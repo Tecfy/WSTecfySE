@@ -22,22 +22,22 @@ namespace WebService
     // [System.Web.Script.Services.ScriptService]
     public class ServiceIntegracaoSE : System.Web.Services.WebService
     {
-        private string strConexaoBaseStudent = ConfigurationManager.AppSettings["appConexaoBaseStudent"];
+        private readonly string strConexaoBaseStudent = ConfigurationManager.AppSettings["appConexaoBaseStudent"];
 
-        private string strConexaoBaseDocControl = ConfigurationManager.AppSettings["appConexaoBaseDocControl"];
+        private readonly string strConexaoBaseDocControl = ConfigurationManager.AppSettings["appConexaoBaseDocControl"];
 
-        private static bool PROD;
+        private static readonly bool PROD;
 
         static ServiceIntegracaoSE()
         {
-            ServiceIntegracaoSE.PROD = Convert.ToBoolean(ConfigurationManager.AppSettings["appEnvironProd"]);
+            PROD = Convert.ToBoolean(ConfigurationManager.AppSettings["appEnvironProd"]);
         }
 
         public ServiceIntegracaoSE()
         {
         }
 
-        private string constructConsultDoc(string ra, string codcurso, bool requeredDoc)
+        private string ConstructConsultDoc(string ra, string codcurso, bool requeredDoc)
         {
             string str = (requeredDoc ? "  and requeredDoc = 'true'" : "");
             string[] strArrays = new string[] { "select * from Document where Document.Cod not in\r\n                                        (\r\n\t                                        select distinct DocId \r\n\t                                        from TransactionDoc \r\n\t                                        where ra = '", ra, "'\r\n                                        )\r\n                                        and docForcodCenter  =  ''", str, "union select * from document where docForcodCenter = '", codcurso, "' \r\n                                                and Cod not in\r\n\t\t                                        ( \r\n\t\t\t                                        select distinct DocId \r\n\t\t\t                                        from TransactionDoc \r\n\t\t\t                                        where ra = '", ra, "'\r\n\t\t                                        )\r\n                                        order by requeredDoc desc\r\n                                        " };
@@ -46,9 +46,9 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosAlunos findStudentByName(string name)
+        public DadosAlunos FindStudentByName(string name)
         {
-            adicionarArquivo("findStudentByName");
+            AdicionarArquivo("findStudentByName");
             DadosAlunos dadosAluno = new DadosAlunos();
             SqlConnection sqlConnection = null;
             SqlDataReader sqlDataReader = null;
@@ -107,28 +107,24 @@ namespace WebService
             return dadosAluno;
         }
 
-        public static void adicionarArquivo(string metodo)
+        public static void AdicionarArquivo(string metodo)
         {
             contador++;
             File.AppendAllText(@"C:\\LOG\" + Guid.NewGuid().ToString(), metodo + " " + contador);
         }
-        public static void adicionarArquivo(string metodo, string paramentos)
+
+        public static void AdicionarArquivo(string metodo, string paramentos)
         {
             contador++;
             File.AppendAllText(@"C:\\LOG\" + Guid.NewGuid().ToString(), metodo + " " + contador + " " + paramentos);
         }
 
-
         private static int contador;
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosAlunos findStudentByRa(string ra)
+        public DadosAlunos FindStudentByRa(string ra)
         {
-
-            adicionarArquivo("findStudentByRa");
-
-
-
+            AdicionarArquivo("findStudentByRa");
 
             DadosAlunos dadosAluno = new DadosAlunos();
             SqlConnection sqlConnection = null;
@@ -188,7 +184,7 @@ namespace WebService
             return dadosAluno;
         }
 
-        private string getDateLimite()
+        private string GetDateLimite()
         {
             string str;
             string str1 = "";
@@ -237,9 +233,9 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DateSystem getDateSystem()
+        public DateSystem GetDateSystem()
         {
-            adicionarArquivo("getDateSystem");
+            AdicionarArquivo("getDateSystem");
             DateSystem dateSystem;
             SqlConnection sqlConnection = null;
             SqlDataReader sqlDataReader = null;
@@ -260,15 +256,15 @@ namespace WebService
                     {
                         DateSystem dateSystem1 = new DateSystem()
                         {
-                            semestreVigente = Convert.ToString(sqlDataReader["semestreVigente"]),
-                            inicioAtividade = Convert.ToString(sqlDataReader["inicioAtividade"]),
-                            divulgacaoSite = Convert.ToString(sqlDataReader["divulgacaoSite"]),
-                            dataEntregaDoc = Convert.ToString(sqlDataReader["dataEntregaDoc"]),
-                            anoVigencia = Convert.ToString(sqlDataReader["anoVigencia"])
+                            SemestreVigente = Convert.ToString(sqlDataReader["semestreVigente"]),
+                            InicioAtividade = Convert.ToString(sqlDataReader["inicioAtividade"]),
+                            DivulgacaoSite = Convert.ToString(sqlDataReader["divulgacaoSite"]),
+                            DataEntregaDoc = Convert.ToString(sqlDataReader["dataEntregaDoc"]),
+                            AnoVigencia = Convert.ToString(sqlDataReader["anoVigencia"])
                         };
                         dateLimite = dateSystem1;
                     }
-                    dateLimite.dataLimite = this.getDateLimite();
+                    dateLimite.DataLimite = this.GetDateLimite();
                 }
                 catch (Exception exception1)
                 {
@@ -291,14 +287,13 @@ namespace WebService
                     sqlDataReader.Close();
                 }
             }
-            return dateSystem;
         }
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosProgramAtivity getProgramRegistration(string CenterCod)
+        public DadosProgramAtivity GetProgramRegistration(string CenterCod)
         {
-            adicionarArquivo("getProgramRegistration");
+            AdicionarArquivo("getProgramRegistration");
             DadosProgramAtivity dadosProgramAtivity;
             SqlConnection sqlConnection = null;
             SqlDataReader sqlDataReader = null;
@@ -354,33 +349,26 @@ namespace WebService
                     sqlDataReader.Close();
                 }
             }
-            return dadosProgramAtivity;
         }
-
-
-
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool insertDocument(string id,byte[] arquivo)
+        public bool InsertDocument(string id,byte[] arquivo)
         {
-
             File.AppendAllText("c:/ssss.txt", "inseriu");
 
             return false;
-
         }
-
-
+        
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DocumentsStudent listDocument(string ra, string codcurso, bool requered)
+        public DocumentsStudent ListDocument(string ra, string codcurso, bool requered)
         {
-            adicionarArquivo("listDocument", "  "+ra + " " + " " + codcurso + (requered == true ? "ok" : "Nok"));
+            AdicionarArquivo("listDocument", "  "+ra + " " + " " + codcurso + (requered == true ? "ok" : "Nok"));
             DocumentsStudent documentsStudent = new DocumentsStudent();
             SqlConnection sqlConnection = null;
             SqlDataReader sqlDataReader = null;
-            string str = this.constructConsultDoc(ra, codcurso, requered);
+            string str = this.ConstructConsultDoc(ra, codcurso, requered);
             try
             {
                 try
@@ -430,7 +418,7 @@ namespace WebService
             return documentsStudent;
         }
 
-        private string monutInsert(string RA, string CodDocument)
+        private string MonutInsert(string RA, string CodDocument)
         {
             string str = DateTime.Now.ToString("yyyy-MM-dd 00:00:00");
             string[] codDocument = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('", CodDocument, "', '", RA, "', '", str, "',  '', '' )" };
@@ -521,11 +509,11 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public string setEndProcess(string RA, string CodCurso)
+        public string SetEndProcess(string RA, string CodCurso)
         {
-            adicionarArquivo("setEndProcess");
+            AdicionarArquivo("setEndProcess");
             string str;
-            if (!ServiceIntegracaoSE.PROD)
+            if (!PROD)
             {
                 return "true";
             }
@@ -634,17 +622,17 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool updateDocument(string Ra, string CodDocument)
+        public bool UpdateDocument(string Ra, string CodDocument)
         {
-            adicionarArquivo("updateDocument");
+            AdicionarArquivo("updateDocument");
             bool flag;
-            if (!ServiceIntegracaoSE.PROD)
+            if (!PROD)
             {
                 return true;
             }
             SqlConnection sqlConnection = null;
             SqlDataReader sqlDataReader = null;
-            string str = this.monutInsert(Ra, CodDocument);
+            string str = this.MonutInsert(Ra, CodDocument);
             try
             {
                 try
@@ -683,7 +671,6 @@ namespace WebService
                     sqlDataReader.Close();
                 }
             }
-            return flag;
         }
 
         public enum TYPOBUSCA

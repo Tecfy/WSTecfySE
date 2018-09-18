@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace WebService.SE
-
+﻿namespace WebService.SE
 {
     interface IDocumento<t>
     {
-        bool inserirDocumento(t Indice);
-        bool uploadDocumento(t Indice, string id);
+        bool InserirDocumento(t Indice);
 
+        bool UploadDocumento(t Indice, string id);
     }
 }

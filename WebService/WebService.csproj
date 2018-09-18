@@ -105,15 +105,16 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aluno.cs" />
-    <Compile Include="AlunosRetorno.cs" />
-    <Compile Include="Ativity.cs" />
-    <Compile Include="CreateLogFiles.cs" />
-    <Compile Include="DadosAlunos.cs" />
-    <Compile Include="DadosProgramAtivity.cs" />
-    <Compile Include="DateSystem.cs" />
-    <Compile Include="Document.cs" />
-    <Compile Include="DocumentsStudent.cs" />
+    <Compile Include="Connection\SEConnection.cs" />
+    <Compile Include="Models\Aluno.cs" />
+    <Compile Include="Models\AlunosRetorno.cs" />
+    <Compile Include="Models\Ativity.cs" />
+    <Compile Include="Models\CreateLogFiles.cs" />
+    <Compile Include="Models\DadosAlunos.cs" />
+    <Compile Include="Models\DadosProgramAtivity.cs" />
+    <Compile Include="Models\DateSystem.cs" />
+    <Compile Include="Models\Document.cs" />
+    <Compile Include="Models\DocumentsStudent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -128,12 +129,11 @@
       <DependentUpon>ServiceIntegracaoSE.asmx</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SE\Class1.cs" />
     <Compile Include="SE\DocumentoAtributo.cs" />
     <Compile Include="SE\IDocumento.cs" />
     <Compile Include="SE\InsegracaoSE.cs" />
     <Compile Include="SE\SEClient.cs" />
-    <Compile Include="Student.cs" />
+    <Compile Include="Models\Student.cs" />
     <Compile Include="Web References\com.softexpert.tecfy\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

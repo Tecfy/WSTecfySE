@@ -5,11 +5,11 @@ namespace WebService
 {
 	public class CreateLogFiles
 	{
-		private string sLogFormat;
+		private readonly string sLogFormat;
 
-		private string sErrorTime;
+		private readonly string sErrorTime;
 
-		private string fileLogName = "";
+		private readonly string fileLogName = "";
 
 		public CreateLogFiles(string sPathName)
 		{
@@ -33,8 +33,8 @@ namespace WebService
 				streamWriter.Flush();
 				streamWriter.Close();
 			}
-			catch (Exception exception)
-			{
+			catch (Exception)
+            {
 			}
 		}
 	}

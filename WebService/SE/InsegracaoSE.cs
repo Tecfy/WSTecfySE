@@ -1,70 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Web.Configuration;
 using TecnoSet.Ecm.Wpf.Services.SE;
 using WebService.com.softexpert.tecfy;
+using WebService.Connection;
 
 namespace WebService.SE
 {
     public class InsegracaoSE : IDocumento<DocumentoAtributo>
     {
-        string Username = WebConfigurationManager.AppSettings["Username"];
-        string Password = WebConfigurationManager.AppSettings["Password"];
-
-        public documentDataReturn verificarPropriedadesDocumento(string iddocumento)
+        public documentDataReturn VerificarPropriedadesDocumento(string iddocumento)
         {
-            var ass = retornaconexao("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-            return ass.viewDocumentData(iddocumento, "", "");
-
+            SEClient seClient = SEConnection.GetConnection();
+            return seClient.viewDocumentData(iddocumento, "", "");
         }
 
-        public searchCategoryReturn carregarCategorias()
+        public searchCategoryReturn CarregarCategorias()
         {
-            var ass = retornaconexao("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-            var cat = ass.searchCategory();
-            return cat;
+            SEClient seClient = SEConnection.GetConnection();
+            searchCategoryReturn searchCategoryReturn = seClient.searchCategory();
+            return searchCategoryReturn;
         }
 
-        public documentReturn[] verificaDocumentoNome(string nome)
+        public documentReturn[] VerificaDocumentoNome(string name)
         {
-            var ass = retornaconexao("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-            attributeData[] at = new attributeData[1];
-            at[0] = new attributeData();
-            //busca a matricula
-            at[0].IDATTRIBUTE = "ATR01";
-            at[0].VLATTRIBUTE = nome;
+            string attributeName = WebConfigurationManager.AppSettings["Attribute_Name"];
+
+            SEClient seClient = SEConnection.GetConnection();
+            attributeData[] attributes = new attributeData[1];
+            attributes[0] = new attributeData
+            {
+                IDATTRIBUTE = attributeName,
+                VLATTRIBUTE = name
+            };
 
             List<documentReturn> retorno = new List<documentReturn>();
 
-            searchDocumentFilter sdf = new searchDocumentFilter();
-            sdf.IDCATEGORY = "00";
-            var d = ass.searchDocument(sdf, "", at);
-            documentReturn retornoDocumento = new documentReturn();
-            if (d.RESULTS.Count() > 0)
+            searchDocumentFilter searchDocumentFilter = new searchDocumentFilter
             {
-                foreach (var item in d.RESULTS)
-                {
-                    var propriedade = verificarPropriedadesDocumento(item.IDDOCUMENT);
+                IDCATEGORY = WebConfigurationManager.AppSettings["Category_Owner"]
+            };
 
-                    var prop = propriedade.ATTRIBUTTES.Where(_s => _s.ATTRIBUTTEVALUE.FirstOrDefault() == "ATR01").FirstOrDefault();
+            searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributes);
+
+            if (searchDocumentReturn.RESULTS.Count() > 0)
+            {
+                foreach (var item in searchDocumentReturn.RESULTS)
+                {
+                    var propriedade = VerificarPropriedadesDocumento(item.IDDOCUMENT);
+
+                    var prop = propriedade.ATTRIBUTTES.Where(_s => _s.ATTRIBUTTEVALUE.FirstOrDefault() == attributeName).FirstOrDefault();
                     if (prop != null)
                     {
 
-                        if (prop.ATTRIBUTTEVALUE.Contains(nome))
+                        if (prop.ATTRIBUTTEVALUE.Contains(name))
                         {
                             retorno.Add(item);
                         }
                     }
-
                 }
-
-
-
-
 
                 return retorno.ToArray();
             }
@@ -73,46 +69,27 @@ namespace WebService.SE
                 return null;
             }
         }
-        public documentReturn verificaDocumentoCadastrado(string matricula)
+
+        public documentReturn VerificaDocumentoCadastrado(string matricula)
         {
-            var ass = retornaconexao("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-            attributeData[] at = new attributeData[1];
-            at[0] = new attributeData();
-            ////busca a matricula
-            at[0].IDATTRIBUTE = "ATR02";
-            at[0].VLATTRIBUTE = matricula;
-
-
-
-            searchDocumentFilter sdf = new searchDocumentFilter();
-            sdf.IDCATEGORY = "00";
-            var d = ass.searchDocument(sdf, "", at);
-            documentReturn retorno = new documentReturn();
-            if (d.RESULTS.Count() > 0)
+            SEClient seClient = SEConnection.GetConnection();
+            attributeData[] attributes = new attributeData[1];
+            attributes[0] = new attributeData
             {
-                return d.RESULTS[0];
-            }
-            else
-            {
-                return null;
-            }
-        }
-        public documentReturn verificaDocumentoCadastrado(string matricula, string categoria)
-        {
-            var ass = retornaconexao("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-            attributeData[] at = new attributeData[1];
-            at[0] = new attributeData();
-            ////busca a matricula
-            at[0].IDATTRIBUTE = "ATR02";
-            at[0].VLATTRIBUTE = matricula;
+                IDATTRIBUTE = WebConfigurationManager.AppSettings["Attribute_Registration"],
+                VLATTRIBUTE = matricula
+            };
 
-            searchDocumentFilter sdf = new searchDocumentFilter();
-            sdf.IDCATEGORY = categoria;
-            var d = ass.searchDocument(sdf, "", at);
-            documentReturn retorno = new documentReturn();
-            if (d.RESULTS.Count() > 0)
+            searchDocumentFilter searchDocumentFilter = new searchDocumentFilter
             {
-                return d.RESULTS[0];
+                IDCATEGORY = WebConfigurationManager.AppSettings["Category_Owner"]
+            };
+
+            searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributes);
+
+            if (searchDocumentReturn.RESULTS.Count() > 0)
+            {
+                return searchDocumentReturn.RESULTS[0];
             }
             else
             {
@@ -120,174 +97,87 @@ namespace WebService.SE
             }
         }
 
-
-        public SEClient retornaconexao(String url)
+        public documentReturn VerificaDocumentoCadastrado(string matricula, string categoria)
         {
-            SEClient ass = new SEClient(url);
-            ass.SetAuthentication(Username, Password);
+            SEClient sEClient = SEConnection.GetConnection();
+            attributeData[] attributes = new attributeData[1];
+            attributes[0] = new attributeData
+            {
+                IDATTRIBUTE = WebConfigurationManager.AppSettings["Attribute_Registration"],
+                VLATTRIBUTE = matricula
+            };
 
-            return ass;
+            searchDocumentFilter searchDocumentFilter = new searchDocumentFilter
+            {
+                IDCATEGORY = categoria
+            };
 
+            searchDocumentReturn searchDocumentReturn = sEClient.searchDocument(searchDocumentFilter, "", attributes);
+
+            if (searchDocumentReturn.RESULTS.Count() > 0)
+            {
+                return searchDocumentReturn.RESULTS[0];
+            }
+            else
+            {
+                return null;
+            }
         }
 
-
-        //public bool inserirDocumentoBinario(DocumentoAtributo Indice)
-        //{
-        //    bool retorno = false;
-        //    try
-        //    {
-        //        var arquivo = Indice.NomeArquivo;
-        //        var indices = arquivo.Split('_');
-
-        //        if (indices.Count() >= 2)
-        //        {
-        //            SEClient ass = new SEClient("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-        //            ass.SetAuthentication(Username, Password);
-
-
-        //            var documentoCategoria00 = verificaDocumentoCadastrado(Indice.Matricula, "00");
-        //            if (documentoCategoria00 == null)
-        //            {
-        //                throw new Exception("Sistema não possui Aluno com categoria 00");
-        //            }
-        //            ///verifica se o documento existe 
-        //            var documento = verificaDocumentoCadastrado(Indice.Matricula, Indice.Categoria);
-        //            ////já existe o docuemnto na categoria especificada. Portanto faz upload do documento e das propriedades
-        //            if (documento != null)
-        //            {
-        //                var propriedade = verificarPropriedadesDocumento(documentoCategoria00.IDDOCUMENT);
-        //                if (propriedade.ATTRIBUTTES.Count() > 0)
-        //                {
-        //                    String atributos = "";
-        //                    foreach (var item in propriedade.ATTRIBUTTES)
-        //                    {
-        //                        string valor = "";
-        //                        if (item.ATTRIBUTTEVALUE.Count() > 0)
-        //                        {
-        //                            valor = item.ATTRIBUTTEVALUE[0];
-        //                        }
-        //                        try
-        //                        {
-        //                            var s = ass.setAttributeValue(documento.IDDOCUMENT, "", item.ATTRIBUTTENAME, valor);
-        //                        }
-        //                        catch (Exception ex)
-        //                        {
-        //                            throw new Exception("Campo " + item.ATTRIBUTTENAME + "Com erro");
-        //                        }
-
-
-        //                    }
-        //                    var ds = uploadDocumentoBinario(Indice, documento.IDDOCUMENT);
-        //                }
-        //            }
-
-        //            ////faz a inserção de um novo documento
-        //            else
-        //            {
-        //                var propriedade = verificarPropriedadesDocumento(documentoCategoria00.IDDOCUMENT);
-        //                if (propriedade.ATTRIBUTTES.Count() > 0)
-        //                {
-        //                    String atributos = "";
-        //                    foreach (var item in propriedade.ATTRIBUTTES)
-        //                    {
-        //                        string valor = "";
-        //                        if (item.ATTRIBUTTEVALUE.Count() > 0)
-        //                        {
-        //                            valor = item.ATTRIBUTTEVALUE[0];
-        //                        }
-
-        //                        atributos += item.ATTRIBUTTENAME + "=" + valor + ";";
-        //                    }
-        //                    var s = ass.newDocument(categoria, "", "Documento:aluno" + matricula, "", "", atributos, "", null, 0);
-
-        //                    var inx = s.Split(':');
-        //                    if (inx.Count() > 0)
-        //                    {
-        //                        if (inx[1].ToUpper().Contains("SUCESSO"))
-        //                        {
-
-        //                            uploadDocumento(Indice, inx[0]);
-        //                        }
-        //                        else
-        //                        {
-        //                            throw new Exception(s);
-        //                        }
-        //                    }
-
-
-
-        //                }
-
-
-        //            }
-        //        }
-
-
-        //        return retorno;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw new Exception(e.Message);
-        //    }
-        //}
-
-        public bool inserirDocumentoBinario(DocumentoAtributo Indice)
+        public bool InserirDocumentoBinario(DocumentoAtributo Indice)
         {
             bool retorno = false;
             try
             {
+                SEClient seClient = SEConnection.GetConnection();
 
-                String categoria = "", matricula = "";
-
-                SEClient ass = new SEClient("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-                ass.SetAuthentication(Username, Password);
-
-                matricula = Indice.Matricula;
-                categoria = Indice.Categoria;
-                var documentoCategoria00 = verificaDocumentoCadastrado(matricula, "00");
-                if (documentoCategoria00 == null)
+                documentReturn documentReturnOwner = VerificaDocumentoCadastrado(Indice.Matricula, WebConfigurationManager.AppSettings["Category_Owner"]);
+                if (documentReturnOwner == null)
                 {
-                    throw new Exception("Sistema não possui Aluno com categoria 00");
+                    throw new Exception("Sistema não localizou o aluno Aluno!");
                 }
-                ///verifica se o documento existe 
-                var documento = verificaDocumentoCadastrado(matricula, categoria);
-                ////já existe o docuemnto na categoria especificada. Portanto faz upload do documento e das propriedades
-                if (documento != null)
+
+                // Checks whether the document exists
+                documentReturn documentReturn = VerificaDocumentoCadastrado(Indice.Matricula, Indice.Categoria);
+
+                // If the document exists in the specified category it uploads the document and replica the properties of the owner document
+                if (documentReturn != null)
                 {
-                    var propriedade = verificarPropriedadesDocumento(documentoCategoria00.IDDOCUMENT);
-                    if (propriedade.ATTRIBUTTES.Count() > 0)
+                    documentDataReturn documentDataReturn = VerificarPropriedadesDocumento(documentReturnOwner.IDDOCUMENT);
+                    if (documentDataReturn.ATTRIBUTTES.Count() > 0)
                     {
-                        String atributos = "";
-                        foreach (var item in propriedade.ATTRIBUTTES)
+                        foreach (var item in documentDataReturn.ATTRIBUTTES)
                         {
                             string valor = "";
                             if (item.ATTRIBUTTEVALUE.Count() > 0)
                             {
                                 valor = item.ATTRIBUTTEVALUE[0];
                             }
+
                             try
                             {
-                                var s = ass.setAttributeValue(documento.IDDOCUMENT, "", item.ATTRIBUTTENAME, valor);
+                                seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", item.ATTRIBUTTENAME, valor);
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
-                                throw new Exception("Campo " + item.ATTRIBUTTENAME + "Com erro");
+                                throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
                             }
-
-
                         }
-                        var ds = uploadDocumentoBinario(Indice, documento.IDDOCUMENT);
+
+                        seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", WebConfigurationManager.AppSettings["Attribute_Pages"], Indice.Paginas.ToString());
+
+                        UploadDocumentoBinario(Indice, documentReturn.IDDOCUMENT);
                     }
                 }
 
-                ////faz a inserção de um novo documento
+                // If you do not insert a new document
                 else
                 {
-                    var propriedade = verificarPropriedadesDocumento(documentoCategoria00.IDDOCUMENT);
-                    if (propriedade.ATTRIBUTTES.Count() > 0)
+                    documentDataReturn documentDataReturn = VerificarPropriedadesDocumento(documentReturnOwner.IDDOCUMENT);
+                    if (documentDataReturn.ATTRIBUTTES.Count() > 0)
                     {
-                        String atributos = "";
-                        foreach (var item in propriedade.ATTRIBUTTES)
+                        string atributos = "";
+                        foreach (var item in documentDataReturn.ATTRIBUTTES)
                         {
                             string valor = "";
                             if (item.ATTRIBUTTEVALUE.Count() > 0)
@@ -297,17 +187,12 @@ namespace WebService.SE
 
                             atributos += item.ATTRIBUTTENAME + "=" + valor + ";";
                         }
-                        if (Indice.Identificacao != null && Indice.Identificacao != "")
-                        {
-                            atributos += "atr08=" + Indice.Identificacao + ";";
-                        }
-                        if (Indice.Data != null && Indice.Data != "")
-                        {
-                            atributos += "atr09=" + Indice.Identificacao + ";";
-                        }
-                        var cat = this.carregarCategorias().RESULTARRAY.Where(_s => _s.IDCATEGORY == categoria).FirstOrDefault().NMCATEGORY;
 
-                        var s = ass.newDocument(categoria, "", cat, "", "", atributos, "", null, 0);
+                        atributos += WebConfigurationManager.AppSettings["Attribute_Pages"] + "=" + Indice.Paginas + ";";
+
+                        var cat = this.CarregarCategorias().RESULTARRAY.Where(_s => _s.IDCATEGORY == Indice.Categoria).FirstOrDefault().NMCATEGORY;
+
+                        var s = seClient.newDocument(Indice.Categoria, "", cat, "", "", atributos, "", null, 0);
 
                         var inx = s.Split(':');
                         if (inx.Count() > 0)
@@ -315,22 +200,15 @@ namespace WebService.SE
                             if (inx[1].ToUpper().Contains("SUCESSO"))
                             {
 
-                                uploadDocumentoBinario(Indice, inx[0]);
+                                UploadDocumentoBinario(Indice, inx[0]);
                             }
                             else
                             {
                                 throw new Exception(s);
                             }
                         }
-
-
-
                     }
-
-
                 }
-
-
 
                 return retorno;
             }
@@ -340,7 +218,7 @@ namespace WebService.SE
             }
         }
 
-        public bool inserirDocumento(DocumentoAtributo Indice)
+        public bool InserirDocumento(DocumentoAtributo Indice)
         {
             bool retorno = false;
             try
@@ -350,55 +228,58 @@ namespace WebService.SE
                 String categoria = "", matricula = "";
                 if (indices.Count() >= 2)
                 {
-                    SEClient ass = new SEClient("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-                    ass.SetAuthentication(Username, Password);
+                    SEClient seClient = SEConnection.GetConnection();
 
                     matricula = indices[0];
                     categoria = indices[1];
-                    var documentoCategoria00 = verificaDocumentoCadastrado(matricula, "00");
-                    if (documentoCategoria00 == null)
+
+                    documentReturn documentReturnOwner = VerificaDocumentoCadastrado(matricula, WebConfigurationManager.AppSettings["Category_Owner"]);
+                    if (documentReturnOwner == null)
                     {
-                        throw new Exception("Sistema não possui Aluno com categoria 00");
+                        throw new Exception("Sistema não localizou o aluno Aluno!");
                     }
-                    ///verifica se o documento existe 
-                    var documento = verificaDocumentoCadastrado(matricula, categoria);
-                    ////já existe o docuemnto na categoria especificada. Portanto faz upload do documento e das propriedades
-                    if (documento != null)
+
+                    // Checks whether the document exists
+                    documentReturn documentReturn = VerificaDocumentoCadastrado(matricula, categoria);
+
+                    // If the document exists in the specified category it uploads the document and replica the properties of the owner document
+                    if (documentReturn != null)
                     {
-                        var propriedade = verificarPropriedadesDocumento(documentoCategoria00.IDDOCUMENT);
-                        if (propriedade.ATTRIBUTTES.Count() > 0)
+                        documentDataReturn documentDataReturn = VerificarPropriedadesDocumento(documentReturnOwner.IDDOCUMENT);
+                        if (documentDataReturn.ATTRIBUTTES.Count() > 0)
                         {
-                            String atributos = "";
-                            foreach (var item in propriedade.ATTRIBUTTES)
+                            foreach (var item in documentDataReturn.ATTRIBUTTES)
                             {
                                 string valor = "";
                                 if (item.ATTRIBUTTEVALUE.Count() > 0)
                                 {
                                     valor = item.ATTRIBUTTEVALUE[0];
                                 }
+
                                 try
                                 {
-                                    var s = ass.setAttributeValue(documento.IDDOCUMENT, "", item.ATTRIBUTTENAME, valor);
+                                    seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", item.ATTRIBUTTENAME, valor);
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
                                     throw new Exception("Campo " + item.ATTRIBUTTENAME + "Com erro");
                                 }
-
-
                             }
-                            var ds = uploadDocumento(Indice, documento.IDDOCUMENT);
+
+                            seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", WebConfigurationManager.AppSettings["Attribute_Pages"], Indice.Paginas.ToString());
+
+                            UploadDocumento(Indice, documentReturn.IDDOCUMENT);
                         }
                     }
 
-                    ////faz a inserção de um novo documento
+                    // If you do not insert a new document
                     else
                     {
-                        var propriedade = verificarPropriedadesDocumento(documentoCategoria00.IDDOCUMENT);
-                        if (propriedade.ATTRIBUTTES.Count() > 0)
+                        documentDataReturn documentDataReturn = VerificarPropriedadesDocumento(documentReturnOwner.IDDOCUMENT);
+                        if (documentDataReturn.ATTRIBUTTES.Count() > 0)
                         {
                             String atributos = "";
-                            foreach (var item in propriedade.ATTRIBUTTES)
+                            foreach (var item in documentDataReturn.ATTRIBUTTES)
                             {
                                 string valor = "";
                                 if (item.ATTRIBUTTEVALUE.Count() > 0)
@@ -408,7 +289,10 @@ namespace WebService.SE
 
                                 atributos += item.ATTRIBUTTENAME + "=" + valor + ";";
                             }
-                            var s = ass.newDocument(categoria, "", "Documento:aluno" + matricula, "", "", atributos, "", null, 0);
+
+                            atributos += WebConfigurationManager.AppSettings["Attribute_Pages"] + "=" + Indice.Paginas + ";";
+
+                            var s = seClient.newDocument(categoria, "", "Documento:aluno" + matricula, "", "", atributos, "", null, 0);
 
                             var inx = s.Split(':');
                             if (inx.Count() > 0)
@@ -416,22 +300,16 @@ namespace WebService.SE
                                 if (inx[1].ToUpper().Contains("SUCESSO"))
                                 {
 
-                                    uploadDocumento(Indice, inx[0]);
+                                    UploadDocumento(Indice, inx[0]);
                                 }
                                 else
                                 {
                                     throw new Exception(s);
                                 }
                             }
-
-
-
                         }
-
-
                     }
                 }
-
 
                 return retorno;
             }
@@ -440,51 +318,60 @@ namespace WebService.SE
                 throw new Exception(e.Message);
             }
         }
-        public bool uploadDocumentoBinario(DocumentoAtributo Indice, string iddocumento)
+
+        public bool UploadDocumentoBinario(DocumentoAtributo Indice, string iddocumento)
         {
             try
             {
                 var arquivo = Path.GetFileName(Indice.Arquivo.FullName);
 
-                //////id Do novo documento
-                SEClient ass = new SEClient("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-                ass.SetAuthentication(Username, Password);
+                SEClient seClient = SEConnection.GetConnection();
 
-                eletronicFile[] wl = new eletronicFile[2];
-                wl[0] = new eletronicFile();
+                eletronicFile[] eletronicFiles = new eletronicFile[2];
 
-                wl[0].BINFILE = Indice.ArquivoBinario;
-                wl[0].ERROR = "";
-                wl[0].NMFILE = Path.GetFileName(Indice.Arquivo.FullName);
-                ass.uploadEletronicFileAsync(iddocumento, "", "", wl);
+                eletronicFiles[0] = new eletronicFile
+                {
+                    BINFILE = Indice.ArquivoBinario,
+                    ERROR = "",
+                    NMFILE = Path.GetFileName(Indice.Arquivo.FullName)
+                };
+
+                seClient.uploadEletronicFileAsync(iddocumento, "", "", eletronicFiles);
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
-
         }
-        public bool uploadDocumento(DocumentoAtributo Indice, string iddocumento)
+
+        public bool UploadDocumento(DocumentoAtributo Indice, string iddocumento)
         {
-            var arquivo = Path.GetFileName(Indice.Arquivo.FullName);
-            var indices = arquivo.Split('_');
-            //////id Do novo documento
-            SEClient ass = new SEClient("https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/dc_ws.php");
-            ass.SetAuthentication(Username, Password);
+            try
+            {
+                var arquivo = Path.GetFileName(Indice.Arquivo.FullName);
+                var indices = arquivo.Split('_');
 
-            eletronicFile[] wl = new eletronicFile[2];
-            wl[0] = new eletronicFile();
+                SEClient seClient = SEConnection.GetConnection();
 
-            wl[0].BINFILE = File.ReadAllBytes(Indice.Arquivo.FullName);
-            wl[0].ERROR = "";
-            wl[0].NMFILE = Path.GetFileName(Indice.Arquivo.FullName);
-            var d = ass.uploadEletronicFile(iddocumento, "", "", wl);
+                eletronicFile[] eletronicFiles = new eletronicFile[2];
 
-            return true;
+                eletronicFiles[0] = new eletronicFile
+                {
+                    BINFILE = File.ReadAllBytes(Indice.Arquivo.FullName),
+                    ERROR = "",
+                    NMFILE = Path.GetFileName(Indice.Arquivo.FullName)
+                };
 
+                seClient.uploadEletronicFile(iddocumento, "", "", eletronicFiles);
 
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
 using WebService.com.softexpert.tecfy;
@@ -9,7 +7,7 @@ namespace TecnoSet.Ecm.Wpf.Services.SE
 {
     public class SEClient: Documento
     {
-        private String m_HeaderName; private String m_HeaderValue;
+        private string m_HeaderName; private string m_HeaderValue;
 
         protected override WebRequest GetWebRequest(Uri uri)
         {
@@ -20,16 +18,7 @@ namespace TecnoSet.Ecm.Wpf.Services.SE
             return (WebRequest)request;
         }
 
-        public SEClient(string urlWebService, string usaurio, string senha) : base(urlWebService)
-        {
-
-        }
-
-        public SEClient(string urlWebService) : base(urlWebService)
-        {
-        }
-
-        public void SetRequestHeader(String headerName, String headerValue)
+        public void SetRequestHeader(string headerName, string headerValue)
         {
             this.m_HeaderName = headerName;
             this.m_HeaderValue = headerValue;
@@ -40,7 +29,5 @@ namespace TecnoSet.Ecm.Wpf.Services.SE
             string usernamePassword = userName + ":" + password;
             this.SetRequestHeader("Authorization", "Basic " + Convert.ToBase64String(new ASCIIEncoding().GetBytes(usernamePassword)));
         }
-
-
     }
 }
