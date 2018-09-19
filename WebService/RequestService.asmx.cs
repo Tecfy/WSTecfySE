@@ -42,7 +42,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosAlunos FindStudentByName(string name)
+        public DadosAlunos findStudentByName(string name)
         {
             DadosAlunos dadosAluno = new DadosAlunos();
             var integrador = new InsegracaoSE();
@@ -60,7 +60,7 @@ namespace WebService
                         NOMEALUNO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                         RA = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                         CPFALUNO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        CODCENTRO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CodeUnity"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CodeUnity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                        CODCENTRO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                         NOMECURSO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                         SIGLACENTRO = "0125",
                         NOMECENTRO = "0125",
@@ -77,7 +77,7 @@ namespace WebService
         private static int contador;
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosAlunos FindStudentByRa(string ra)
+        public DadosAlunos findStudentByRa(string ra)
         {
             File.AppendAllText(@"C:\\LOG\CategoriaRAPROCURA" + Guid.NewGuid(), "PASSOU");
 
@@ -96,7 +96,7 @@ namespace WebService
                     NOMEALUNO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                     RA = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                     CPFALUNO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                    CODCENTRO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CodeUnity"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CodeUnity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                    CODCENTRO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                     NOMECURSO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                     SIGLACENTRO = "0125",
                     NOMECENTRO = "0125",
@@ -110,7 +110,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DateSystem GetDateSystem()
+        public DateSystem getDateSystem()
         {
             DateSystem dateSystem;
             SqlConnection sqlConnection = null;
@@ -167,7 +167,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DocumentsStudent GetCategory()
+        public DocumentsStudent getCategory()
         {
             DocumentsStudent documentsStudent = new DocumentsStudent();
 
@@ -197,7 +197,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosProgramAtivity GetProgramRegistration(string CenterCod)
+        public DadosProgramAtivity getProgramRegistration(string CenterCod)
         {
             DadosProgramAtivity dadosProgramAtivity;
             SqlConnection sqlConnection = null;
@@ -258,7 +258,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool InsertDocumentByteArray(byte[] arquivo, String Matricula, string categoria, string ip, string usuario, string extensao)
+        public bool insertDocumentByteArray(byte[] arquivo, String Matricula, string categoria, string ip, string usuario, string extensao)
         {
             try
             {
@@ -286,7 +286,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool InsertDocumentBase64(string arquivo, String Matricula, string categoria, string ip, string usuario, string extensao)
+        public bool insertDocumentBase64(string arquivo, String Matricula, string categoria, string ip, string usuario, string extensao)
         {
             try
             {
@@ -316,7 +316,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool InsertDocumentEmbarcada(string data, string Identificacao, string id, String ra, string categoria)
+        public bool insertDocumentEmbarcada(string data, string Identificacao, string id, String ra, string categoria)
         {
             AdicionarArquivof("passou ra: " + ra + " categoria " + categoria);
 
@@ -339,7 +339,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool InsertDocument(string id, String ra, string categoria)
+        public bool insertDocument(string id, String ra, string categoria)
         {
             AdicionarArquivof("passou ra: " + ra + " categoria " + categoria);
 
@@ -360,7 +360,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DocumentsStudent ListDocument(string ra = "", string codcurso = "", bool requered = true)
+        public DocumentsStudent listDocument(string ra = "", string codcurso = "", bool requered = true)
         {
             DocumentsStudent documentsStudent = new DocumentsStudent();
 
@@ -395,7 +395,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public RetornoCategoria GetCategorias(string matricula)
+        public RetornoCategoria getCategorias(string matricula)
         {
             File.AppendAllText(@"C:\\LOG\Categoria" + Guid.NewGuid(), matricula);
 
@@ -421,7 +421,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public AlunosRetorno GetMatriculas()
+        public AlunosRetorno getMatriculas()
         {
             AlunosRetorno ar = new AlunosRetorno();
 
@@ -432,7 +432,7 @@ namespace WebService
 
             foreach (var item in results)
             {
-                var nome = this.FindStudentByRa(item.Matricula).RetornoStudent[0].NOMEALUNO;
+                var nome = this.findStudentByRa(item.Matricula).RetornoStudent[0].NOMEALUNO;
 
                 al.Add(new Aluno() { Matricula = item.Matricula, Nome = nome });
             }
@@ -444,7 +444,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public string SetEndProcess(string RA, string CodCurso)
+        public string setEndProcess(string RA, string CodCurso)
         {
             string str;
 
@@ -558,7 +558,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool UpdateDocument(string Ra, string CodDocument)
+        public bool updateDocument(string Ra, string CodDocument)
         {
             bool flag;
 

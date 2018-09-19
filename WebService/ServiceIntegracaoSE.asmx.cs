@@ -12,21 +12,20 @@ using WebService.SE;
 
 namespace WebService
 {
-    /// <summary>
-    /// Descrição resumida de ServiceIntegracaoSE
-    /// </summary>
     [WebService(Namespace = "http://tempuri.org/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
-    // Para permitir que esse serviço da web seja chamado a partir do script, usando ASP.NET AJAX, remova os comentários da linha a seguir. 
-    // [System.Web.Script.Services.ScriptService]
     public class ServiceIntegracaoSE : System.Web.Services.WebService
     {
+        #region .: Variables :.
+
         private readonly string strConexaoBaseStudent = ConfigurationManager.AppSettings["appConexaoBaseStudent"];
-
         private readonly string strConexaoBaseDocControl = ConfigurationManager.AppSettings["appConexaoBaseDocControl"];
-
         private static readonly bool PROD;
+
+        #endregion
+
+        #region .: Constructor :.
 
         static ServiceIntegracaoSE()
         {
@@ -44,9 +43,13 @@ namespace WebService
             return string.Concat(strArrays);
         }
 
+        #endregion
+
+        #region .: Methods :.
+
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosAlunos FindStudentByName(string name)
+        public DadosAlunos findStudentByName(string name)
         {
             AdicionarArquivo("findStudentByName");
             DadosAlunos dadosAluno = new DadosAlunos();
@@ -105,24 +108,12 @@ namespace WebService
                 }
             }
             return dadosAluno;
-        }
-
-        public static void AdicionarArquivo(string metodo)
-        {
-            contador++;
-            File.AppendAllText(@"C:\\LOG\" + Guid.NewGuid().ToString(), metodo + " " + contador);
-        }
-
-        public static void AdicionarArquivo(string metodo, string paramentos)
-        {
-            contador++;
-            File.AppendAllText(@"C:\\LOG\" + Guid.NewGuid().ToString(), metodo + " " + contador + " " + paramentos);
-        }
+        }        
 
         private static int contador;
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosAlunos FindStudentByRa(string ra)
+        public DadosAlunos findStudentByRa(string ra)
         {
             AdicionarArquivo("findStudentByRa");
 
@@ -184,56 +175,9 @@ namespace WebService
             return dadosAluno;
         }
 
-        private string GetDateLimite()
-        {
-            string str;
-            string str1 = "";
-            SqlConnection sqlConnection = null;
-            SqlDataReader sqlDataReader = null;
-            try
-            {
-                try
-                {
-                    sqlConnection = new SqlConnection(this.strConexaoBaseStudent);
-                    sqlConnection.Open();
-                    SqlCommand sqlCommand = new SqlCommand("dbo.STPECM_Consultas;6", sqlConnection)
-                    {
-                        CommandType = CommandType.StoredProcedure
-                    };
-                    sqlDataReader = sqlCommand.ExecuteReader();
-                    while (sqlDataReader.Read())
-                    {
-                        str1 = Convert.ToString(sqlDataReader["DATALimite"]);
-                    }
-                    str = str1;
-                }
-                catch (Exception exception1)
-                {
-                    Exception exception = exception1;
-                    CreateLogFiles createLogFile = new CreateLogFiles(base.Server.MapPath("Logs/ErrorLog"));
-                    createLogFile.ErrorLog(string.Concat("Metodo GetDateLimite", exception.Message));
-                    string str2 = "01/01/2011";
-                    str1 = str2;
-                    str = str2;
-                }
-            }
-            finally
-            {
-                if (sqlConnection != null)
-                {
-                    sqlConnection.Close();
-                }
-                if (sqlDataReader != null)
-                {
-                    sqlDataReader.Close();
-                }
-            }
-            return str;
-        }
-
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DateSystem GetDateSystem()
+        public DateSystem getDateSystem()
         {
             AdicionarArquivo("getDateSystem");
             DateSystem dateSystem;
@@ -291,7 +235,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosProgramAtivity GetProgramRegistration(string CenterCod)
+        public DadosProgramAtivity getProgramRegistration(string CenterCod)
         {
             AdicionarArquivo("getProgramRegistration");
             DadosProgramAtivity dadosProgramAtivity;
@@ -353,18 +297,18 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool InsertDocument(string id,byte[] arquivo)
+        public bool insertDocument(string id, byte[] arquivo)
         {
             File.AppendAllText("c:/ssss.txt", "inseriu");
 
             return false;
         }
-        
+
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DocumentsStudent ListDocument(string ra, string codcurso, bool requered)
+        public DocumentsStudent listDocument(string ra, string codcurso, bool requered)
         {
-            AdicionarArquivo("listDocument", "  "+ra + " " + " " + codcurso + (requered == true ? "ok" : "Nok"));
+            AdicionarArquivo("listDocument", "  " + ra + " " + " " + codcurso + (requered == true ? "ok" : "Nok"));
             DocumentsStudent documentsStudent = new DocumentsStudent();
             SqlConnection sqlConnection = null;
             SqlDataReader sqlDataReader = null;
@@ -416,100 +360,11 @@ namespace WebService
                 }
             }
             return documentsStudent;
-        }
-
-        private string MonutInsert(string RA, string CodDocument)
-        {
-            string str = DateTime.Now.ToString("yyyy-MM-dd 00:00:00");
-            string[] codDocument = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('", CodDocument, "', '", RA, "', '", str, "',  '', '' )" };
-            string str1 = string.Concat(codDocument);
-            if (CodDocument.Equals("10"))
-            {
-                string[] rA = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('10', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA);
-                string str2 = str1;
-                string[] strArrays = new string[] { str2, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('18', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays);
-                string str3 = str1;
-                string[] rA1 = new string[] { str3, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('1', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA1);
-            }
-            if (CodDocument.Equals("1"))
-            {
-                string[] strArrays1 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('1', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays1);
-                string str4 = str1;
-                string[] rA2 = new string[] { str4, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('10', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA2);
-            }
-            if (CodDocument.Equals("18"))
-            {
-                string[] strArrays2 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('10', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays2);
-                string str5 = str1;
-                string[] rA3 = new string[] { str5, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('18', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA3);
-            }
-            if (CodDocument.Equals("11"))
-            {
-                string[] strArrays3 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('11', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays3);
-                string str6 = str1;
-                string[] rA4 = new string[] { str6, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('12', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA4);
-                string str7 = str1;
-                string[] strArrays4 = new string[] { str7, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('6', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays4);
-            }
-            if (CodDocument.Equals("12"))
-            {
-                string[] rA5 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('12', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA5);
-                string str8 = str1;
-                string[] strArrays5 = new string[] { str8, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('11', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays5);
-            }
-            if (CodDocument.Equals("6"))
-            {
-                string[] rA6 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('11', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA6);
-                string str9 = str1;
-                string[] strArrays6 = new string[] { str9, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('6', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays6);
-            }
-            if (CodDocument.Equals("9"))
-            {
-                string[] rA7 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('19', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA7);
-                string str10 = str1;
-                string[] strArrays7 = new string[] { str10, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('9', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays7);
-                string str11 = str1;
-                string[] rA8 = new string[] { str11, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('2', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA8);
-            }
-            if (CodDocument.Equals("19"))
-            {
-                string[] strArrays8 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('19', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays8);
-                string str12 = str1;
-                string[] rA9 = new string[] { str12, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('9', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA9);
-            }
-            if (CodDocument.Equals("2"))
-            {
-                string[] strArrays9 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('2', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(strArrays9);
-                string str13 = str1;
-                string[] rA10 = new string[] { str13, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('9', '", RA, "', '", str, "',  '', '' )" };
-                str1 = string.Concat(rA10);
-            }
-            return str1;
-        }
+        }        
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public string SetEndProcess(string RA, string CodCurso)
+        public string setEndProcess(string RA, string CodCurso)
         {
             AdicionarArquivo("setEndProcess");
             string str;
@@ -622,7 +477,7 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public bool UpdateDocument(string Ra, string CodDocument)
+        public bool updateDocument(string Ra, string CodDocument)
         {
             AdicionarArquivo("updateDocument");
             bool flag;
@@ -673,11 +528,168 @@ namespace WebService
             }
         }
 
+        #endregion
+
+        #region .: Helper :.
+
+        public static void AdicionarArquivo(string metodo)
+        {
+            contador++;
+            File.AppendAllText(@"C:\\LOG\" + Guid.NewGuid().ToString(), metodo + " " + contador);
+        }
+
+        public static void AdicionarArquivo(string metodo, string paramentos)
+        {
+            contador++;
+            File.AppendAllText(@"C:\\LOG\" + Guid.NewGuid().ToString(), metodo + " " + contador + " " + paramentos);
+        }
+
+        private string MonutInsert(string RA, string CodDocument)
+        {
+            string str = DateTime.Now.ToString("yyyy-MM-dd 00:00:00");
+            string[] codDocument = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('", CodDocument, "', '", RA, "', '", str, "',  '', '' )" };
+            string str1 = string.Concat(codDocument);
+            if (CodDocument.Equals("10"))
+            {
+                string[] rA = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('10', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA);
+                string str2 = str1;
+                string[] strArrays = new string[] { str2, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('18', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays);
+                string str3 = str1;
+                string[] rA1 = new string[] { str3, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('1', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA1);
+            }
+            if (CodDocument.Equals("1"))
+            {
+                string[] strArrays1 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('1', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays1);
+                string str4 = str1;
+                string[] rA2 = new string[] { str4, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('10', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA2);
+            }
+            if (CodDocument.Equals("18"))
+            {
+                string[] strArrays2 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('10', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays2);
+                string str5 = str1;
+                string[] rA3 = new string[] { str5, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('18', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA3);
+            }
+            if (CodDocument.Equals("11"))
+            {
+                string[] strArrays3 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('11', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays3);
+                string str6 = str1;
+                string[] rA4 = new string[] { str6, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('12', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA4);
+                string str7 = str1;
+                string[] strArrays4 = new string[] { str7, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('6', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays4);
+            }
+            if (CodDocument.Equals("12"))
+            {
+                string[] rA5 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('12', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA5);
+                string str8 = str1;
+                string[] strArrays5 = new string[] { str8, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('11', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays5);
+            }
+            if (CodDocument.Equals("6"))
+            {
+                string[] rA6 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('11', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA6);
+                string str9 = str1;
+                string[] strArrays6 = new string[] { str9, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('6', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays6);
+            }
+            if (CodDocument.Equals("9"))
+            {
+                string[] rA7 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('19', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA7);
+                string str10 = str1;
+                string[] strArrays7 = new string[] { str10, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('9', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays7);
+                string str11 = str1;
+                string[] rA8 = new string[] { str11, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('2', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA8);
+            }
+            if (CodDocument.Equals("19"))
+            {
+                string[] strArrays8 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('19', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays8);
+                string str12 = str1;
+                string[] rA9 = new string[] { str12, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('9', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA9);
+            }
+            if (CodDocument.Equals("2"))
+            {
+                string[] strArrays9 = new string[] { "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('2', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(strArrays9);
+                string str13 = str1;
+                string[] rA10 = new string[] { str13, "insert into TransactionDoc(DocId, Ra, Date, CodCurso, UserTransaction) values('9', '", RA, "', '", str, "',  '', '' )" };
+                str1 = string.Concat(rA10);
+            }
+            return str1;
+        }
+
+        private string GetDateLimite()
+        {
+            string str;
+            string str1 = "";
+            SqlConnection sqlConnection = null;
+            SqlDataReader sqlDataReader = null;
+            try
+            {
+                try
+                {
+                    sqlConnection = new SqlConnection(this.strConexaoBaseStudent);
+                    sqlConnection.Open();
+                    SqlCommand sqlCommand = new SqlCommand("dbo.STPECM_Consultas;6", sqlConnection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    sqlDataReader = sqlCommand.ExecuteReader();
+                    while (sqlDataReader.Read())
+                    {
+                        str1 = Convert.ToString(sqlDataReader["DATALimite"]);
+                    }
+                    str = str1;
+                }
+                catch (Exception exception1)
+                {
+                    Exception exception = exception1;
+                    CreateLogFiles createLogFile = new CreateLogFiles(base.Server.MapPath("Logs/ErrorLog"));
+                    createLogFile.ErrorLog(string.Concat("Metodo GetDateLimite", exception.Message));
+                    string str2 = "01/01/2011";
+                    str1 = str2;
+                    str = str2;
+                }
+            }
+            finally
+            {
+                if (sqlConnection != null)
+                {
+                    sqlConnection.Close();
+                }
+                if (sqlDataReader != null)
+                {
+                    sqlDataReader.Close();
+                }
+            }
+            return str;
+        }
+
+        #endregion
+
+        #region .: CLass/Enum :.
+
         public enum TYPOBUSCA
         {
             RA,
             NOME
         }
 
+        #endregion
     }
 }
