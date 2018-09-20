@@ -130,6 +130,7 @@ namespace WebService.SE
             try
             {
                 SEClient seClient = SEConnection.GetConnection();
+                string prefix = WebConfigurationManager.AppSettings["Prefix_Category"];
 
                 documentReturn documentReturnOwner = VerificaDocumentoCadastrado(Indice.Matricula, WebConfigurationManager.AppSettings["Category_Owner"]);
                 if (documentReturnOwner == null)
@@ -148,19 +149,22 @@ namespace WebService.SE
                     {
                         foreach (var item in documentDataReturn.ATTRIBUTTES)
                         {
-                            string valor = "";
-                            if (item.ATTRIBUTTEVALUE.Count() > 0)
+                            if (item.ATTRIBUTTENAME.Contains(prefix))
                             {
-                                valor = item.ATTRIBUTTEVALUE[0];
-                            }
+                                string valor = "";
+                                if (item.ATTRIBUTTEVALUE.Count() > 0)
+                                {
+                                    valor = item.ATTRIBUTTEVALUE[0];
+                                }
 
-                            try
-                            {
-                                seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", item.ATTRIBUTTENAME, valor);
-                            }
-                            catch (Exception)
-                            {
-                                throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
+                                try
+                                {
+                                    seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", item.ATTRIBUTTENAME, valor);
+                                }
+                                catch (Exception)
+                                {
+                                    throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
+                                }
                             }
                         }
 
@@ -179,28 +183,30 @@ namespace WebService.SE
                         string atributos = "";
                         foreach (var item in documentDataReturn.ATTRIBUTTES)
                         {
-                            string valor = "";
-                            if (item.ATTRIBUTTEVALUE.Count() > 0)
+                            if (item.ATTRIBUTTENAME.Contains(prefix))
                             {
-                                valor = item.ATTRIBUTTEVALUE[0];
-                            }
+                                string valor = "";
+                                if (item.ATTRIBUTTEVALUE.Count() > 0)
+                                {
+                                    valor = item.ATTRIBUTTEVALUE[0];
+                                }
 
-                            atributos += item.ATTRIBUTTENAME + "=" + valor + ";";
+                                atributos += item.ATTRIBUTTENAME + "=" + valor + ";";
+                            }
                         }
 
                         atributos += WebConfigurationManager.AppSettings["Attribute_Pages"] + "=" + Indice.Paginas + ";";
 
                         var cat = this.CarregarCategorias().RESULTARRAY.Where(_s => _s.IDCATEGORY == Indice.Categoria).FirstOrDefault().NMCATEGORY;
 
-                        var s = seClient.newDocument(Indice.Categoria, "", cat, "", "", atributos, "", null, 0);
+                        var s = seClient.newDocument(Indice.Categoria, Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim(), cat, "", "", atributos, "", null, 0);
 
                         var inx = s.Split(':');
                         if (inx.Count() > 0)
                         {
-                            if (inx[1].ToUpper().Contains("SUCESSO"))
+                            if (inx.Count() >= 3 && inx[2].ToUpper().Contains("SUCESSO"))
                             {
-
-                                UploadDocumentoBinario(Indice, inx[0]);
+                                UploadDocumentoBinario(Indice, Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim());
                             }
                             else
                             {
@@ -336,7 +342,7 @@ namespace WebService.SE
                     NMFILE = Path.GetFileName(Indice.Arquivo.FullName)
                 };
 
-                seClient.uploadEletronicFileAsync(iddocumento, "", "", eletronicFiles);
+                var var = seClient.uploadEletronicFile(iddocumento, "", "", eletronicFiles);
 
                 return true;
             }
