@@ -295,9 +295,9 @@ namespace WebService
                 var da = new DocumentoAtributo
                 {
                     ArquivoBinario = Convert.FromBase64String(arquivo),
-                    Categoria = categoria,
+                    Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
                     Matricula = Matricula,
-                    Arquivo = new FileInfo(Guid.NewGuid() + "." + extensao)
+                    Arquivo = new FileInfo(Guid.NewGuid() + extensao)
                 };
 
                 AdicionarArquivoSaida("insertDocumentBase64 convert", Guid.NewGuid().ToString());
