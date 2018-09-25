@@ -294,7 +294,7 @@ namespace WebService
 
                 var da = new DocumentoAtributo
                 {
-                    ArquivoBinario = Convert.FromBase64String(arquivo),
+                    ArquivoBinario = System.IO.File.ReadAllBytes(@"D:\Temp\Tecfy\6b67b134.pdf"),// Convert.FromBase64String(arquivo),
                     Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
                     Matricula = Matricula,
                     Arquivo = new FileInfo(Guid.NewGuid() + extensao)

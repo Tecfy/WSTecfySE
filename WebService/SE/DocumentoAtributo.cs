@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using iTextSharp.text.pdf;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace WebService.SE
@@ -24,13 +25,9 @@ namespace WebService.SE
             get
             {
                 int pageCount;
-                MemoryStream stream = new MemoryStream(ArquivoBinario);
-                using (var r = new StreamReader(stream))
+                using (var reader = new PdfReader(ArquivoBinario))
                 {
-                    string pdfText = r.ReadToEnd();
-                    System.Text.RegularExpressions.Regex regx = new Regex(@"/Type\s*/Page[^s]");
-                    System.Text.RegularExpressions.MatchCollection matches = regx.Matches(pdfText);
-                    pageCount = matches.Count;
+                    pageCount = reader.NumberOfPages;
                 }
 
                 return pageCount;
