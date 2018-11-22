@@ -77,7 +77,7 @@ namespace WebService
         private static int contador;
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosAlunos findStudentByRa(string ra)
+        public DadosAlunos findStudentByRa(string ra, string usuario)
         {
             File.AppendAllText(@"C:\\LOG\CategoriaRAPROCURA" + Guid.NewGuid(), "PASSOU");
 
@@ -294,7 +294,7 @@ namespace WebService
 
                 var da = new DocumentoAtributo
                 {
-                    ArquivoBinario = System.IO.File.ReadAllBytes(@"D:\Temp\Tecfy\6b67b134.pdf"),// Convert.FromBase64String(arquivo),
+                    ArquivoBinario = Convert.FromBase64String(arquivo),
                     Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
                     Matricula = Matricula,
                     Arquivo = new FileInfo(Guid.NewGuid() + extensao)
@@ -432,7 +432,7 @@ namespace WebService
 
             foreach (var item in results)
             {
-                var nome = this.findStudentByRa(item.Matricula).RetornoStudent[0].NOMEALUNO;
+                var nome = this.findStudentByRa(item.Matricula, "").RetornoStudent[0].NOMEALUNO;
 
                 al.Add(new Aluno() { Matricula = item.Matricula, Nome = nome });
             }

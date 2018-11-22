@@ -113,7 +113,7 @@ namespace WebService
         private static int contador;
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        public DadosAlunos findStudentByRa(string ra)
+        public DadosAlunos findStudentByRa(string ra, string usuario)
         {
             AdicionarArquivo("findStudentByRa");
 
