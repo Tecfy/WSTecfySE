@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Web.Configuration;
 using System.Web.Script.Services;
 using System.Web.Services;
+using WebService.Connection;
 using WebService.SE;
 
 namespace WebService
@@ -610,6 +612,40 @@ namespace WebService
             }
         }
 
+        #region .: Devplace .:
+
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        [WebMethod]
+        public JobsRegistrationOut getJobsByRegistration(string registration)
+        {
+            JobsRegistrationOut jobsRegistrationOut = new JobsRegistrationOut();
+
+            try
+            {
+                var client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.GetJobsByRegistration"].ToString(), registration));
+
+                var request = RestRequestHelper.Get(Method.GET);
+
+                IRestResponse response = client.Execute(request);
+
+                jobsRegistrationOut = SimpleJson.DeserializeObject<JobsRegistrationOut>(response.Content);
+
+                if (!jobsRegistrationOut.success)
+                {
+                    throw new Exception(jobsRegistrationOut.messages.FirstOrDefault());
+                }
+            }
+            catch (Exception ex)
+            {
+                jobsRegistrationOut.successMessage = null;
+                jobsRegistrationOut.messages.Add(ex.Message);
+            }
+
+            return jobsRegistrationOut;
+        }
+
+        #endregion
+
         #endregion
 
         #region .: Helper :.
@@ -828,5 +864,7 @@ namespace WebService
         }
 
         #endregion
+
+
     }
 }

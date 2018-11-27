@@ -43,6 +43,12 @@
     <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.13\lib\itextsharp.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -109,16 +115,21 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection\RestRequestHelper.cs" />
     <Compile Include="Connection\SEConnection.cs" />
     <Compile Include="Models\Aluno.cs" />
     <Compile Include="Models\AlunosRetorno.cs" />
     <Compile Include="Models\Ativity.cs" />
+    <Compile Include="Models\Common\ResultServiceVM.cs" />
     <Compile Include="Models\CreateLogFiles.cs" />
     <Compile Include="Models\DadosAlunos.cs" />
     <Compile Include="Models\DadosProgramAtivity.cs" />
     <Compile Include="Models\DateSystem.cs" />
     <Compile Include="Models\Document.cs" />
     <Compile Include="Models\DocumentsStudent.cs" />
+    <Compile Include="Models\JobCategory\VM\JobCategoriesRegistrationVM.cs" />
+    <Compile Include="Models\Job\Out\JobsRegistrationOut.cs" />
+    <Compile Include="Models\Job\VM\JobsRegistrationVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -162,6 +173,11 @@
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>WebService_com_softexpert_tecfy_Documento</CachedSettingsPropName>
     </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\JobCategory\In\" />
+    <Folder Include="Models\JobCategory\Out\" />
+    <Folder Include="Models\Job\In\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
