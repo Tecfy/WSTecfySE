@@ -644,6 +644,38 @@ namespace WebService
             return jobsRegistrationOut;
         }
 
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        [WebMethod]
+        public JobCategorySaveOut setJobCategorySave(int jobCategoryId, string archive)
+        {
+            JobCategorySaveOut jobCategorySaveOut = new JobCategorySaveOut();
+
+            try
+            {
+                JobCategorySaveIn jobCategorySaveIn = new JobCategorySaveIn { jobCategoryId = jobCategoryId, archive = archive };
+
+                var client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.SetJobCategorySave"].ToString()));
+
+                var request = RestRequestHelper.Get(Method.POST, SimpleJson.SerializeObject(jobCategorySaveIn));
+
+                IRestResponse response = client.Execute(request);
+
+                jobCategorySaveOut = SimpleJson.DeserializeObject<JobCategorySaveOut>(response.Content);
+
+                if (!jobCategorySaveOut.success)
+                {
+                    throw new Exception(jobCategorySaveOut.messages.FirstOrDefault());
+                }
+            }
+            catch (Exception ex)
+            {
+                jobCategorySaveOut.successMessage = null;
+                jobCategorySaveOut.messages.Add(ex.Message);
+            }
+
+            return jobCategorySaveOut;
+        }
+
         #endregion
 
         #endregion
