@@ -73,6 +73,10 @@ namespace WebService.com.softexpert.tecfy {
         
         private System.Threading.SendOrPostCallback viewDocumentDataOperationCompleted;
         
+        private System.Threading.SendOrPostCallback newDocumentContainerAssociationOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback deleteDocumentContainerAssociationOperationCompleted;
+        
         private bool useDefaultCredentialsSetExplicitly;
         
         /// <remarks/>
@@ -176,6 +180,12 @@ namespace WebService.com.softexpert.tecfy {
         
         /// <remarks/>
         public event viewDocumentDataCompletedEventHandler viewDocumentDataCompleted;
+        
+        /// <remarks/>
+        public event newDocumentContainerAssociationCompletedEventHandler newDocumentContainerAssociationCompleted;
+        
+        /// <remarks/>
+        public event deleteDocumentContainerAssociationCompletedEventHandler deleteDocumentContainerAssociationCompleted;
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:document#newCaptureInstance", RequestNamespace="urn:document", ResponseNamespace="urn:document", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -397,23 +407,26 @@ namespace WebService.com.softexpert.tecfy {
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:document#downloadEletronicFile", RequestNamespace="urn:document", ResponseNamespace="urn:document", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlArrayAttribute("return")]
         [return: System.Xml.Serialization.XmlArrayItemAttribute("item", IsNullable=false)]
-        public eletronicFile[] downloadEletronicFile(string iddocument, string idrevision, string iduser, string fgconverttopdf, string idcategory) {
+        public eletronicFile[] downloadEletronicFile(string iddocument, string idrevision, string iduser, string fgconverttopdf, string idcategory, string fgwatermark, string nmfile, string fgfilelink) {
             object[] results = this.Invoke("downloadEletronicFile", new object[] {
                         iddocument,
                         idrevision,
                         iduser,
                         fgconverttopdf,
-                        idcategory});
+                        idcategory,
+                        fgwatermark,
+                        nmfile,
+                        fgfilelink});
             return ((eletronicFile[])(results[0]));
         }
         
         /// <remarks/>
-        public void downloadEletronicFileAsync(string iddocument, string idrevision, string iduser, string fgconverttopdf, string idcategory) {
-            this.downloadEletronicFileAsync(iddocument, idrevision, iduser, fgconverttopdf, idcategory, null);
+        public void downloadEletronicFileAsync(string iddocument, string idrevision, string iduser, string fgconverttopdf, string idcategory, string fgwatermark, string nmfile, string fgfilelink) {
+            this.downloadEletronicFileAsync(iddocument, idrevision, iduser, fgconverttopdf, idcategory, fgwatermark, nmfile, fgfilelink, null);
         }
         
         /// <remarks/>
-        public void downloadEletronicFileAsync(string iddocument, string idrevision, string iduser, string fgconverttopdf, string idcategory, object userState) {
+        public void downloadEletronicFileAsync(string iddocument, string idrevision, string iduser, string fgconverttopdf, string idcategory, string fgwatermark, string nmfile, string fgfilelink, object userState) {
             if ((this.downloadEletronicFileOperationCompleted == null)) {
                 this.downloadEletronicFileOperationCompleted = new System.Threading.SendOrPostCallback(this.OndownloadEletronicFileOperationCompleted);
             }
@@ -422,7 +435,10 @@ namespace WebService.com.softexpert.tecfy {
                         idrevision,
                         iduser,
                         fgconverttopdf,
-                        idcategory}, this.downloadEletronicFileOperationCompleted, userState);
+                        idcategory,
+                        fgwatermark,
+                        nmfile,
+                        fgfilelink}, this.downloadEletronicFileOperationCompleted, userState);
         }
         
         private void OndownloadEletronicFileOperationCompleted(object arg) {
@@ -601,23 +617,24 @@ namespace WebService.com.softexpert.tecfy {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:document#newAccessPermission", RequestNamespace="urn:document", ResponseNamespace="urn:document", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlElementAttribute("return")]
-        public string newAccessPermission(string iddocument, string iduser, int usertype, string permission, int permissionstype) {
+        public string newAccessPermission(string iddocument, string iduser, int usertype, string permission, int permissionstype, string fgaddlowerlevel) {
             object[] results = this.Invoke("newAccessPermission", new object[] {
                         iddocument,
                         iduser,
                         usertype,
                         permission,
-                        permissionstype});
+                        permissionstype,
+                        fgaddlowerlevel});
             return ((string)(results[0]));
         }
         
         /// <remarks/>
-        public void newAccessPermissionAsync(string iddocument, string iduser, int usertype, string permission, int permissionstype) {
-            this.newAccessPermissionAsync(iddocument, iduser, usertype, permission, permissionstype, null);
+        public void newAccessPermissionAsync(string iddocument, string iduser, int usertype, string permission, int permissionstype, string fgaddlowerlevel) {
+            this.newAccessPermissionAsync(iddocument, iduser, usertype, permission, permissionstype, fgaddlowerlevel, null);
         }
         
         /// <remarks/>
-        public void newAccessPermissionAsync(string iddocument, string iduser, int usertype, string permission, int permissionstype, object userState) {
+        public void newAccessPermissionAsync(string iddocument, string iduser, int usertype, string permission, int permissionstype, string fgaddlowerlevel, object userState) {
             if ((this.newAccessPermissionOperationCompleted == null)) {
                 this.newAccessPermissionOperationCompleted = new System.Threading.SendOrPostCallback(this.OnnewAccessPermissionOperationCompleted);
             }
@@ -626,7 +643,8 @@ namespace WebService.com.softexpert.tecfy {
                         iduser,
                         usertype,
                         permission,
-                        permissionstype}, this.newAccessPermissionOperationCompleted, userState);
+                        permissionstype,
+                        fgaddlowerlevel}, this.newAccessPermissionOperationCompleted, userState);
         }
         
         private void OnnewAccessPermissionOperationCompleted(object arg) {
@@ -967,6 +985,90 @@ namespace WebService.com.softexpert.tecfy {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:document#newDocumentContainerAssociation", RequestNamespace="urn:document", ResponseNamespace="urn:document", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [return: System.Xml.Serialization.XmlElementAttribute("Status")]
+        public string newDocumentContainerAssociation(string UpperLevelCategoryID, string UpperLevelDocumentID, string RevisionID, string StructID, string LowerLevelCategoryID, string LowerLevelDocumentID, out long Code, out string Detail) {
+            object[] results = this.Invoke("newDocumentContainerAssociation", new object[] {
+                        UpperLevelCategoryID,
+                        UpperLevelDocumentID,
+                        RevisionID,
+                        StructID,
+                        LowerLevelCategoryID,
+                        LowerLevelDocumentID});
+            Code = ((long)(results[1]));
+            Detail = ((string)(results[2]));
+            return ((string)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void newDocumentContainerAssociationAsync(string UpperLevelCategoryID, string UpperLevelDocumentID, string RevisionID, string StructID, string LowerLevelCategoryID, string LowerLevelDocumentID) {
+            this.newDocumentContainerAssociationAsync(UpperLevelCategoryID, UpperLevelDocumentID, RevisionID, StructID, LowerLevelCategoryID, LowerLevelDocumentID, null);
+        }
+        
+        /// <remarks/>
+        public void newDocumentContainerAssociationAsync(string UpperLevelCategoryID, string UpperLevelDocumentID, string RevisionID, string StructID, string LowerLevelCategoryID, string LowerLevelDocumentID, object userState) {
+            if ((this.newDocumentContainerAssociationOperationCompleted == null)) {
+                this.newDocumentContainerAssociationOperationCompleted = new System.Threading.SendOrPostCallback(this.OnnewDocumentContainerAssociationOperationCompleted);
+            }
+            this.InvokeAsync("newDocumentContainerAssociation", new object[] {
+                        UpperLevelCategoryID,
+                        UpperLevelDocumentID,
+                        RevisionID,
+                        StructID,
+                        LowerLevelCategoryID,
+                        LowerLevelDocumentID}, this.newDocumentContainerAssociationOperationCompleted, userState);
+        }
+        
+        private void OnnewDocumentContainerAssociationOperationCompleted(object arg) {
+            if ((this.newDocumentContainerAssociationCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.newDocumentContainerAssociationCompleted(this, new newDocumentContainerAssociationCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:document#deleteDocumentContainerAssociation", RequestNamespace="urn:document", ResponseNamespace="urn:document", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [return: System.Xml.Serialization.XmlElementAttribute("Status")]
+        public string deleteDocumentContainerAssociation(string UpperLevelCategoryID, string UpperLevelDocumentID, string RevisionID, string StructID, string LowerLevelCategoryID, string LowerLevelDocumentID, out long Code, out string Detail) {
+            object[] results = this.Invoke("deleteDocumentContainerAssociation", new object[] {
+                        UpperLevelCategoryID,
+                        UpperLevelDocumentID,
+                        RevisionID,
+                        StructID,
+                        LowerLevelCategoryID,
+                        LowerLevelDocumentID});
+            Code = ((long)(results[1]));
+            Detail = ((string)(results[2]));
+            return ((string)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void deleteDocumentContainerAssociationAsync(string UpperLevelCategoryID, string UpperLevelDocumentID, string RevisionID, string StructID, string LowerLevelCategoryID, string LowerLevelDocumentID) {
+            this.deleteDocumentContainerAssociationAsync(UpperLevelCategoryID, UpperLevelDocumentID, RevisionID, StructID, LowerLevelCategoryID, LowerLevelDocumentID, null);
+        }
+        
+        /// <remarks/>
+        public void deleteDocumentContainerAssociationAsync(string UpperLevelCategoryID, string UpperLevelDocumentID, string RevisionID, string StructID, string LowerLevelCategoryID, string LowerLevelDocumentID, object userState) {
+            if ((this.deleteDocumentContainerAssociationOperationCompleted == null)) {
+                this.deleteDocumentContainerAssociationOperationCompleted = new System.Threading.SendOrPostCallback(this.OndeleteDocumentContainerAssociationOperationCompleted);
+            }
+            this.InvokeAsync("deleteDocumentContainerAssociation", new object[] {
+                        UpperLevelCategoryID,
+                        UpperLevelDocumentID,
+                        RevisionID,
+                        StructID,
+                        LowerLevelCategoryID,
+                        LowerLevelDocumentID}, this.deleteDocumentContainerAssociationOperationCompleted, userState);
+        }
+        
+        private void OndeleteDocumentContainerAssociationOperationCompleted(object arg) {
+            if ((this.deleteDocumentContainerAssociationCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.deleteDocumentContainerAssociationCompleted(this, new deleteDocumentContainerAssociationCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         public new void CancelAsync(object userState) {
             base.CancelAsync(userState);
         }
@@ -997,6 +1099,8 @@ namespace WebService.com.softexpert.tecfy {
         
         private byte[] bINFILEField;
         
+        private string cONTAINERField;
+        
         private string eRRORField;
         
         /// <remarks/>
@@ -1021,12 +1125,43 @@ namespace WebService.com.softexpert.tecfy {
         }
         
         /// <remarks/>
+        public string CONTAINER {
+            get {
+                return this.cONTAINERField;
+            }
+            set {
+                this.cONTAINERField = value;
+            }
+        }
+        
+        /// <remarks/>
         public string ERROR {
             get {
                 return this.eRRORField;
             }
             set {
                 this.eRRORField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:document")]
+    public partial class electronicFile {
+        
+        private string fILENAMEField;
+        
+        /// <remarks/>
+        public string FILENAME {
+            get {
+                return this.fILENAMEField;
+            }
+            set {
+                this.fILENAMEField = value;
             }
         }
     }
@@ -1106,6 +1241,8 @@ namespace WebService.com.softexpert.tecfy {
         private string uRLField;
         
         private attributtes[] aTTRIBUTTESField;
+        
+        private electronicFile[] eLECTRONICFILEField;
         
         private string eRRORField;
         
@@ -1277,6 +1414,17 @@ namespace WebService.com.softexpert.tecfy {
             }
             set {
                 this.aTTRIBUTTESField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", IsNullable=false)]
+        public electronicFile[] ELECTRONICFILE {
+            get {
+                return this.eLECTRONICFILEField;
+            }
+            set {
+                this.eLECTRONICFILEField = value;
             }
         }
         
@@ -2830,6 +2978,90 @@ namespace WebService.com.softexpert.tecfy {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((documentDataReturn)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    public delegate void newDocumentContainerAssociationCompletedEventHandler(object sender, newDocumentContainerAssociationCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class newDocumentContainerAssociationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal newDocumentContainerAssociationCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public long Code {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((long)(this.results[1]));
+            }
+        }
+        
+        /// <remarks/>
+        public string Detail {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[2]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    public delegate void deleteDocumentContainerAssociationCompletedEventHandler(object sender, deleteDocumentContainerAssociationCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class deleteDocumentContainerAssociationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal deleteDocumentContainerAssociationCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public long Code {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((long)(this.results[1]));
+            }
+        }
+        
+        /// <remarks/>
+        public string Detail {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[2]));
             }
         }
     }

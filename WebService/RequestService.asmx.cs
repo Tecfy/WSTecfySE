@@ -81,18 +81,14 @@ namespace WebService
         [WebMethod]
         public DadosAlunos findStudentByRa(string ra, string usuario)
         {
-            File.AppendAllText(@"C:\\LOG\CategoriaRAPROCURA" + Guid.NewGuid(), "PASSOU");
-
             DadosAlunos dadosAluno = new DadosAlunos();
             var integrador = new InsegracaoSE();
-            string arquivoRA = ra;
-
-            var mt = integrador.VerificaDocumentoCadastrado(arquivoRA);
 
             dadosAluno.RetornoStudent = new List<Student>();
-            if (mt != null)
+
+            var it = integrador.VerificarPropriedadesDocumento(ra);
+            if (string.IsNullOrEmpty(it.ERROR))
             {
-                var it = integrador.VerificarPropriedadesDocumento(mt.IDDOCUMENT);
                 Student estudante = new Student
                 {
                     NOMEALUNO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
@@ -303,11 +299,7 @@ namespace WebService
                     Arquivo = new FileInfo(Guid.NewGuid() + extensao)
                 };
 
-                AdicionarArquivoSaida("insertDocumentBase64 convert", Guid.NewGuid().ToString());
-
                 integrador.InserirDocumentoBinario(da);
-
-                AdicionarArquivoSaida("insertDocumentBase64 final", Guid.NewGuid().ToString());
 
                 return true;
             }

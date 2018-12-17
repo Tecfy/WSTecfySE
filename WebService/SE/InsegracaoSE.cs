@@ -135,7 +135,7 @@ namespace WebService.SE
                 documentReturn documentReturnOwner = VerificaDocumentoCadastrado(Indice.Matricula, WebConfigurationManager.AppSettings["Category_Owner"]);
                 if (documentReturnOwner == null)
                 {
-                    throw new Exception("Sistema não localizou o aluno Aluno!");
+                    throw new Exception("Sistema não localizou o aluno!");
                 }
 
                 // Checks whether the document exists
@@ -172,6 +172,23 @@ namespace WebService.SE
                         seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", WebConfigurationManager.AppSettings["Attribute_Usuario"], Indice.Usuario.ToString());
 
                         UploadDocumentoBinario(Indice, documentReturn.IDDOCUMENT);
+
+                        if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity_Code"]))
+                        {                            
+                            string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity_Code"]).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
+
+                            SEAdministration seAdministration = SEConnection.GetConnectionAdm();
+
+                            seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
+                            seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
+
+                            var n = seClient.newAccessPermission(documentReturn.IDDOCUMENT,
+                                    unityCode + ";" + unityCode,
+                                    int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.UserType"].ToString()),
+                                    WebConfigurationManager.AppSettings["NewAccessPermission.Permission"].ToString(),
+                                    int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString()),
+                                    WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString());
+                        }
                     }
                 }
 
@@ -221,6 +238,23 @@ namespace WebService.SE
 
                         seClient.setAttributeValue(Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim(), "", WebConfigurationManager.AppSettings["Attribute_Pages"], Indice.Paginas.ToString());
                         seClient.setAttributeValue(Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim(), "", WebConfigurationManager.AppSettings["Attribute_Usuario"], Indice.Usuario.ToString());
+
+                        if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity_Code"]))
+                        {
+                            string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity_Code"]).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
+
+                            SEAdministration seAdministration = SEConnection.GetConnectionAdm();
+
+                            seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
+                            seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
+
+                            var n = seClient.newAccessPermission(documentReturn.IDDOCUMENT,
+                                    unityCode + ";" + unityCode,
+                                    int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.UserType"].ToString()),
+                                    WebConfigurationManager.AppSettings["NewAccessPermission.Permission"].ToString(),
+                                    int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString()),
+                                    WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString());
+                        }
                     }
                 }
 

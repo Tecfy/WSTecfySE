@@ -1,0 +1,1151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:admin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:admin" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:admin">
+      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
+      <xsd:complexType name="ArrayOfString">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="codes" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="newUserRequestType">
+        <xsd:all>
+          <xsd:element name="IDUSER" type="xsd:string" />
+          <xsd:element name="NAME" type="xsd:string" />
+          <xsd:element name="LOGIN" type="xsd:string" />
+          <xsd:element name="PASS" type="xsd:string" />
+          <xsd:element name="EMAIL" type="xsd:string" />
+          <xsd:element name="IDAREA" type="xsd:string" />
+          <xsd:element name="IDFUNC" type="xsd:string" />
+          <xsd:element name="IDACCGROUP" type="xsd:string" />
+          <xsd:element minOccurs="0" name="CDLEADER" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="newUserResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Detail" type="xsd:string" />
+          <xsd:element name="Code" type="xsd:int" />
+          <xsd:element name="RecordKey" type="xsd:string" />
+          <xsd:element name="RecordId" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="editUserRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+          <xsd:element name="NAME" type="xsd:string" />
+          <xsd:element name="LOGIN" type="xsd:string" />
+          <xsd:element name="PASS" type="xsd:string" />
+          <xsd:element name="EMAIL" type="xsd:string" />
+          <xsd:element minOccurs="0" name="CDLEADER" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="editUserResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Detail" type="xsd:string" />
+          <xsd:element name="Code" type="xsd:int" />
+          <xsd:element name="RecordId" type="xsd:string" />
+          <xsd:element name="RecordKey" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="disableUserRequestType">
+        <xsd:all>
+          <xsd:element name="cd" type="tns:ArrayOfString" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="disableUserResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Detail" type="xsd:string" />
+          <xsd:element name="Code" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="editUserDepartmentRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+          <xsd:element name="IDAREA" type="xsd:string" />
+          <xsd:element name="IDFUNC" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="editUserDepartmentResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Detail" type="xsd:string" />
+          <xsd:element name="Code" type="xsd:int" />
+          <xsd:element name="RecordId" type="xsd:string" />
+          <xsd:element name="RecordKey" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="editPositionRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+          <xsd:element name="DESC" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="editPositionResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Detail" type="xsd:string" />
+          <xsd:element name="Code" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="newPositionRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+          <xsd:element name="DESC" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="newPositionResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Detail" type="xsd:string" />
+          <xsd:element name="Code" type="xsd:int" />
+          <xsd:element name="RecordId" type="xsd:string" />
+          <xsd:element name="RecordKey" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addAttribProfileValueRequestType">
+        <xsd:all>
+          <xsd:element name="IDUSER" type="xsd:string" />
+          <xsd:element name="NMATTRIBUTE" type="xsd:string" />
+          <xsd:element name="VLATTRIBUTE" type="xsd:string" />
+          <xsd:element name="DSATTRIBUTE" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addAttribProfileValueResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addAttributeRequestType">
+        <xsd:all>
+          <xsd:element name="IDATTRIBUTE" type="xsd:string" />
+          <xsd:element name="NMATTRIBUTE" type="xsd:string" />
+          <xsd:element name="IDUSER" type="xsd:string" />
+          <xsd:element name="FGATTRIBUTETYPE" type="xsd:string" />
+          <xsd:element name="FGDATATYPE" type="xsd:string" />
+          <xsd:element name="FGSELECTIONTYPE" type="xsd:string" />
+          <xsd:element name="FGMULTIVALUED" type="xsd:string" />
+          <xsd:element name="CDISOSYSTEM" type="xsd:string" />
+          <xsd:element name="FGMASKTYPE" type="xsd:string" />
+          <xsd:element name="DSMASK" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addAttributeResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addAttribValueRequestType">
+        <xsd:all>
+          <xsd:element name="IDATTRIBUTE" type="xsd:string" />
+          <xsd:element name="VLATTRIBUTE" type="xsd:string" />
+          <xsd:element name="FGDEFAULTVALUE" type="xsd:string" />
+          <xsd:element name="IDUSER" type="xsd:string" />
+          <xsd:element name="IDDATASOURCE" type="xsd:string" />
+          <xsd:element name="DSCONNDBSQL" type="xsd:string" />
+          <xsd:element name="NMFILTERFIELD" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addAttribValueResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addCompanyRequestType">
+        <xsd:all>
+          <xsd:element name="IDCOMMERCIAL" type="xsd:string" />
+          <xsd:element name="NMCOMPANY" type="xsd:string" />
+          <xsd:element name="DSADDRESS" type="xsd:string" />
+          <xsd:element name="NMCITY" type="xsd:string" />
+          <xsd:element name="IDSTATE" type="xsd:string" />
+          <xsd:element name="NMCOUNTRY" type="xsd:string" />
+          <xsd:element name="IDZIPCODE" type="xsd:string" />
+          <xsd:element name="IDPHONE" type="xsd:string" />
+          <xsd:element name="IDFAX" type="xsd:string" />
+          <xsd:element name="NMHOMEPAGE" type="xsd:string" />
+          <xsd:element name="FGCUSTOMER" type="xsd:string" />
+          <xsd:element name="FGSUPPLIER" type="xsd:string" />
+          <xsd:element name="FGMANUFACTURER" type="xsd:string" />
+          <xsd:element name="DSCOMPANY" type="xsd:string" />
+          <xsd:element name="IDCOMPANY" type="xsd:string" />
+          <xsd:element name="IDCOMPANYTYPE" type="xsd:string" />
+          <xsd:element name="CDISOSYSTEM" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addCompanyResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addCompContactRequestType">
+        <xsd:all>
+          <xsd:element name="IDCOMMERCIAL" type="xsd:string" />
+          <xsd:element name="NMCONTACT" type="xsd:string" />
+          <xsd:element name="NMDEPARTMENT" type="xsd:string" />
+          <xsd:element name="NMPOSITION" type="xsd:string" />
+          <xsd:element name="IDPHONE" type="xsd:string" />
+          <xsd:element name="IDFAX" type="xsd:string" />
+          <xsd:element name="NMEMAIL" type="xsd:string" />
+          <xsd:element name="DSCONTACT" type="xsd:string" />
+          <xsd:element name="FGDEFAULT" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addCompContactResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addDepartmentPositionRequestType">
+        <xsd:all>
+          <xsd:element name="IDAREA" type="xsd:string" />
+          <xsd:element name="IDFUNC" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addDepartmentPositionResponseType">
+        <xsd:all>
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Code" type="xsd:long" />
+          <xsd:element name="Detail" type="xsd:string" />
+          <xsd:element name="RecordID" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addMeasUnityRequestType">
+        <xsd:all>
+          <xsd:element name="IDMEASUNITY" type="xsd:string" />
+          <xsd:element name="NMMEASUNITY" type="xsd:string" />
+          <xsd:element name="CDISOSYSTEM" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addMeasUnityResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addUserDepartmentRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+          <xsd:element name="IDAREA" type="xsd:string" />
+          <xsd:element name="IDFUNC" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="addUserDepartmentResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="changePositionStatusRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="changePositionStatusResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="compAtribAssocRequestType">
+        <xsd:all>
+          <xsd:element name="IDCOMMERCIAL" type="xsd:string" />
+          <xsd:element name="IDATTRIBUTE" type="xsd:string" />
+          <xsd:element name="VLATTRIBUTE" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="compAtribAssocResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteCompanyRequestType">
+        <xsd:all>
+          <xsd:element name="IDCOMMERCIAL" type="xsd:string" />
+          <xsd:element name="NMCOMPANY" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteCompanyResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteCompContactRequestType">
+        <xsd:all>
+          <xsd:element name="IDCOMMERCIAL" type="xsd:string" />
+          <xsd:element name="NMCONTACT" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteCompContactResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteDepartmentRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteDepartmentResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteMeasUnityRequestType">
+        <xsd:all>
+          <xsd:element name="idmeasunity" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteMeasUnityResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteUserRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteUserResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteUserDepartmentRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+          <xsd:element name="IDAREA" type="xsd:string" />
+          <xsd:element name="IDFUNC" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteUserDepartmentResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteUserAccessGroupRequestType">
+        <xsd:all>
+          <xsd:element name="USERID" type="xsd:string" />
+          <xsd:element name="IDACCGROUP" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteUserAccessGroupResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+          <xsd:element name="detail" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteUserLeaderRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="deleteUserLeaderResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="editDepartmentRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+          <xsd:element name="DESC" type="xsd:string" />
+          <xsd:element name="IDUPPER" nillable="true" type="xsd:string" />
+          <xsd:element name="IDCOMPANY" nillable="true" type="xsd:string" />
+          <xsd:element name="FGDEPTTYPE" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="editDepartmentResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="getAttribDataRequestType">
+        <xsd:all>
+          <xsd:element name="IDATTRIBS" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="getAttribDataResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="newDepartmentRequestType">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:string" />
+          <xsd:element name="DESC" type="xsd:string" />
+          <xsd:element name="IDPOS" nillable="true" type="xsd:string" />
+          <xsd:element name="IDUPPER" nillable="true" type="xsd:string" />
+          <xsd:element name="IDCOMPANY" nillable="true" type="xsd:string" />
+          <xsd:element name="FGDEPTTYPE" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="newDepartmentResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="importUserRequestType">
+        <xsd:all>
+          <xsd:element name="UserId" type="xsd:string" />
+          <xsd:element name="UserName" type="xsd:string" />
+          <xsd:element name="UserLogin" type="xsd:string" />
+          <xsd:element name="UserPassword" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserCounterSign" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserLanguage" type="xsd:string" />
+          <xsd:element minOccurs="0" name="IsActive" type="xsd:string" />
+          <xsd:element minOccurs="0" name="IsEnabled" type="xsd:string" />
+          <xsd:element minOccurs="0" name="NumMaxConnections" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserPhone" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserEmail" type="xsd:string" />
+          <xsd:element minOccurs="0" name="LeaderId" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserPhoto" type="xsd:base64Binary" />
+          <xsd:element minOccurs="0" name="UserDomainId" type="xsd:string" />
+          <xsd:element minOccurs="0" name="DomainId" type="xsd:string" />
+          <xsd:element minOccurs="0" name="AccGroupIdArray" type="xsd:string" />
+          <xsd:element minOccurs="0" name="RolPosIdArray" type="xsd:string" />
+          <xsd:element minOccurs="0" name="TeamIdArray" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UpdateType" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="importUserResponseType">
+        <xsd:all>
+          <xsd:element name="UserId" type="xsd:int" />
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Detail" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="synchUserRequestType">
+        <xsd:all>
+          <xsd:element name="nmdomainuid" type="xsd:string" />
+          <xsd:element name="id" type="xsd:string" />
+          <xsd:element name="login" type="xsd:string" />
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element minOccurs="0" name="email" type="xsd:string" />
+          <xsd:element name="fglanguage" type="xsd:string" />
+          <xsd:element name="fguserenabled" type="xsd:string" />
+          <xsd:element name="fguserblocked" type="xsd:string" />
+          <xsd:element name="fgnotice" type="xsd:string" />
+          <xsd:element minOccurs="0" name="idarea" type="xsd:string" />
+          <xsd:element minOccurs="0" name="nmarea" type="xsd:string" />
+          <xsd:element minOccurs="0" name="idfunc" type="xsd:string" />
+          <xsd:element minOccurs="0" name="nmfunc" type="xsd:string" />
+          <xsd:element minOccurs="0" name="nmdefsynchfilter" type="xsd:string" />
+          <xsd:element name="oidconnection" type="xsd:string" />
+          <xsd:element minOccurs="0" name="cdleader" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="synchUserResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="updateEmployeeProfileRequestType">
+        <xsd:all>
+          <xsd:element name="IDUSER" type="xsd:string" />
+          <xsd:element name="IDEDULEVEL" type="xsd:string" />
+          <xsd:element name="FGEDULEVELSTATUS" type="xsd:string" />
+          <xsd:element name="DTBIRTHDAY" type="xsd:string" />
+          <xsd:element name="DTADMISSION" type="xsd:string" />
+          <xsd:element name="DTDEMISSION" type="xsd:string" />
+          <xsd:element name="DSADDRESS" type="xsd:string" />
+          <xsd:element name="DSOBS" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="updateEmployeeProfileResponseType">
+        <xsd:all>
+          <xsd:element name="return" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:element name="newUser" type="tns:newUserRequestType" />
+      <xsd:element name="newUserResponse" type="tns:newUserResponseType" />
+      <xsd:element name="editUser" type="tns:editUserRequestType" />
+      <xsd:element name="editUserResponse" type="tns:editUserResponseType" />
+      <xsd:element name="disableUser" type="tns:disableUserRequestType" />
+      <xsd:element name="disableUserResponse" type="tns:disableUserResponseType" />
+      <xsd:element name="editUserDepartment" type="tns:editUserDepartmentRequestType" />
+      <xsd:element name="editUserDepartmentResponse" type="tns:editUserDepartmentResponseType" />
+      <xsd:element name="editPosition" type="tns:editPositionRequestType" />
+      <xsd:element name="editPositionResponse" type="tns:editPositionResponseType" />
+      <xsd:element name="newPosition" type="tns:newPositionRequestType" />
+      <xsd:element name="newPositionResponse" type="tns:newPositionResponseType" />
+      <xsd:element name="addAttribProfileValue" type="tns:addAttribProfileValueRequestType" />
+      <xsd:element name="addAttribProfileValueResponse" type="tns:addAttribProfileValueResponseType" />
+      <xsd:element name="addAttribute" type="tns:addAttributeRequestType" />
+      <xsd:element name="addAttributeResponse" type="tns:addAttributeResponseType" />
+      <xsd:element name="addAttribValue" type="tns:addAttribValueRequestType" />
+      <xsd:element name="addAttribValueResponse" type="tns:addAttribValueResponseType" />
+      <xsd:element name="addCompany" type="tns:addCompanyRequestType" />
+      <xsd:element name="addCompanyResponse" type="tns:addCompanyResponseType" />
+      <xsd:element name="addCompContact" type="tns:addCompContactRequestType" />
+      <xsd:element name="addCompContactResponse" type="tns:addCompContactResponseType" />
+      <xsd:element name="addDepartmentPosition" type="tns:addDepartmentPositionRequestType" />
+      <xsd:element name="addDepartmentPositionResponse" type="tns:addDepartmentPositionResponseType" />
+      <xsd:element name="addMeasUnity" type="tns:addMeasUnityRequestType" />
+      <xsd:element name="addMeasUnityResponse" type="tns:addMeasUnityResponseType" />
+      <xsd:element name="addUserDepartment" type="tns:addUserDepartmentRequestType" />
+      <xsd:element name="addUserDepartmentResponse" type="tns:addUserDepartmentResponseType" />
+      <xsd:element name="changePositionStatus" type="tns:changePositionStatusRequestType" />
+      <xsd:element name="changePositionStatusResponse" type="tns:changePositionStatusResponseType" />
+      <xsd:element name="compAtribAssoc" type="tns:compAtribAssocRequestType" />
+      <xsd:element name="compAtribAssocResponse" type="tns:compAtribAssocResponseType" />
+      <xsd:element name="deleteCompany" type="tns:deleteCompanyRequestType" />
+      <xsd:element name="deleteCompanyResponse" type="tns:deleteCompanyResponseType" />
+      <xsd:element name="deleteCompContact" type="tns:deleteCompContactRequestType" />
+      <xsd:element name="deleteCompContactResponse" type="tns:deleteCompContactResponseType" />
+      <xsd:element name="deleteDepartment" type="tns:deleteDepartmentRequestType" />
+      <xsd:element name="deleteDepartmentResponse" type="tns:deleteDepartmentResponseType" />
+      <xsd:element name="deleteMeasUnity" type="tns:deleteMeasUnityRequestType" />
+      <xsd:element name="deleteMeasUnityResponse" type="tns:deleteMeasUnityResponseType" />
+      <xsd:element name="deleteUser" type="tns:deleteUserRequestType" />
+      <xsd:element name="deleteUserResponse" type="tns:deleteUserResponseType" />
+      <xsd:element name="deleteUserDepartment" type="tns:deleteUserDepartmentRequestType" />
+      <xsd:element name="deleteUserDepartmentResponse" type="tns:deleteUserDepartmentResponseType" />
+      <xsd:element name="deleteUserAccessGroup" type="tns:deleteUserAccessGroupRequestType" />
+      <xsd:element name="deleteUserAccessGroupResponse" type="tns:deleteUserAccessGroupResponseType" />
+      <xsd:element name="deleteUserLeader" type="tns:deleteUserLeaderRequestType" />
+      <xsd:element name="deleteUserLeaderResponse" type="tns:deleteUserLeaderResponseType" />
+      <xsd:element name="editDepartment" type="tns:editDepartmentRequestType" />
+      <xsd:element name="editDepartmentResponse" type="tns:editDepartmentResponseType" />
+      <xsd:element name="getAttribData" type="tns:getAttribDataRequestType" />
+      <xsd:element name="getAttribDataResponse" type="tns:getAttribDataResponseType" />
+      <xsd:element name="newDepartment" type="tns:newDepartmentRequestType" />
+      <xsd:element name="newDepartmentResponse" type="tns:newDepartmentResponseType" />
+      <xsd:element name="importUser" type="tns:importUserRequestType" />
+      <xsd:element name="importUserResponse" type="tns:importUserResponseType" />
+      <xsd:element name="synchUser" type="tns:synchUserRequestType" />
+      <xsd:element name="synchUserResponse" type="tns:synchUserResponseType" />
+      <xsd:element name="updateEmployeeProfile" type="tns:updateEmployeeProfileRequestType" />
+      <xsd:element name="updateEmployeeProfileResponse" type="tns:updateEmployeeProfileResponseType" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="newUserRequest">
+    <wsdl:part name="parameters" element="tns:newUser" />
+  </wsdl:message>
+  <wsdl:message name="newUserResponse">
+    <wsdl:part name="parameters" element="tns:newUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="editUserRequest">
+    <wsdl:part name="parameters" element="tns:editUser" />
+  </wsdl:message>
+  <wsdl:message name="editUserResponse">
+    <wsdl:part name="parameters" element="tns:editUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="disableUserRequest">
+    <wsdl:part name="parameters" element="tns:disableUser" />
+  </wsdl:message>
+  <wsdl:message name="disableUserResponse">
+    <wsdl:part name="parameters" element="tns:disableUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="editUserDepartmentRequest">
+    <wsdl:part name="parameters" element="tns:editUserDepartment" />
+  </wsdl:message>
+  <wsdl:message name="editUserDepartmentResponse">
+    <wsdl:part name="parameters" element="tns:editUserDepartmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="editPositionRequest">
+    <wsdl:part name="parameters" element="tns:editPosition" />
+  </wsdl:message>
+  <wsdl:message name="editPositionResponse">
+    <wsdl:part name="parameters" element="tns:editPositionResponse" />
+  </wsdl:message>
+  <wsdl:message name="newPositionRequest">
+    <wsdl:part name="parameters" element="tns:newPosition" />
+  </wsdl:message>
+  <wsdl:message name="newPositionResponse">
+    <wsdl:part name="parameters" element="tns:newPositionResponse" />
+  </wsdl:message>
+  <wsdl:message name="addAttribProfileValueRequest">
+    <wsdl:part name="parameters" element="tns:addAttribProfileValue" />
+  </wsdl:message>
+  <wsdl:message name="addAttribProfileValueResponse">
+    <wsdl:part name="parameters" element="tns:addAttribProfileValueResponse" />
+  </wsdl:message>
+  <wsdl:message name="addAttributeRequest">
+    <wsdl:part name="parameters" element="tns:addAttribute" />
+  </wsdl:message>
+  <wsdl:message name="addAttributeResponse">
+    <wsdl:part name="parameters" element="tns:addAttributeResponse" />
+  </wsdl:message>
+  <wsdl:message name="addAttribValueRequest">
+    <wsdl:part name="parameters" element="tns:addAttribValue" />
+  </wsdl:message>
+  <wsdl:message name="addAttribValueResponse">
+    <wsdl:part name="parameters" element="tns:addAttribValueResponse" />
+  </wsdl:message>
+  <wsdl:message name="addCompanyRequest">
+    <wsdl:part name="parameters" element="tns:addCompany" />
+  </wsdl:message>
+  <wsdl:message name="addCompanyResponse">
+    <wsdl:part name="parameters" element="tns:addCompanyResponse" />
+  </wsdl:message>
+  <wsdl:message name="addCompContactRequest">
+    <wsdl:part name="parameters" element="tns:addCompContact" />
+  </wsdl:message>
+  <wsdl:message name="addCompContactResponse">
+    <wsdl:part name="parameters" element="tns:addCompContactResponse" />
+  </wsdl:message>
+  <wsdl:message name="addDepartmentPositionRequest">
+    <wsdl:part name="parameters" element="tns:addDepartmentPosition" />
+  </wsdl:message>
+  <wsdl:message name="addDepartmentPositionResponse">
+    <wsdl:part name="parameters" element="tns:addDepartmentPositionResponse" />
+  </wsdl:message>
+  <wsdl:message name="addMeasUnityRequest">
+    <wsdl:part name="parameters" element="tns:addMeasUnity" />
+  </wsdl:message>
+  <wsdl:message name="addMeasUnityResponse">
+    <wsdl:part name="parameters" element="tns:addMeasUnityResponse" />
+  </wsdl:message>
+  <wsdl:message name="addUserDepartmentRequest">
+    <wsdl:part name="parameters" element="tns:addUserDepartment" />
+  </wsdl:message>
+  <wsdl:message name="addUserDepartmentResponse">
+    <wsdl:part name="parameters" element="tns:addUserDepartmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="changePositionStatusRequest">
+    <wsdl:part name="parameters" element="tns:changePositionStatus" />
+  </wsdl:message>
+  <wsdl:message name="changePositionStatusResponse">
+    <wsdl:part name="parameters" element="tns:changePositionStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="compAtribAssocRequest">
+    <wsdl:part name="parameters" element="tns:compAtribAssoc" />
+  </wsdl:message>
+  <wsdl:message name="compAtribAssocResponse">
+    <wsdl:part name="parameters" element="tns:compAtribAssocResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteCompanyRequest">
+    <wsdl:part name="parameters" element="tns:deleteCompany" />
+  </wsdl:message>
+  <wsdl:message name="deleteCompanyResponse">
+    <wsdl:part name="parameters" element="tns:deleteCompanyResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteCompContactRequest">
+    <wsdl:part name="parameters" element="tns:deleteCompContact" />
+  </wsdl:message>
+  <wsdl:message name="deleteCompContactResponse">
+    <wsdl:part name="parameters" element="tns:deleteCompContactResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteDepartmentRequest">
+    <wsdl:part name="parameters" element="tns:deleteDepartment" />
+  </wsdl:message>
+  <wsdl:message name="deleteDepartmentResponse">
+    <wsdl:part name="parameters" element="tns:deleteDepartmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteMeasUnityRequest">
+    <wsdl:part name="parameters" element="tns:deleteMeasUnity" />
+  </wsdl:message>
+  <wsdl:message name="deleteMeasUnityResponse">
+    <wsdl:part name="parameters" element="tns:deleteMeasUnityResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserRequest">
+    <wsdl:part name="parameters" element="tns:deleteUser" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserResponse">
+    <wsdl:part name="parameters" element="tns:deleteUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserDepartmentRequest">
+    <wsdl:part name="parameters" element="tns:deleteUserDepartment" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserDepartmentResponse">
+    <wsdl:part name="parameters" element="tns:deleteUserDepartmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserAccessGroupRequest">
+    <wsdl:part name="parameters" element="tns:deleteUserAccessGroup" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserAccessGroupResponse">
+    <wsdl:part name="parameters" element="tns:deleteUserAccessGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserLeaderRequest">
+    <wsdl:part name="parameters" element="tns:deleteUserLeader" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserLeaderResponse">
+    <wsdl:part name="parameters" element="tns:deleteUserLeaderResponse" />
+  </wsdl:message>
+  <wsdl:message name="editDepartmentRequest">
+    <wsdl:part name="parameters" element="tns:editDepartment" />
+  </wsdl:message>
+  <wsdl:message name="editDepartmentResponse">
+    <wsdl:part name="parameters" element="tns:editDepartmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="getAttribDataRequest">
+    <wsdl:part name="parameters" element="tns:getAttribData" />
+  </wsdl:message>
+  <wsdl:message name="getAttribDataResponse">
+    <wsdl:part name="parameters" element="tns:getAttribDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="newDepartmentRequest">
+    <wsdl:part name="parameters" element="tns:newDepartment" />
+  </wsdl:message>
+  <wsdl:message name="newDepartmentResponse">
+    <wsdl:part name="parameters" element="tns:newDepartmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="importUserRequest">
+    <wsdl:part name="parameters" element="tns:importUser" />
+  </wsdl:message>
+  <wsdl:message name="importUserResponse">
+    <wsdl:part name="parameters" element="tns:importUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="synchUserRequest">
+    <wsdl:part name="parameters" element="tns:synchUser" />
+  </wsdl:message>
+  <wsdl:message name="synchUserResponse">
+    <wsdl:part name="parameters" element="tns:synchUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="updateEmployeeProfileRequest">
+    <wsdl:part name="parameters" element="tns:updateEmployeeProfile" />
+  </wsdl:message>
+  <wsdl:message name="updateEmployeeProfileResponse">
+    <wsdl:part name="parameters" element="tns:updateEmployeeProfileResponse" />
+  </wsdl:message>
+  <wsdl:portType name="AdministrationPortType">
+    <wsdl:operation name="newUser">
+      <documentation>Adiciona um novo usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUSER     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NAME       -&gt; Nome do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;LOGIN      -&gt; Login do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PASS       -&gt; Senha do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;EMAIL      -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA     -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC     -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDACCGROUP -&gt; Identificador do grupo de acesso &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDLEADER   -&gt; MatrÃ­cula do lÃ­der &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:newUserRequest" />
+      <wsdl:output message="tns:newUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="editUser">
+      <documentation>Edita as informaÃ§Ãµes de um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID    -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NAME  -&gt; Nome do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;LOGIN -&gt; Login do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PASS  -&gt; Senha do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;EMAIL -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDLEADER   -&gt; MatrÃ­cula do lÃ­der &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:editUserRequest" />
+      <wsdl:output message="tns:editUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="disableUser">
+      <documentation>Synchronize User. Parameters: CD-&gt;Primary of the User; Return values: SUCCESS-&gt;0; FAILURE:-1.</documentation>
+      <wsdl:input message="tns:disableUserRequest" />
+      <wsdl:output message="tns:disableUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="editUserDepartment">
+      <documentation>Edita um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:editUserDepartmentRequest" />
+      <wsdl:output message="tns:editUserDepartmentResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="editPosition">
+      <documentation>Edita as informÃ§Ãµes de uma funÃ§Ã£o&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID   -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC -&gt; DescriÃ§Ã£o &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:editPositionRequest" />
+      <wsdl:output message="tns:editPositionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="newPosition">
+      <documentation>Adiciona uma nova funÃ§Ã£o&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID   -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC -&gt; DescriÃ§Ã£o &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:newPositionRequest" />
+      <wsdl:output message="tns:newPositionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="addAttribProfileValue">
+      <documentation>Valor do atributo do perfil do colaborador&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUSER      -&gt; MatrÃ­cula do colaborador   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMATTRIBUTE -&gt; Identificador do atributo   &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;VLATTRIBUTE -&gt; Valor do atributo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSATTRIBUTE -&gt; Valor do atributo   &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: 1               &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.&lt;BR&gt;</documentation>
+      <wsdl:input message="tns:addAttribProfileValueRequest" />
+      <wsdl:output message="tns:addAttribProfileValueResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="addAttribute">
+      <documentation>Adiciona atributos&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDATTRIBUTE     -&gt; Identificador do atributo &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMATTRIBUTE     -&gt; Nome do atributo &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUSER          -&gt; Identificador do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGATTRIBUTETYPE -&gt; Tipo do atributo [1 - Lista de valores (discreto); 2 - Indeterminado; 3 - Externo] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDATATYPE      -&gt; Tipo de dados do atributo: [1 - Texto, 2 - NumÃ©rico, 3 - Data, 4 - Memorando, 5 - Moeda] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGSELECTIONTYPE -&gt; Modo de seleÃ§Ã£o [1 - Zoom;  2 - Combo] &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGMULTIVALUED   -&gt; Atributo multivalorado [1 - Sim; 2 - NÃ£o] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDISOSYSTEM     -&gt; CÃ³digo do componente SE Suite, no qual o atributo estarÃ¡ associado (separados por ";" ). Exemplo: 109;107. &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGMASKTYPE      -&gt; Tipo de mÃ¡scara [1 - MÃ¡scara simples; 2 - ExpressÃ£o regular]&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSMASK          -&gt; MÃ¡scara &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro incluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:addAttributeRequest" />
+      <wsdl:output message="tns:addAttributeResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="addAttribValue">
+      <documentation>Adiciona valores em atributos&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDATTRIBUTE    -&gt; Identificador do atributo &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUSER         -&gt; Identificador do usuÃ¡rio &lt;BR&gt;ParÃ¢metros requeridos:  Lista de valores&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;VLATTRIBUTE    -&gt; Valor do atributo (Requerido quando o tipo do atributo for Lista de valores)&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDEFAULTVALUE -&gt; Utilizar como padrÃ£o: [1 - Sim, 2 - NÃ£o] (Requerido quando o tipo do atributo for Lista de valores)&lt;BR&gt;ParÃ¢metros requeridos:  Atributo externo&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDDATASOURCE   -&gt; Identificador da fonte de dados (Requerido quando o tipo do atributo for Atributo externo)&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSCONNDBSQL    -&gt; SQL (Requerido quando o tipo do atributo for Atributo externo)&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMFILTERFIELD  -&gt; Campo filtro (Requerido quando o tipo do atributo for Atributo externo)&lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro incluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:addAttribValueRequest" />
+      <wsdl:output message="tns:addAttribValueResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="addCompany">
+      <documentation>Adiciona uma nova empresa ou edita uma empresa existente.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMMERCIAL   -&gt; Nome fantasia &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMCOMPANY      -&gt; RazÃ£o social &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGCUSTOMER     -&gt; Empresa como cliente: [1 - Sim, 2 - NÃ£o] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGSUPPLIER     -&gt; Empresa como fornecedor: [1 - Sim, 2 - NÃ£o] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGMANUFACTURER -&gt; Empresa como fabricante: [1 - Sim, 2 - NÃ£o] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMPANYTYPE  -&gt; Identificador do tipo de empresa &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSADDRESS      -&gt; EndereÃ§o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMCITY         -&gt; Cidade &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDSTATE        -&gt; Estado &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMCOUNTRY      -&gt; PaÃ­s &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDZIPCODE      -&gt; CEP &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDPHONE        -&gt; Telefone &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFAX          -&gt; Fax &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMHOMEPAGE     -&gt; Home page &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSCOMPANY      -&gt; DescriÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMPANY      -&gt; CÃ³digo da empresa &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDISOSYSTEM    -&gt; CÃ³digo do componente SE Suite, no qual a empresa estarÃ¡ associada (separados por ";" ). Exemplo: 109;107. &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro incluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:addCompanyRequest" />
+      <wsdl:output message="tns:addCompanyResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="addCompContact">
+      <documentation>Adiciona contatos a uma empresa ou edita um contato existente.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMMERCIAL -&gt; Nome fantasia &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMCONTACT    -&gt; Contato &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMDEPARTMENT -&gt; Ãrea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMPOSITION   -&gt; FunÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDPHONE      -&gt; Telefone &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFAX        -&gt; Fax &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMEMAIL      -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSCONTACT    -&gt; DescriÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDEFAULT    -&gt; Utilizar como padrÃ£o: [1 -Sim, 2 -NÃ£o] &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro incluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:addCompContactRequest" />
+      <wsdl:output message="tns:addCompContactResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="addDepartmentPosition">
+      <documentation>Adiciona um relacionamento entre Ã¡rea e funÃ§Ã£o&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:addDepartmentPositionRequest" />
+      <wsdl:output message="tns:addDepartmentPositionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="addMeasUnity">
+      <documentation>Adiciona uma nova unidade de medida ou edita uma unidade de medida existente.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDMEASUNITY -&gt; Identificador (Unidade de medida).&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMMEASUNITY -&gt; Nome (Unidade de medida).&lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDISOSYSTEM    -&gt; CÃ³digo do componente SE Suite, no qual a empresa estarÃ¡ associada (separados por ";" ). Exemplo: 109;107. &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro incluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:addMeasUnityRequest" />
+      <wsdl:output message="tns:addMeasUnityResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="addUserDepartment">
+      <documentation>Adiciona um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:addUserDepartmentRequest" />
+      <wsdl:output message="tns:addUserDepartmentResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="changePositionStatus">
+      <documentation>Altera o status de uma funÃ§Ã£o&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDPOSITION)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:changePositionStatusRequest" />
+      <wsdl:output message="tns:changePositionStatusResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="compAtribAssoc">
+      <documentation>Associa valores de atributos a empresas&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMMERCIAL -&gt; Nome fantasia &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDATTRIBUTE  -&gt; Identificador do atributo &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;VLATTRIBUTE  -&gt; Valor do atributo &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro incluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:compAtribAssocRequest" />
+      <wsdl:output message="tns:compAtribAssocResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteCompany">
+      <documentation>Deleta uma empresa.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMMERCIAL   -&gt; Nome fantasia &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMCOMPANY      -&gt; RazÃ£o social &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro excluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:deleteCompanyRequest" />
+      <wsdl:output message="tns:deleteCompanyResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteCompContact">
+      <documentation>Deleta um contato de uma empresa.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMMERCIAL   -&gt; Nome fantasia &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMCONTACT      -&gt; Contato &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro excluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:deleteCompContactRequest" />
+      <wsdl:output message="tns:deleteCompContactResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteDepartment">
+      <documentation>Deleta uma Ã¡rea.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID -&gt; Identificador da Ã¡rea &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDDEPARTMENT)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1                &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:deleteDepartmentRequest" />
+      <wsdl:output message="tns:deleteDepartmentResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteMeasUnity">
+      <documentation>Deleta uma unidade de medida&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDMEASUNITY -&gt; Identificador (Unidade de medida).&lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Registro excluÃ­do com sucesso  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.  &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:deleteMeasUnityRequest" />
+      <wsdl:output message="tns:deleteMeasUnityResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteUser">
+      <documentation>Deleta um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:deleteUserRequest" />
+      <wsdl:output message="tns:deleteUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserDepartment">
+      <documentation>Exclui um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:deleteUserDepartmentRequest" />
+      <wsdl:output message="tns:deleteUserDepartmentResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserAccessGroup">
+      <documentation>Exclui um relacionamento entre usuÃ¡rio e grupo de acesso.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;USERID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDACCGROUP -&gt; Identificador do grupo de acesso &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:deleteUserAccessGroupRequest" />
+      <wsdl:output message="tns:deleteUserAccessGroupResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserLeader">
+      <documentation>Edita as informaÃ§Ãµes de um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID    -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:deleteUserLeaderRequest" />
+      <wsdl:output message="tns:deleteUserLeaderResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="editDepartment">
+      <documentation>Edita as informaÃ§Ãµes de uma Ã¡rea.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID         -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC       -&gt; DescriÃ§Ã£o &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUPPER    -&gt; Ãrea superior &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMPANY  -&gt; CÃ³digo da empresa &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDEPTTYPE -&gt; Tipo da Ã¡rea [1 - Ãrea; 2 - Unidade de NegÃ³cio] &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:editDepartmentRequest" />
+      <wsdl:output message="tns:editDepartmentResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="getAttribData">
+      <documentation>Busca pelas informaÃ§Ãµes do atributo.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDATTRIBS            -&gt; Identificador do atributo, pode ser passado mais de um identificador. Exemplo: "Atributo1,Atributo2,Atributo3" &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;RETORNO:                        &lt;BR&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; CDATTRIBUTE     -&gt; CÃ³digo do atributo &lt;BR&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; NMATTRIBUTE     -&gt; Identificador do atributo &lt;BR&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; FGDATATYPE      -&gt; Tipo de dados do atributo: [1 - Texto, 2 - NumÃ©rico, 3 - Data, 4 - Memorando, 5 - Moeda] &lt;BR&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; FGATTRIBUTETYPE -&gt; Tipo de atributo &lt;BR&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; NMLABEL -&gt; Label do atributo;                     &lt;BR&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; FGMULTIVALUED   -&gt; Atributo multivalorado [1 - Sim; 2 - NÃ£o] &lt;BR&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; VALUE           -&gt; Lista de valores do atributo &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:getAttribDataRequest" />
+      <wsdl:output message="tns:getAttribDataResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="newDepartment">
+      <documentation>Adiciona uma nova Ã¡rea.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID         -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC       -&gt; DescriÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDPOS      -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUPPER    -&gt; Ãrea superior &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMPANY  -&gt; CÃ³digo da empresa &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDEPTTYPE -&gt; Tipo da Ã¡rea [1 - Ãrea; 2 - Unidade de NegÃ³cio] &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:newDepartmentRequest" />
+      <wsdl:output message="tns:newDepartmentResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="importUser">
+      <documentation>Adiciona um novo usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserID         -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserName           -&gt; Nome do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserLogin          -&gt; Login do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserPassword       -&gt; Senha do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserCounterSign    -&gt; Contrassenha &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserLanguage       -&gt; Idioma do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsActive         -&gt; SituaÃ§Ã£o [1 - UsuÃ¡rio ativo; 2 - UsuÃ¡rio inativo] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsEnabled        -&gt; Habilitado &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NumMaxConnections -&gt; NÃºmero mÃ¡ximo de conexÃµes &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserPhone          -&gt; Telefone &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserEmail          -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;LeaderId       -&gt; MatrÃ­cula do lÃ­der &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserPhoto          -&gt; Foto &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserDomainId     -&gt; Identificador do domÃ­nio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DomainId         -&gt; Controlador de domÃ­nio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;AccGroupIdArray     -&gt; Identificador do grupo de acesso &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;RolPosIdArray     -&gt; Dados da Ã¡rea e funÃ§Ã£o do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UpdateType         -&gt; Equipe &lt;BR&gt;Retorno&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserId         -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Status         -&gt; Status: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Detail         -&gt; Detalhes &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:importUserRequest" />
+      <wsdl:output message="tns:importUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="synchUser">
+      <documentation>[THIS METHOD IS DEPRECATED] Synchronize User. Parameters: nmdomainuid-&gt;Unique user identifier on Domain Controller
+                                        ID-&gt;Identifier for the User; Name-&gt;The user's name; 
+                                        Login-&gt;The user's login; 
+                                        Email-&gt;Email address for this user; 
+                                        Fglanguage-&gt;Default languge of this user
+                                        Fguserenabled-&gt;User enabled
+                                        Fguserblocked-&gt;User blocked
+                                        Fgnotice-&gt;Enviar email
+                                        Idarea-&gt;User department;
+                                        nmarea-&gt;User department name;
+                                        Idposition-&gt;User position
+                                        nmposition-&gt;User position name
+                                        nmdefsynchfilter-&gt;First time synch field
+                                        oidconnection-&gt;Connection identifier
+                                        cdleader-&gt;Leader id
+                                        Return values: SUCCESS-&gt;Primary key value for the user(CDUSER); FAILURE:-1.</documentation>
+      <wsdl:input message="tns:synchUserRequest" />
+      <wsdl:output message="tns:synchUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="updateEmployeeProfile">
+      <documentation>Atualiza informaÃ§Ãµes do perfil do colaborador&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUSER           -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDEDULEVEL       -&gt; Identificador do nÃ­vel de instruÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGEDULEVELSTATUS -&gt; NÃ­vel de instruÃ§Ã£o [1 - Completo; 2 - Incompleto] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DTBIRTHDAY       -&gt; Data de nascimento &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DTADMISSION      -&gt; Ao delegar uma atividade a outro usuÃ¡rio, vocÃª deve informar uma justificativa no campo [ComentÃ¡rio]. &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DTDEMISSION      -&gt; Data de demissÃ£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSADDRESS        -&gt; EndereÃ§o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSOBS            -&gt; ObservaÃ§Ã£o &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: 1               &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.&lt;BR&gt;</documentation>
+      <wsdl:input message="tns:updateEmployeeProfileRequest" />
+      <wsdl:output message="tns:updateEmployeeProfileResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AdministrationBinding" type="tns:AdministrationPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="newUser">
+      <soap:operation soapAction="urn:admin#newUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editUser">
+      <soap:operation soapAction="urn:admin#editUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="disableUser">
+      <soap:operation soapAction="urn:admin#disableUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editUserDepartment">
+      <soap:operation soapAction="urn:admin#editUserDepartment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editPosition">
+      <soap:operation soapAction="urn:admin#editPosition" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="newPosition">
+      <soap:operation soapAction="urn:admin#newPosition" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addAttribProfileValue">
+      <soap:operation soapAction="urn:admin#addAttribProfileValue" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addAttribute">
+      <soap:operation soapAction="urn:admin#addAttribute" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addAttribValue">
+      <soap:operation soapAction="urn:admin#addAttribValue" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addCompany">
+      <soap:operation soapAction="urn:admin#addCompany" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addCompContact">
+      <soap:operation soapAction="urn:admin#addCompContact" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addDepartmentPosition">
+      <soap:operation soapAction="urn:admin#addDepartmentPosition" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addMeasUnity">
+      <soap:operation soapAction="urn:admin#addMeasUnity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addUserDepartment">
+      <soap:operation soapAction="urn:admin#addUserDepartment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="changePositionStatus">
+      <soap:operation soapAction="urn:admin#changePositionStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="compAtribAssoc">
+      <soap:operation soapAction="urn:admin#compAtribAssoc" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteCompany">
+      <soap:operation soapAction="urn:admin#deleteCompany" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteCompContact">
+      <soap:operation soapAction="urn:admin#deleteCompContact" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteDepartment">
+      <soap:operation soapAction="urn:admin#deleteDepartment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteMeasUnity">
+      <soap:operation soapAction="urn:admin#deleteMeasUnity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUser">
+      <soap:operation soapAction="urn:admin#deleteUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserDepartment">
+      <soap:operation soapAction="urn:admin#deleteUserDepartment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserAccessGroup">
+      <soap:operation soapAction="urn:admin#deleteUserAccessGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUserLeader">
+      <soap:operation soapAction="urn:admin#deleteUserLeader" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editDepartment">
+      <soap:operation soapAction="urn:admin#editDepartment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAttribData">
+      <soap:operation soapAction="urn:admin#getAttribData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="newDepartment">
+      <soap:operation soapAction="urn:admin#newDepartment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="importUser">
+      <soap:operation soapAction="urn:admin#importUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="synchUser">
+      <soap:operation soapAction="urn:admin#synchUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateEmployeeProfile">
+      <soap:operation soapAction="urn:admin#updateEmployeeProfile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Administration">
+    <wsdl:port name="AdministrationPort" binding="tns:AdministrationBinding">
+      <soap:address location="https://tecfy.softexpert.com/softexpert/webserviceproxy/se/ws/adm_ws.php" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
