@@ -299,6 +299,7 @@ namespace WebService
                     ArquivoBinario = Convert.FromBase64String(arquivo),
                     Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
                     Matricula = Matricula,
+                    Usuario = usuario,
                     Arquivo = new FileInfo(Guid.NewGuid() + extensao)
                 };
 

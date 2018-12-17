@@ -169,6 +169,7 @@ namespace WebService.SE
                         }
 
                         seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", WebConfigurationManager.AppSettings["Attribute_Pages"], Indice.Paginas.ToString());
+                        seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", WebConfigurationManager.AppSettings["Attribute_Usuario"], Indice.Usuario.ToString());
 
                         UploadDocumentoBinario(Indice, documentReturn.IDDOCUMENT);
                     }
@@ -179,27 +180,10 @@ namespace WebService.SE
                 {
                     documentDataReturn documentDataReturn = VerificarPropriedadesDocumento(documentReturnOwner.IDDOCUMENT);
                     if (documentDataReturn.ATTRIBUTTES.Count() > 0)
-                    {
-                        string atributos = "";
-                        foreach (var item in documentDataReturn.ATTRIBUTTES)
-                        {
-                            if (item.ATTRIBUTTENAME.Contains(prefix))
-                            {
-                                string valor = "";
-                                if (item.ATTRIBUTTEVALUE.Count() > 0)
-                                {
-                                    valor = item.ATTRIBUTTEVALUE[0];
-                                }
-
-                                atributos += item.ATTRIBUTTENAME + "=" + valor + ";";
-                            }
-                        }
-
-                        atributos += WebConfigurationManager.AppSettings["Attribute_Pages"] + "=" + Indice.Paginas + ";";
-
+                    {          
                         var cat = this.CarregarCategorias().RESULTARRAY.Where(_s => _s.IDCATEGORY == Indice.Categoria).FirstOrDefault().NMCATEGORY;
 
-                        var s = seClient.newDocument(Indice.Categoria, Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim(), cat, "", "", atributos, "", null, 0);
+                        var s = seClient.newDocument(Indice.Categoria, Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim(), cat, "", "", "", "", null, 0);
 
                         var inx = s.Split(':');
                         if (inx.Count() > 0)
@@ -213,6 +197,30 @@ namespace WebService.SE
                                 throw new Exception(s);
                             }
                         }
+
+                        foreach (var item in documentDataReturn.ATTRIBUTTES)
+                        {
+                            if (item.ATTRIBUTTENAME.Contains(prefix))
+                            {
+                                string valor = "";
+                                if (item.ATTRIBUTTEVALUE.Count() > 0)
+                                {
+                                    valor = item.ATTRIBUTTEVALUE[0];
+                                }
+
+                                try
+                                {
+                                    seClient.setAttributeValue(Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim(), "", item.ATTRIBUTTENAME, valor);
+                                }
+                                catch (Exception)
+                                {
+                                    throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
+                                }
+                            }
+                        }
+
+                        seClient.setAttributeValue(Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim(), "", WebConfigurationManager.AppSettings["Attribute_Pages"], Indice.Paginas.ToString());
+                        seClient.setAttributeValue(Indice.Matricula.Trim() + "-" + Indice.Categoria.Trim(), "", WebConfigurationManager.AppSettings["Attribute_Usuario"], Indice.Usuario.ToString());
                     }
                 }
 

@@ -20,6 +20,8 @@ namespace WebService.SE
 
         public string Identificacao { get; set; }
 
+        public string Usuario { get; set; }
+
         public int Paginas
         {
             get
