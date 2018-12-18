@@ -2,7 +2,7 @@
 
 namespace WebService
 {
-    public class JobCategoriesRegistrationVM
+    public class JobCategoriesVM
     {
         public int jobCategoryId { get; set; }
 

@@ -111,6 +111,12 @@
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.Hom.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Prod.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -136,8 +142,11 @@
     <Compile Include="Models\DocumentsStudent.cs" />
     <Compile Include="Models\JobCategory\In\JobCategorySaveIn.cs" />
     <Compile Include="Models\JobCategory\Out\JobCategorySaveOut.cs" />
+    <Compile Include="Models\JobCategory\VM\JobCategoriesVM.cs" />
     <Compile Include="Models\JobCategory\VM\JobCategoriesRegistrationVM.cs" />
+    <Compile Include="Models\Job\Out\JobOut.cs" />
     <Compile Include="Models\Job\Out\JobsRegistrationOut.cs" />
+    <Compile Include="Models\Job\VM\JobVM.cs" />
     <Compile Include="Models\Job\VM\JobsRegistrationVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -206,6 +215,12 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Hom|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

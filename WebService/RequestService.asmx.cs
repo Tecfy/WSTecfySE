@@ -609,6 +609,36 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
+        public JobOut getJobById(int jobId)
+        {
+            JobOut jobOut = new JobOut();
+
+            try
+            {
+                var client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.GetJobById"].ToString(), jobId));
+
+                var request = RestRequestHelper.Get(Method.GET);
+
+                IRestResponse response = client.Execute(request);
+
+                jobOut = SimpleJson.DeserializeObject<JobOut>(response.Content);
+
+                if (!jobOut.success)
+                {
+                    throw new Exception(jobOut.messages.FirstOrDefault());
+                }
+            }
+            catch (Exception ex)
+            {
+                jobOut.successMessage = null;
+                jobOut.messages.Add(ex.Message);
+            }
+
+            return jobOut;
+        }
+
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        [WebMethod]
         public JobsRegistrationOut getJobsByRegistration(string registration)
         {
             JobsRegistrationOut jobsRegistrationOut = new JobsRegistrationOut();
