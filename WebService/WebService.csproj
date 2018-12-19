@@ -122,7 +122,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ServiceIntegracaoSE.asmx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -130,16 +129,8 @@
   <ItemGroup>
     <Compile Include="Connection\RestRequestHelper.cs" />
     <Compile Include="Connection\SEConnection.cs" />
-    <Compile Include="Models\Aluno.cs" />
-    <Compile Include="Models\AlunosRetorno.cs" />
-    <Compile Include="Models\Ativity.cs" />
     <Compile Include="Models\Common\ResultServiceVM.cs" />
-    <Compile Include="Models\CreateLogFiles.cs" />
-    <Compile Include="Models\DadosAlunos.cs" />
-    <Compile Include="Models\DadosProgramAtivity.cs" />
-    <Compile Include="Models\DateSystem.cs" />
-    <Compile Include="Models\Document.cs" />
-    <Compile Include="Models\DocumentsStudent.cs" />
+    <Compile Include="Models\DadosAlunos\DadosAlunos.cs" />
     <Compile Include="Models\JobCategory\In\JobCategorySaveIn.cs" />
     <Compile Include="Models\JobCategory\Out\JobCategorySaveOut.cs" />
     <Compile Include="Models\JobCategory\VM\JobCategoriesVM.cs" />
@@ -158,16 +149,11 @@
       <DependentUpon>RequestService.asmx</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ServiceIntegracaoSE.asmx.cs">
-      <DependentUpon>ServiceIntegracaoSE.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="SE\DocumentoAtributo.cs" />
-    <Compile Include="SE\IDocumento.cs" />
     <Compile Include="SE\InsegracaoSE.cs" />
     <Compile Include="SE\SEAdministration.cs" />
     <Compile Include="SE\SEClient.cs" />
-    <Compile Include="Models\Student.cs" />
+    <Compile Include="Models\DadosAlunos\Student.cs" />
     <Compile Include="Web References\com.softexpert.tecfy.adm\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

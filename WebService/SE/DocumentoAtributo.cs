@@ -1,6 +1,5 @@
 ﻿using iTextSharp.text.pdf;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace WebService.SE
 {

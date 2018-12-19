@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using WebService.Models;
+﻿using WebService.Models;
 
 namespace WebService
 {
