@@ -104,6 +104,13 @@ namespace WebService.SE
                                     int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString()),
                                     WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString());
                         }
+
+                        try
+                        {
+                            string returnAssociation = seClient.newDocumentContainerAssociation(WebConfigurationManager.AppSettings["Category_Owner"], documentReturnOwner.IDDOCUMENT, "", WebConfigurationManager.AppSettings["StructID"], documentoAtributo.Categoria, documentoAtributo.Matricula, out long codeAssociation, out string detailAssociation);
+                        }
+                        catch
+                        { }
                     }
                 }
 
@@ -168,6 +175,13 @@ namespace WebService.SE
                                     int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString()),
                                     WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString());
                         }
+
+                        try
+                        {
+                            string returnAssociation = seClient.newDocumentContainerAssociation(WebConfigurationManager.AppSettings["Category_Owner"], documentReturnOwner.IDDOCUMENT, "", WebConfigurationManager.AppSettings["StructID"], documentoAtributo.Categoria, documentoAtributo.Matricula, out long codeAssociation, out string detailAssociation);
+                        }
+                        catch
+                        { }
                     }
                 }
 
