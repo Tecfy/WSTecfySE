@@ -77,6 +77,132 @@ namespace WebService
             }
         }
 
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        [WebMethod(EnableSession = true)]
+        public bool sendFile(string fileName, byte[] buffer, long offset)
+        {
+            //FileName
+            bool retVal = false;
+            try
+            {
+                string path = AppDomain.CurrentDomain.BaseDirectory + WebConfigurationManager.AppSettings["Path"];
+
+                // Setting the file location to be saved in the server.
+                // Reading from the web.config file
+                if (Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                string FilePath = Path.Combine(path, fileName);
+
+                // New file, create an empty file
+                if (offset == 0)
+                {
+                    File.Create(FilePath).Close();
+                }
+
+                // Open a file stream and write the buffer.
+                // Don't open with FileMode.Append because the transfer may wish to
+                // Start a different point
+                int Tentativa = 0;
+                INICIO:
+                try
+                {
+                    if (Tentativa < 6)
+                    {
+                        using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                        {
+                            fs.Seek(offset, SeekOrigin.Begin);
+                            fs.Write(buffer, 0, buffer.Length);
+                        }
+                    }
+                }
+                catch
+                {
+                    Tentativa++;
+                    System.Threading.Thread.Sleep(1000);
+                    goto INICIO;
+                }
+                retVal = true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                //sending error to an email id
+                //common.SendError(ex);
+            }
+
+            return retVal;
+        }
+
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        [WebMethod(EnableSession = true)]
+        public bool checkFile(string fileName, long fileSize)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + WebConfigurationManager.AppSettings["Path"];
+
+            string filePath = Path.Combine(path, fileName);
+
+            FileInfo fileInfo = new FileInfo(filePath);
+
+            if (fileInfo.Exists)
+            {
+                if (fileInfo.Length == fileSize)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        [WebMethod(EnableSession = true)]
+        public bool submitFile(string fileName, string registration, string user)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + WebConfigurationManager.AppSettings["Path"];
+
+            string filePath = Path.Combine(path, fileName);
+
+            if (File.Exists(filePath))
+            {
+                FileInfo fileInfo = new FileInfo(filePath);
+
+                try
+                {
+                    var integrador = new InsegracaoSE();
+
+                    var documentoAtributo = new DocumentoAtributo
+                    {
+                        ArquivoBinario = System.IO.File.ReadAllBytes(filePath),
+                        Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
+                        Matricula = registration,
+                        Usuario = user,
+                        Arquivo = new FileInfo(Guid.NewGuid() + fileInfo.Extension)
+                    };
+
+                    integrador.InserirDocumentoBinario(documentoAtributo);
+
+                    File.Delete(filePath);
+
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         #endregion
 
         #region .: Devplace .:
