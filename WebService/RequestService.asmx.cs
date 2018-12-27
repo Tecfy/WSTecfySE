@@ -8,6 +8,7 @@ using System.Web.Configuration;
 using System.Web.Script.Services;
 using System.Web.Services;
 using WebService.Connection;
+using WebService.Helper;
 using WebService.SE;
 
 namespace WebService
@@ -85,7 +86,7 @@ namespace WebService
             bool retVal = false;
             try
             {
-                string path = AppDomain.CurrentDomain.BaseDirectory + WebConfigurationManager.AppSettings["Path"];
+                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
 
                 // Setting the file location to be saved in the server.
                 // Reading from the web.config file
@@ -140,7 +141,7 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool checkFile(string fileName, long fileSize)
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + WebConfigurationManager.AppSettings["Path"];
+            string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
 
             string filePath = Path.Combine(path, fileName);
 
@@ -165,7 +166,7 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool submitFile(string fileName, string registration, string user)
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + WebConfigurationManager.AppSettings["Path"];
+            string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
 
             string filePath = Path.Combine(path, fileName);
 

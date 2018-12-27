@@ -130,6 +130,7 @@
   <ItemGroup>
     <Compile Include="Connection\RestRequestHelper.cs" />
     <Compile Include="Connection\SEConnection.cs" />
+    <Compile Include="Helper\ServerMapHelper.cs" />
     <Compile Include="Models\Common\ResultServiceVM.cs" />
     <Compile Include="Models\DadosAlunos\DadosAlunos.cs" />
     <Compile Include="Models\JobCategory\In\JobCategorySaveIn.cs" />

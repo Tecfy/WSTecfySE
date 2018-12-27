@@ -187,9 +187,9 @@ namespace WebService.SE
 
                 return retorno;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new Exception(e.Message);
+                throw ex;
             }
         }
 
