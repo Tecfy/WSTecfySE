@@ -11,6 +11,7 @@ Global
 		Hom|Any CPU = Hom|Any CPU
 		Prod|Any CPU = Prod|Any CPU
 		Release|Any CPU = Release|Any CPU
+		SERProd|Any CPU = SERProd|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A5766729-FB84-44B0-8C63-3E0C94748832}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -21,6 +22,8 @@ Global
 		{A5766729-FB84-44B0-8C63-3E0C94748832}.Prod|Any CPU.Build.0 = Prod|Any CPU
 		{A5766729-FB84-44B0-8C63-3E0C94748832}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5766729-FB84-44B0-8C63-3E0C94748832}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5766729-FB84-44B0-8C63-3E0C94748832}.SERProd|Any CPU.ActiveCfg = SERProd|Any CPU
+		{A5766729-FB84-44B0-8C63-3E0C94748832}.SERProd|Any CPU.Build.0 = SERProd|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
