@@ -86,7 +86,10 @@ namespace WebService
             bool retVal = false;
             try
             {
-                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
+                //Cria os Diretorios
+                CreateFolder();
+
+                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
 
                 // Setting the file location to be saved in the server.
                 // Reading from the web.config file
@@ -141,7 +144,10 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool checkFile(string fileName, long fileSize)
         {
-            string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
+            //Cria os Diretorios
+            CreateFolder();
+
+            string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
 
             string filePath = Path.Combine(path, fileName);
 
@@ -166,13 +172,22 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool submitFile(string fileName, string registration, string user)
         {
-            string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
+            //Cria os Diretorios
+            CreateFolder();
 
-            string filePath = Path.Combine(path, fileName);
+            string pathIn = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
+            string pathOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Out"]);
+            string pathEnd = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.End"]);
 
-            if (File.Exists(filePath))
+            string filePathIn = Path.Combine(pathIn, fileName);
+            string filePathOut = Path.Combine(pathOut, fileName);
+            string filePathEnd = Path.Combine(pathEnd, fileName);
+
+            if (File.Exists(filePathIn))
             {
-                FileInfo fileInfo = new FileInfo(filePath);
+                Helper.Encrypt.DecryptFile(filePathIn, filePathOut, WebConfigurationManager.AppSettings["Key"]);
+
+                FileInfo fileInfo = new FileInfo(filePathOut);
 
                 try
                 {
@@ -180,7 +195,7 @@ namespace WebService
 
                     var documentoAtributo = new DocumentoAtributo
                     {
-                        ArquivoBinario = System.IO.File.ReadAllBytes(filePath),
+                        ArquivoBinario = System.IO.File.ReadAllBytes(filePathIn),
                         Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
                         Matricula = registration,
                         Usuario = user,
@@ -189,8 +204,10 @@ namespace WebService
 
                     integrador.InserirDocumentoBinario(documentoAtributo);
 
-                    File.Delete(filePath);
+                    File.Move(filePathIn, filePathEnd);
+                    File.Delete(filePathOut);
 
+                    DeleteFiles();
                     return true;
                 }
                 catch (Exception)
@@ -303,5 +320,38 @@ namespace WebService
         #endregion
 
         #endregion
+
+        #region .: Helper :.
+
+        private void CreateFolder()
+        {
+            var folders = new string[] { "Path.In", "Path.Out", "Path.End" };
+
+            foreach (var item in folders)
+            {
+                var pathInput = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings[item]).ToString();
+                if (!Directory.Exists(pathInput))
+                {
+                    Directory.CreateDirectory(pathInput);
+                }
+            }
+        }
+
+        private void DeleteFiles()
+        {
+            string pathEnd = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.End"]);
+            int days = Convert.ToInt32(WebConfigurationManager.AppSettings["Days"]);
+
+            foreach (var item in Directory.GetFiles(pathEnd))
+            {
+                FileInfo fileInfo = new FileInfo(item);
+                if (fileInfo.CreationTime.AddDays(days) <= DateTime.Now)
+                {
+                    File.Delete(item);
+                }
+            }
+        }
+
+        #endregion 
     }
 }
