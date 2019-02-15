@@ -1,0 +1,7 @@
+**** Método: submitFile. Arquivo sendo enviado para o SE: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry. Inicio: 14/02/2019 21:51:30 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry. Inicio: 14/02/2019 21:53:55 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry. Inicio: 14/02/2019 21:54:39 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry. Inicio: 14/02/2019 21:59:35 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry. Fim: 14/02/2019 22:00:13 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry. Inicio: 14/02/2019 22:17:34 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry. Fim: 14/02/2019 22:18:32 ****

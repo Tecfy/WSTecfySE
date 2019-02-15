@@ -18,6 +18,12 @@ namespace WebService
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     public class RequestService : System.Web.Services.WebService
     {
+        readonly string pathIn = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
+        readonly string pathOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Out"]);
+        readonly string pathEnd = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.End"]);
+        readonly string pathLog = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Log"]);
+        readonly string extension = WebConfigurationManager.AppSettings["Extension"];
+
         #region .: Methods :.       
 
         #region .: CAPservice .:
@@ -89,16 +95,14 @@ namespace WebService
                 //Cria os Diretorios
                 CreateFolder();
 
-                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
-
                 // Setting the file location to be saved in the server.
                 // Reading from the web.config file
-                if (Directory.Exists(path))
+                if (Directory.Exists(pathIn))
                 {
-                    Directory.CreateDirectory(path);
+                    Directory.CreateDirectory(pathIn);
                 }
 
-                string FilePath = Path.Combine(path, fileName);
+                string FilePath = Path.Combine(pathIn, fileName);
 
                 // New file, create an empty file
                 if (offset == 0)
@@ -122,8 +126,10 @@ namespace WebService
                         }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+
                     Tentativa++;
                     System.Threading.Thread.Sleep(1000);
                     goto INICIO;
@@ -132,6 +138,7 @@ namespace WebService
             }
             catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
                 throw ex;
                 //sending error to an email id
                 //common.SendError(ex);
@@ -144,26 +151,41 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool checkFile(string fileName, long fileSize)
         {
-            //Cria os Diretorios
-            CreateFolder();
-
-            string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
-
-            string filePath = Path.Combine(path, fileName);
-
-            FileInfo fileInfo = new FileInfo(filePath);
-
-            if (fileInfo.Exists)
+            try
             {
-                if (fileInfo.Length == fileSize)
+                //Cria os Diretorios
+                CreateFolder();
+
+                string filePath = Path.Combine(pathIn, fileName);
+
+                FileInfo fileInfo = new FileInfo(filePath);
+
+                if (fileInfo.Exists)
                 {
-                    return true;
+                    if (fileInfo.Length == fileSize)
+                    {
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo pronto para ser enviado: {0} ****", fileName) + Environment.NewLine);
+
+                        return true;
+                    }
+                    else
+                    {
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo corrompido: {0} ****", fileName) + Environment.NewLine);
+
+                        return false;
+                    }
                 }
                 else
+                {
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo não existe: {0} ****", fileName) + Environment.NewLine);
+
                     return false;
+                }
             }
-            else
+            catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+
                 return false;
             }
         }
@@ -172,51 +194,65 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool submitFile(string fileName, string registration, string user)
         {
-            //Cria os Diretorios
-            CreateFolder();
-
-            string pathIn = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
-            string pathOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Out"]);
-            string pathEnd = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.End"]);
-
-            string filePathIn = Path.Combine(pathIn, fileName);
-            string filePathOut = Path.Combine(pathOut, fileName);
-            string filePathEnd = Path.Combine(pathEnd, fileName);
-
-            if (File.Exists(filePathIn))
+            try
             {
-                Helper.Encrypt.DecryptFile(filePathIn, filePathOut, WebConfigurationManager.AppSettings["Key"]);
+                //Cria os Diretorios
+                CreateFolder();
 
-                FileInfo fileInfo = new FileInfo(filePathOut);
+                string filePathIn = Path.Combine(pathIn, fileName);
+                string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
+                string filePathEnd = Path.Combine(pathEnd, fileName);
 
-                try
+                if (File.Exists(filePathIn))
                 {
-                    var integrador = new InsegracaoSE();
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                    var documentoAtributo = new DocumentoAtributo
+                    Helper.Encrypt.DecryptFile(filePathIn, filePathOut, WebConfigurationManager.AppSettings["Key"]);
+
+                    FileInfo fileInfo = new FileInfo(filePathOut);
+
+                    try
                     {
-                        ArquivoBinario = System.IO.File.ReadAllBytes(filePathIn),
-                        Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
-                        Matricula = registration,
-                        Usuario = user,
-                        Arquivo = new FileInfo(Guid.NewGuid() + fileInfo.Extension)
-                    };
+                        var integrador = new InsegracaoSE();
 
-                    integrador.InserirDocumentoBinario(documentoAtributo);
+                        var documentoAtributo = new DocumentoAtributo
+                        {
+                            ArquivoBinario = System.IO.File.ReadAllBytes(filePathOut),
+                            Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
+                            Matricula = registration,
+                            Usuario = user,
+                            Arquivo = new FileInfo(Guid.NewGuid() + fileInfo.Extension)
+                        };
 
-                    File.Move(filePathIn, filePathEnd);
-                    File.Delete(filePathOut);
+                        integrador.InserirDocumentoBinario(documentoAtributo);
 
-                    DeleteFiles();
-                    return true;
+                        File.Move(filePathIn, filePathEnd);
+                        File.Delete(filePathOut);
+
+                        DeleteFiles();
+
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+
+                        return false;
+                    }
                 }
-                catch (Exception)
+                else
                 {
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo não existe: {0} ****", fileName) + Environment.NewLine);
+
                     return false;
                 }
             }
-            else
+            catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+
                 return false;
             }
         }
@@ -325,7 +361,7 @@ namespace WebService
 
         private void CreateFolder()
         {
-            var folders = new string[] { "Path.In", "Path.Out", "Path.End" };
+            var folders = new string[] { "Path.In", "Path.Out", "Path.End", "Path.Log" };
 
             foreach (var item in folders)
             {
@@ -339,7 +375,6 @@ namespace WebService
 
         private void DeleteFiles()
         {
-            string pathEnd = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.End"]);
             int days = Convert.ToInt32(WebConfigurationManager.AppSettings["Days"]);
 
             foreach (var item in Directory.GetFiles(pathEnd))

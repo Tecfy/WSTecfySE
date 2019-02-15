@@ -1,0 +1,2 @@
+**** Método: submitFile. Erro: Não há suporte para o formato do caminho dado.. Arquivo: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry  ****
+**** Método: submitFile. Erro: PDF header signature not found.. Arquivo: 5d527de3-f98b-4e4d-93ec-2f39dc44bbcb.cry  ****
