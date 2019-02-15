@@ -4,3 +4,6 @@ Falha na solicitação com resposta vazia.. Arquivo: 01180587.pdf  ****
 **** Método: submitFile. Erro: O tempo limite da operação foi atingido. Arquivo: 01180587.pdf  ****
 **** Método: submitFile. Erro: O cliente encontrou o tipo de conteúdo de resposta de 'text/html;charset=UTF-8', mas esperava 'text/xml'.
 Falha na solicitação com resposta vazia.. Arquivo: 01180587.pdf  ****
+**** Método: submitFile. Erro: O acesso ao caminho 'D:\Desenv\Tecfy\WSTecfySE\Files\Sesuite' foi negado.. Arquivo: 01180587.pdf  ****
+**** Método: submitFile. Erro: A solicitação foi anulada: Não foi possível criar um canal seguro para SSL/TLS.. Arquivo: 01180587.pdf  ****
+**** Método: submitFile. Erro: Incorrect syntax near 'b2df6'.. Arquivo: 01180587.pdf  ****

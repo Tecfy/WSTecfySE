@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Web.Configuration;
@@ -10,6 +11,25 @@ namespace WebService.SE
 {
     public class InsegracaoSE
     {
+        #region .: Attributes :.
+
+        readonly bool physicalFile = Convert.ToBoolean(WebConfigurationManager.AppSettings["Physical.File.Sesuite"]);
+        readonly string physicalPath = WebConfigurationManager.AppSettings["Physical.Path.Sesuite"];
+        readonly string prefix = WebConfigurationManager.AppSettings["Prefix_Category"];
+        readonly string categoryOwner = WebConfigurationManager.AppSettings["Category_Owner"];
+        readonly string attributePages = WebConfigurationManager.AppSettings["Attribute_Pages"];
+        readonly string attributeUsuario = WebConfigurationManager.AppSettings["Attribute_Usuario"];
+        readonly string attributeUnityCode = WebConfigurationManager.AppSettings["Attribute_Unity_Code"];
+        readonly int newAccessPermissionUserType = int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.UserType"].ToString());
+        readonly string newAccessPermissionPermission = WebConfigurationManager.AppSettings["NewAccessPermission.Permission"].ToString();
+        readonly int newAccessPermissionPermissionType = int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString());
+        readonly string newAccessPermissionFgaddLowerLevel = WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString();
+        readonly string structID = WebConfigurationManager.AppSettings["StructID"];
+        readonly string categoryPrimaryTitle = WebConfigurationManager.AppSettings["Category_Primary_Title"];
+        readonly string attributeRegistration = WebConfigurationManager.AppSettings["Attribute_Registration"];
+
+        #endregion
+
         #region .: Public :.
 
         public documentDataReturn VerificarPropriedadesDocumento(string iddocumento)
@@ -45,9 +65,8 @@ namespace WebService.SE
             try
             {
                 SEClient seClient = SEConnection.GetConnection();
-                string prefix = WebConfigurationManager.AppSettings["Prefix_Category"];
 
-                documentReturn documentReturnOwner = VerificaDocumentoCadastrado(documentoAtributo.Matricula, WebConfigurationManager.AppSettings["Category_Owner"]);
+                documentReturn documentReturnOwner = VerificaDocumentoCadastrado(documentoAtributo.Matricula, categoryOwner);
                 if (documentReturnOwner == null)
                 {
                     throw new Exception("Sistema não localizou o aluno!");
@@ -83,14 +102,21 @@ namespace WebService.SE
                             }
                         }
 
-                        seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", WebConfigurationManager.AppSettings["Attribute_Pages"], documentoAtributo.Paginas.ToString());
-                        seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", WebConfigurationManager.AppSettings["Attribute_Usuario"], documentoAtributo.Usuario.ToString());
+                        seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", attributePages, documentoAtributo.Paginas.ToString());
+                        seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", attributeUsuario, documentoAtributo.Usuario.ToString());
 
-                        UploadDocumento(documentoAtributo, documentReturn.IDDOCUMENT);
-
-                        if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity_Code"]))
+                        if (physicalFile)
                         {
-                            string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity_Code"]).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
+                            InsertPhysicalFile(documentoAtributo, documentReturn.IDDOCUMENT);
+                        }
+                        else
+                        {
+                            InsertEletronicFile(documentoAtributo, documentReturn.IDDOCUMENT);
+                        }
+
+                        if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
+                        {
+                            string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
 
                             SEAdministration seAdministration = SEConnection.GetConnectionAdm();
 
@@ -99,15 +125,15 @@ namespace WebService.SE
 
                             var n = seClient.newAccessPermission(documentReturn.IDDOCUMENT,
                                     unityCode + ";" + unityCode,
-                                    int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.UserType"].ToString()),
-                                    WebConfigurationManager.AppSettings["NewAccessPermission.Permission"].ToString(),
-                                    int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString()),
-                                    WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString());
+                                    newAccessPermissionUserType,
+                                    newAccessPermissionPermission,
+                                    newAccessPermissionPermissionType,
+                                    newAccessPermissionFgaddLowerLevel);
                         }
 
                         try
                         {
-                            string returnAssociation = seClient.newDocumentContainerAssociation(WebConfigurationManager.AppSettings["Category_Owner"], documentReturnOwner.IDDOCUMENT, "", WebConfigurationManager.AppSettings["StructID"], documentoAtributo.Categoria, documentoAtributo.Matricula, out long codeAssociation, out string detailAssociation);
+                            string returnAssociation = seClient.newDocumentContainerAssociation(categoryOwner, documentReturnOwner.IDDOCUMENT, "", structID, documentoAtributo.Categoria, documentoAtributo.Matricula, out long codeAssociation, out string detailAssociation);
                         }
                         catch
                         { }
@@ -120,14 +146,21 @@ namespace WebService.SE
                     documentDataReturn documentDataReturn = VerificarPropriedadesDocumento(documentReturnOwner.IDDOCUMENT);
                     if (documentDataReturn.ATTRIBUTTES.Count() > 0)
                     {
-                        var s = seClient.newDocument(documentoAtributo.Categoria, documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), WebConfigurationManager.AppSettings["Category_Primary_Title"].ToString(), "", "", "", "", null, 0);
+                        var s = seClient.newDocument(documentoAtributo.Categoria, documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), categoryPrimaryTitle, "", "", "", "", null, 0);
 
                         var inx = s.Split(':');
                         if (inx.Count() > 0)
                         {
                             if (inx.Count() >= 3 && inx[2].ToUpper().Contains("SUCESSO"))
                             {
-                                UploadDocumento(documentoAtributo, documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim());
+                                if (physicalFile)
+                                {
+                                    InsertPhysicalFile(documentoAtributo, documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim());
+                                }
+                                else
+                                {
+                                    InsertEletronicFile(documentoAtributo, documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim());
+                                }
                             }
                             else
                             {
@@ -156,12 +189,12 @@ namespace WebService.SE
                             }
                         }
 
-                        seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", WebConfigurationManager.AppSettings["Attribute_Pages"], documentoAtributo.Paginas.ToString());
-                        seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", WebConfigurationManager.AppSettings["Attribute_Usuario"], documentoAtributo.Usuario.ToString());
+                        seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", attributePages, documentoAtributo.Paginas.ToString());
+                        seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", attributeUsuario, documentoAtributo.Usuario.ToString());
 
-                        if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity_Code"]))
+                        if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
                         {
-                            string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity_Code"]).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
+                            string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
 
                             SEAdministration seAdministration = SEConnection.GetConnectionAdm();
 
@@ -170,15 +203,15 @@ namespace WebService.SE
 
                             var n = seClient.newAccessPermission(documentReturn.IDDOCUMENT,
                                     unityCode + ";" + unityCode,
-                                    int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.UserType"].ToString()),
-                                    WebConfigurationManager.AppSettings["NewAccessPermission.Permission"].ToString(),
-                                    int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString()),
-                                    WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString());
+                                    newAccessPermissionUserType,
+                                    newAccessPermissionPermission,
+                                    newAccessPermissionPermissionType,
+                                    newAccessPermissionFgaddLowerLevel);
                         }
 
                         try
                         {
-                            string returnAssociation = seClient.newDocumentContainerAssociation(WebConfigurationManager.AppSettings["Category_Owner"], documentReturnOwner.IDDOCUMENT, "", WebConfigurationManager.AppSettings["StructID"], documentoAtributo.Categoria, documentoAtributo.Matricula, out long codeAssociation, out string detailAssociation);
+                            string returnAssociation = seClient.newDocumentContainerAssociation(categoryOwner, documentReturnOwner.IDDOCUMENT, "", structID, documentoAtributo.Categoria, documentoAtributo.Matricula, out long codeAssociation, out string detailAssociation);
                         }
                         catch
                         { }
@@ -203,7 +236,7 @@ namespace WebService.SE
             attributeData[] attributes = new attributeData[1];
             attributes[0] = new attributeData
             {
-                IDATTRIBUTE = WebConfigurationManager.AppSettings["Attribute_Registration"],
+                IDATTRIBUTE = attributeRegistration,
                 VLATTRIBUTE = matricula
             };
 
@@ -224,7 +257,7 @@ namespace WebService.SE
             }
         }
 
-        private bool UploadDocumento(DocumentoAtributo Indice, string iddocumento)
+        private bool InsertEletronicFile(DocumentoAtributo Indice, string iddocumento)
         {
             try
             {
@@ -242,6 +275,59 @@ namespace WebService.SE
                 };
 
                 var var = seClient.uploadEletronicFile(iddocumento, "", "", eletronicFiles);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool InsertPhysicalFile(DocumentoAtributo Indice, string iddocumento)
+        {
+            try
+            {
+                #region .: Save File :.
+
+                if (!Directory.Exists(physicalPath))
+                {
+                    Directory.CreateDirectory(physicalPath);
+                }
+
+                if (File.Exists(Path.Combine(physicalPath, Path.GetFileName(Indice.Arquivo.FullName))))
+                {
+                    File.Delete(Path.Combine(physicalPath, Path.GetFileName(Indice.Arquivo.FullName)));
+                }
+
+                File.WriteAllBytes(Path.Combine(physicalPath, Path.GetFileName(Indice.Arquivo.FullName)), Indice.ArquivoBinario);
+
+                #endregion
+
+                #region .: Query :.
+
+                string queryStringInsert = @"INSERT INTO ADINTERFACE (CDINTERFACE, FGIMPORT, CDISOSYSTEM, FGOPTION, NMFIELD01, NMFIELD02, NMFIELD03, NMFIELD04, NMFIELD05, NMFIELD07) VALUES((SELECT COALESCE(MAX(CDINTERFACE),0)+1 FROM ADINTERFACE), 1, 73, 97, '{0}','00','{1}','{2}','{3}','{4}')";
+                string connectionString = WebConfigurationManager.ConnectionStrings["DefaultSesuite"].ConnectionString;
+
+                #endregion
+
+                #region .: Insert Sesuite :.
+
+                using (SqlConnection connectionInsert = new SqlConnection(connectionString))
+                {
+                    var queryInsert = string.Format(queryStringInsert,
+                                                   iddocumento, //Identificador do Documento
+                                                   Path.GetFileName(Indice.Arquivo.FullName), //Nome do Arquivo
+                                                   Indice.Usuario, //Matrícula do Usuário
+                                                   physicalPath, //Caminho do Arquivo
+                                                   Indice.Categoria.Trim() //Identificador da categoria
+                                                   );
+                    SqlCommand commandInsert = new SqlCommand(queryInsert, connectionInsert);
+                    connectionInsert.Open();
+                    commandInsert.ExecuteNonQuery();
+                }
+
+                #endregion
 
                 return true;
             }
