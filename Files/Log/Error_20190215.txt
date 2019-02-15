@@ -1,0 +1,6 @@
+**** Método: submitFile. Erro: Impossível conectar-se ao servidor remoto. Arquivo: 01180587.pdf  ****
+**** Método: submitFile. Erro: O cliente encontrou o tipo de conteúdo de resposta de 'text/html;charset=UTF-8', mas esperava 'text/xml'.
+Falha na solicitação com resposta vazia.. Arquivo: 01180587.pdf  ****
+**** Método: submitFile. Erro: O tempo limite da operação foi atingido. Arquivo: 01180587.pdf  ****
+**** Método: submitFile. Erro: O cliente encontrou o tipo de conteúdo de resposta de 'text/html;charset=UTF-8', mas esperava 'text/xml'.
+Falha na solicitação com resposta vazia.. Arquivo: 01180587.pdf  ****

@@ -18,6 +18,8 @@ namespace WebService
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     public class RequestService : System.Web.Services.WebService
     {
+        readonly string pathLog = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Log"]);
+
         #region .: Methods :.       
 
         #region .: CAPservice .:
@@ -119,8 +121,10 @@ namespace WebService
                         }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+
                     Tentativa++;
                     System.Threading.Thread.Sleep(1000);
                     goto INICIO;
@@ -129,6 +133,7 @@ namespace WebService
             }
             catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
                 throw ex;
                 //sending error to an email id
                 //common.SendError(ex);
@@ -141,23 +146,37 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool checkFile(string fileName, long fileSize)
         {
-            string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
-
-            string filePath = Path.Combine(path, fileName);
-
-            FileInfo fileInfo = new FileInfo(filePath);
-
-            if (fileInfo.Exists)
+            try
             {
-                if (fileInfo.Length == fileSize)
+                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
+
+                string filePath = Path.Combine(path, fileName);
+
+                FileInfo fileInfo = new FileInfo(filePath);
+
+                if (fileInfo.Exists)
                 {
-                    return true;
+                    if (fileInfo.Length == fileSize)
+                    {
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo pronto para ser enviado: {0} ****", fileName) + Environment.NewLine);
+                        return true;
+                    }
+                    else
+                    {
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo corrompido: {0} ****", fileName) + Environment.NewLine);
+                        return false;
+                    }
                 }
                 else
+                {
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo não existe: {0} ****", fileName) + Environment.NewLine);
                     return false;
+                }
             }
-            else
+            catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+
                 return false;
             }
         }
@@ -166,40 +185,55 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool submitFile(string fileName, string registration, string user)
         {
-            string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
-
-            string filePath = Path.Combine(path, fileName);
-
-            if (File.Exists(filePath))
+            try
             {
-                FileInfo fileInfo = new FileInfo(filePath);
+                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
 
-                try
+                string filePath = Path.Combine(path, fileName);
+
+                if (File.Exists(filePath))
                 {
-                    var integrador = new InsegracaoSE();
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                    var documentoAtributo = new DocumentoAtributo
+                    FileInfo fileInfo = new FileInfo(filePath);
+
+                    try
                     {
-                        ArquivoBinario = System.IO.File.ReadAllBytes(filePath),
-                        Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
-                        Matricula = registration,
-                        Usuario = user,
-                        Arquivo = new FileInfo(Guid.NewGuid() + fileInfo.Extension)
-                    };
+                        var integrador = new InsegracaoSE();
 
-                    integrador.InserirDocumentoBinario(documentoAtributo);
+                        var documentoAtributo = new DocumentoAtributo
+                        {
+                            ArquivoBinario = System.IO.File.ReadAllBytes(filePath),
+                            Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
+                            Matricula = registration,
+                            Usuario = user,
+                            Arquivo = new FileInfo(Guid.NewGuid() + fileInfo.Extension)
+                        };
 
-                    File.Delete(filePath);
+                        integrador.InserirDocumentoBinario(documentoAtributo);
 
-                    return true;
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                        File.Delete(filePath);
+
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+                        return false;
+                    }
                 }
-                catch (Exception)
+                else
                 {
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo não existe: {0} ****", fileName) + Environment.NewLine);
                     return false;
                 }
             }
-            else
+            catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+
                 return false;
             }
         }

@@ -245,9 +245,9 @@ namespace WebService.SE
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
         }
 
