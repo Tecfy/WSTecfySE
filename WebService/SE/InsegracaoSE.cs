@@ -27,6 +27,7 @@ namespace WebService.SE
         readonly string structID = WebConfigurationManager.AppSettings["StructID"];
         readonly string categoryPrimaryTitle = WebConfigurationManager.AppSettings["Category_Primary_Title"];
         readonly string attributeRegistration = WebConfigurationManager.AppSettings["Attribute_Registration"];
+        readonly string username = WebConfigurationManager.AppSettings["Username"];
 
         #endregion
 
@@ -318,7 +319,7 @@ namespace WebService.SE
                     var queryInsert = string.Format(queryStringInsert,
                                                    iddocumento, //Identificador do Documento
                                                    Path.GetFileName(Indice.Arquivo.FullName), //Nome do Arquivo
-                                                   Indice.Usuario, //Matrícula do Usuário
+                                                   username, //Matrícula do Usuário
                                                    physicalPath, //Caminho do Arquivo
                                                    Indice.Categoria.Trim() //Identificador da categoria
                                                    );
