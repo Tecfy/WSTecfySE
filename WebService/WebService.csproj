@@ -68,9 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
-    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
-    <None Include="Properties\PublishProfiles\FolderProfile2.pubxml" />
+    <None Include="Properties\PublishProfiles\Homologação SER.pubxml" />
+    <None Include="Properties\PublishProfiles\Homologação.pubxml" />
+    <None Include="Properties\PublishProfiles\Produção SER.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -116,13 +116,7 @@
     <None Include="Web.Hom.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <None Include="Web.Prod.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
     <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.SERProd.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>

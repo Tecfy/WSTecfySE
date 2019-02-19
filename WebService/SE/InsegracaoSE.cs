@@ -13,8 +13,9 @@ namespace WebService.SE
     {
         #region .: Attributes :.
 
-        readonly bool physicalFile = Convert.ToBoolean(WebConfigurationManager.AppSettings["Physical.File.Sesuite"]);
-        readonly string physicalPath = WebConfigurationManager.AppSettings["Physical.Path.Sesuite"];
+        readonly bool physicalFile = Convert.ToBoolean(WebConfigurationManager.AppSettings["Sesuite.Folder.Physical"]);
+        readonly string physicalPath = WebConfigurationManager.AppSettings["Sesuite.Physical.Path"];
+        readonly string username = WebConfigurationManager.AppSettings["Sesuite.Username"];
         readonly string prefix = WebConfigurationManager.AppSettings["Prefix_Category"];
         readonly string categoryOwner = WebConfigurationManager.AppSettings["Category_Owner"];
         readonly string attributePages = WebConfigurationManager.AppSettings["Attribute_Pages"];
@@ -27,7 +28,6 @@ namespace WebService.SE
         readonly string structID = WebConfigurationManager.AppSettings["StructID"];
         readonly string categoryPrimaryTitle = WebConfigurationManager.AppSettings["Category_Primary_Title"];
         readonly string attributeRegistration = WebConfigurationManager.AppSettings["Attribute_Registration"];
-        readonly string username = WebConfigurationManager.AppSettings["Username"];
 
         #endregion
 
@@ -233,28 +233,35 @@ namespace WebService.SE
 
         private documentReturn VerificaDocumentoCadastrado(string matricula, string categoria)
         {
-            SEClient sEClient = SEConnection.GetConnection();
-            attributeData[] attributes = new attributeData[1];
-            attributes[0] = new attributeData
+            try
             {
-                IDATTRIBUTE = attributeRegistration,
-                VLATTRIBUTE = matricula
-            };
+                SEClient sEClient = SEConnection.GetConnection();
+                attributeData[] attributes = new attributeData[1];
+                attributes[0] = new attributeData
+                {
+                    IDATTRIBUTE = attributeRegistration,
+                    VLATTRIBUTE = matricula
+                };
 
-            searchDocumentFilter searchDocumentFilter = new searchDocumentFilter
-            {
-                IDCATEGORY = categoria
-            };
+                searchDocumentFilter searchDocumentFilter = new searchDocumentFilter
+                {
+                    IDCATEGORY = categoria
+                };
 
-            searchDocumentReturn searchDocumentReturn = sEClient.searchDocument(searchDocumentFilter, "", attributes);
+                searchDocumentReturn searchDocumentReturn = sEClient.searchDocument(searchDocumentFilter, "", attributes);
 
-            if (searchDocumentReturn.RESULTS.Count() > 0)
-            {
-                return searchDocumentReturn.RESULTS[0];
+                if (searchDocumentReturn.RESULTS.Count() > 0)
+                {
+                    return searchDocumentReturn.RESULTS[0];
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
 
