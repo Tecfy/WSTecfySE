@@ -207,7 +207,7 @@ namespace WebService
                             Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
                             Matricula = registration,
                             Usuario = user,
-                            Arquivo = new FileInfo(Guid.NewGuid() + fileInfo.Extension)
+                            Arquivo = new FileInfo(Path.GetFileNameWithoutExtension(fileInfo.FullName) + fileInfo.Extension)
                         };
 
                         integrador.InserirDocumentoBinario(documentoAtributo);

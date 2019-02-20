@@ -106,15 +106,6 @@ namespace WebService.SE
                         seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", attributePages, documentoAtributo.Paginas.ToString());
                         seClient.setAttributeValue(documentReturn.IDDOCUMENT, "", attributeUsuario, documentoAtributo.Usuario.ToString());
 
-                        if (physicalFile)
-                        {
-                            InsertPhysicalFile(documentoAtributo, documentReturn.IDDOCUMENT);
-                        }
-                        else
-                        {
-                            InsertEletronicFile(documentoAtributo, documentReturn.IDDOCUMENT);
-                        }
-
                         if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
                         {
                             string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
@@ -138,6 +129,16 @@ namespace WebService.SE
                         }
                         catch
                         { }
+
+                        if (physicalFile)
+                        {
+                            InsertPhysicalFile(documentoAtributo, documentReturn.IDDOCUMENT);
+                        }
+                        else
+                        {
+                            InsertEletronicFile(documentoAtributo, documentReturn.IDDOCUMENT);
+                        }
+
                     }
                 }
 
@@ -154,6 +155,54 @@ namespace WebService.SE
                         {
                             if (inx.Count() >= 3 && inx[2].ToUpper().Contains("SUCESSO"))
                             {
+                                foreach (var item in documentDataReturn.ATTRIBUTTES)
+                                {
+                                    if (item.ATTRIBUTTENAME.Contains(prefix))
+                                    {
+                                        string valor = "";
+                                        if (item.ATTRIBUTTEVALUE.Count() > 0)
+                                        {
+                                            valor = item.ATTRIBUTTEVALUE[0];
+                                        }
+
+                                        try
+                                        {
+                                            seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", item.ATTRIBUTTENAME, valor);
+                                        }
+                                        catch (Exception)
+                                        {
+                                            throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
+                                        }
+                                    }
+                                }
+
+                                seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", attributePages, documentoAtributo.Paginas.ToString());
+                                seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", attributeUsuario, documentoAtributo.Usuario.ToString());
+
+                                if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
+                                {
+                                    string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
+
+                                    SEAdministration seAdministration = SEConnection.GetConnectionAdm();
+
+                                    seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
+                                    seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
+
+                                    var n = seClient.newAccessPermission(documentReturn.IDDOCUMENT,
+                                            unityCode + ";" + unityCode,
+                                            newAccessPermissionUserType,
+                                            newAccessPermissionPermission,
+                                            newAccessPermissionPermissionType,
+                                            newAccessPermissionFgaddLowerLevel);
+                                }
+
+                                try
+                                {
+                                    string returnAssociation = seClient.newDocumentContainerAssociation(categoryOwner, documentReturnOwner.IDDOCUMENT, "", structID, documentoAtributo.Categoria, documentoAtributo.Matricula, out long codeAssociation, out string detailAssociation);
+                                }
+                                catch
+                                { }
+
                                 if (physicalFile)
                                 {
                                     InsertPhysicalFile(documentoAtributo, documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim());
@@ -168,54 +217,6 @@ namespace WebService.SE
                                 throw new Exception(s);
                             }
                         }
-
-                        foreach (var item in documentDataReturn.ATTRIBUTTES)
-                        {
-                            if (item.ATTRIBUTTENAME.Contains(prefix))
-                            {
-                                string valor = "";
-                                if (item.ATTRIBUTTEVALUE.Count() > 0)
-                                {
-                                    valor = item.ATTRIBUTTEVALUE[0];
-                                }
-
-                                try
-                                {
-                                    seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", item.ATTRIBUTTENAME, valor);
-                                }
-                                catch (Exception)
-                                {
-                                    throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
-                                }
-                            }
-                        }
-
-                        seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", attributePages, documentoAtributo.Paginas.ToString());
-                        seClient.setAttributeValue(documentoAtributo.Matricula.Trim() + "-" + documentoAtributo.Categoria.Trim(), "", attributeUsuario, documentoAtributo.Usuario.ToString());
-
-                        if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
-                        {
-                            string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
-
-                            SEAdministration seAdministration = SEConnection.GetConnectionAdm();
-
-                            seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
-                            seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
-
-                            var n = seClient.newAccessPermission(documentReturn.IDDOCUMENT,
-                                    unityCode + ";" + unityCode,
-                                    newAccessPermissionUserType,
-                                    newAccessPermissionPermission,
-                                    newAccessPermissionPermissionType,
-                                    newAccessPermissionFgaddLowerLevel);
-                        }
-
-                        try
-                        {
-                            string returnAssociation = seClient.newDocumentContainerAssociation(categoryOwner, documentReturnOwner.IDDOCUMENT, "", structID, documentoAtributo.Categoria, documentoAtributo.Matricula, out long codeAssociation, out string detailAssociation);
-                        }
-                        catch
-                        { }
                     }
                 }
 
@@ -323,16 +324,13 @@ namespace WebService.SE
 
                 using (SqlConnection connectionInsert = new SqlConnection(connectionString))
                 {
-                    var queryInsert = string.Format(queryStringInsert,
-                                                   iddocumento, //Identificador do Documento
-                                                   Path.GetFileName(Indice.Arquivo.FullName), //Nome do Arquivo
-                                                   username, //Matrícula do Usuário
-                                                   physicalPath, //Caminho do Arquivo
-                                                   Indice.Categoria.Trim() //Identificador da categoria
-                                                   );
-                    SqlCommand commandInsert = new SqlCommand(queryInsert, connectionInsert);
-                    connectionInsert.Open();
-                    commandInsert.ExecuteNonQuery();
+                    var queryInsert = string.Format(queryStringInsert, iddocumento /*Identificador do Documento*/, Path.GetFileName(Indice.Arquivo.FullName) /*Nome do Arquivo*/, username /*Matrícula do Usuário*/, physicalPath /*Caminho do Arquivo*/, Indice.Categoria.Trim() /*Identificador da categoria*/);
+
+                    using (SqlCommand commandInsert = new SqlCommand(queryInsert, connectionInsert))
+                    {
+                        connectionInsert.Open();
+                        commandInsert.ExecuteNonQuery();
+                    }
                 }
 
                 #endregion
