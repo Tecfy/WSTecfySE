@@ -33,51 +33,24 @@ namespace WebService
 
             dadosAluno.RetornoStudent = new List<Student>();
 
-            if (integrador.VerificarPermissaoDocumento(ra, usuario))
+            if (integrador.VerifyDocumentPermission(ra, usuario))
             {
-                var it = integrador.VerificarPropriedadesDocumento(ra);
-                if (string.IsNullOrEmpty(it.ERROR))
+                var documentDataReturn = integrador.GetDocumentProperties(ra);
+                if (string.IsNullOrEmpty(documentDataReturn.ERROR))
                 {
                     Student estudante = new Student
                     {
-                        RA = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        CPFALUNO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        NOMECURSO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        CODCENTRO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        NOMEALUNO = it.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? it.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                        RA = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                        CPFALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                        NOMECURSO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                        CODCENTRO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                        NOMEALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
                     };
                     dadosAluno.RetornoStudent.Add(estudante);
                 }
             }
 
             return dadosAluno;
-        }
-
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        [WebMethod]
-        public bool insertDocumentBase64(string arquivo, String Matricula, string categoria, string ip, string usuario, string extensao)
-        {
-            try
-            {
-                var integrador = new InsegracaoSE();
-
-                var documentoAtributo = new DocumentoAtributo
-                {
-                    ArquivoBinario = Convert.FromBase64String(arquivo),
-                    Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
-                    Matricula = Matricula,
-                    Usuario = usuario,
-                    Arquivo = new FileInfo(Guid.NewGuid() + extensao)
-                };
-
-                integrador.InserirDocumentoBinario(documentoAtributo);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
@@ -195,22 +168,21 @@ namespace WebService
                 {
                     File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                    FileInfo fileInfo = new FileInfo(filePath);
-
                     try
                     {
                         var integrador = new InsegracaoSE();
 
                         var documentoAtributo = new DocumentoAtributo
                         {
-                            ArquivoBinario = System.IO.File.ReadAllBytes(filePath),
-                            Categoria = WebConfigurationManager.AppSettings["Category_Primary"],
-                            Matricula = registration,
-                            Usuario = user,
-                            Arquivo = new FileInfo(Path.GetFileNameWithoutExtension(fileInfo.FullName) + fileInfo.Extension)
+                            FileBinary = System.IO.File.ReadAllBytes(filePath),
+                            CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
+                            CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
+                            Registration = registration,
+                            User = user,
+                            Extension = Path.GetExtension(filePath)
                         };
 
-                        integrador.InserirDocumentoBinario(documentoAtributo);
+                        integrador.InsertBinaryDocument(documentoAtributo);
 
                         File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 

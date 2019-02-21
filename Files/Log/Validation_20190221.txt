@@ -1,0 +1,5 @@
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 21/02/2019 17:50:52 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 21/02/2019 17:51:27 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 21/02/2019 17:53:07 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 21/02/2019 17:57:46 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Fim: 21/02/2019 18:01:43 ****
