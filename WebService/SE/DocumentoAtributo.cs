@@ -19,7 +19,7 @@ namespace WebService.SE
 
         public int CurrentVersion { get; set; }
 
-        public string OwnerDocumentId
+        public string DocumentIdOwner
         {
             get
             {
@@ -27,7 +27,7 @@ namespace WebService.SE
             }
         }
 
-        public string PrimaryDocumentId
+        public string DocumentIdPrimary
         {
             get
             {
@@ -39,7 +39,7 @@ namespace WebService.SE
         {
             get
             {
-                return PrimaryDocumentId + "-" + User + "-" + DateTime.Now.ToString("ddMMyyyyhhmmss") + Extension;
+                return DocumentIdPrimary + "-" + User + "-" + DateTime.Now.ToString("ddMMyyyyhhmmss") + Extension;
             }
         }
 

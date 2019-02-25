@@ -70,10 +70,10 @@ namespace WebService.SE
                 // Checks the current document version
                 documentoAtributo.CurrentVersion = GetPrimaryDocuments(documentoAtributo.Registration, documentoAtributo.CategoryPrimary);
 
-                documentDataReturn documentDataReturn = GetDocumentProperties(documentoAtributo.OwnerDocumentId);
+                documentDataReturn documentDataReturn = GetDocumentProperties(documentoAtributo.DocumentIdOwner);
                 if (documentDataReturn.ATTRIBUTTES.Count() > 0)
                 {
-                    var response = seClient.newDocument(documentoAtributo.CategoryPrimary, documentoAtributo.PrimaryDocumentId, categoryPrimaryTitle, "", "", "", documentoAtributo.User, null, 0);
+                    var response = seClient.newDocument(documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, categoryPrimaryTitle, "", "", "", documentoAtributo.User, null, 0);
 
                     var responseArray = response.Split(':');
                     if (responseArray.Count() > 0)
@@ -97,92 +97,9 @@ namespace WebService.SE
             }
         }
 
-        private void InsertDataDocument(DocumentoAtributo documentoAtributo, documentDataReturn documentDataReturn)
-        {
-            try
-            {
-
-                foreach (var item in documentDataReturn.ATTRIBUTTES)
-                {
-                    if (item.ATTRIBUTTENAME.Contains(prefix))
-                    {
-                        string valor = "";
-                        if (item.ATTRIBUTTEVALUE.Count() > 0)
-                        {
-                            valor = item.ATTRIBUTTEVALUE[0];
-                        }
-
-                        try
-                        {
-                            seClient.setAttributeValue(documentoAtributo.PrimaryDocumentId, "", item.ATTRIBUTTENAME, valor);
-                        }
-                        catch (Exception)
-                        {
-                            throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
-                        }
-                    }
-                }
-
-                seClient.setAttributeValue(documentoAtributo.PrimaryDocumentId, "", attributePages, documentoAtributo.Paginas.ToString());
-                seClient.setAttributeValue(documentoAtributo.PrimaryDocumentId, "", attributeUsuario, documentoAtributo.User.ToString());
-
-                if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
-                {
-                    string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
-
-                    seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
-                    seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
-
-                    seClient.newAccessPermission(documentoAtributo.PrimaryDocumentId, unityCode + ";" + unityCode, newAccessPermissionUserType, newAccessPermissionPermission, newAccessPermissionPermissionType, newAccessPermissionFgaddLowerLevel);
-                }
-
-                try
-                {
-                    seClient.newDocumentContainerAssociation(documentoAtributo.CategoryOwner, documentoAtributo.PrimaryDocumentId, "", structID, documentoAtributo.CategoryPrimary, documentoAtributo.Registration, out long codeAssociation, out string detailAssociation);
-                }
-                catch
-                { }
-
-                if (physicalFile)
-                {
-                    InsertPhysicalFile(documentoAtributo);
-                }
-                else
-                {
-                    InsertEletronicFile(documentoAtributo);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         #endregion
 
         #region .: Private :.
-
-        private int GetPrimaryDocuments(string registration, string category)
-        {
-            try
-            {
-                attributeData[] attributes = new attributeData[1];
-                attributes[0] = new attributeData { IDATTRIBUTE = attributeRegistration, VLATTRIBUTE = registration };
-
-                searchDocumentFilter searchDocumentFilter = new searchDocumentFilter { IDCATEGORY = category };
-
-                searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributes);
-
-                if (searchDocumentReturn.RESULTS.Count() > 0)
-                    return searchDocumentReturn.RESULTS.Count();
-                else
-                    return 0;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
         private documentReturn CheckRegisteredDocument(string registration, string category)
         {
@@ -206,6 +123,88 @@ namespace WebService.SE
             }
         }
 
+        private int GetPrimaryDocuments(string registration, string category)
+        {
+            try
+            {
+                attributeData[] attributes = new attributeData[1];
+                attributes[0] = new attributeData { IDATTRIBUTE = attributeRegistration, VLATTRIBUTE = registration };
+
+                searchDocumentFilter searchDocumentFilter = new searchDocumentFilter { IDCATEGORY = category };
+
+                searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributes);
+
+                if (searchDocumentReturn.RESULTS.Count() > 0)
+                    return searchDocumentReturn.RESULTS.Count();
+                else
+                    return 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private void InsertDataDocument(DocumentoAtributo documentoAtributo, documentDataReturn documentDataReturn)
+        {
+            try
+            {
+                foreach (var item in documentDataReturn.ATTRIBUTTES)
+                {
+                    if (item.ATTRIBUTTENAME.Contains(prefix))
+                    {
+                        string valor = "";
+                        if (item.ATTRIBUTTEVALUE.Count() > 0)
+                        {
+                            valor = item.ATTRIBUTTEVALUE[0];
+                        }
+
+                        try
+                        {
+                            seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", item.ATTRIBUTTENAME, valor);
+                        }
+                        catch (Exception)
+                        {
+                            throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
+                        }
+                    }
+                }
+
+                seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributePages, documentoAtributo.Paginas.ToString());
+                seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributeUsuario, documentoAtributo.User.ToString());
+
+                if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
+                {
+                    string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
+
+                    seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
+                    seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
+
+                    seClient.newAccessPermission(documentoAtributo.DocumentIdPrimary, unityCode + ";" + unityCode, newAccessPermissionUserType, newAccessPermissionPermission, newAccessPermissionPermissionType, newAccessPermissionFgaddLowerLevel);
+                }
+
+                try
+                {
+                    seClient.newDocumentContainerAssociation(documentoAtributo.CategoryOwner, documentoAtributo.DocumentIdOwner, "", structID, documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, out long codeAssociation, out string detailAssociation);
+                }
+                catch
+                { }
+
+                if (physicalFile)
+                {
+                    InsertPhysicalFile(documentoAtributo);
+                }
+                else
+                {
+                    InsertEletronicFile(documentoAtributo);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         private bool InsertEletronicFile(DocumentoAtributo Indice)
         {
             try
@@ -219,7 +218,7 @@ namespace WebService.SE
                     NMFILE = Indice.FileName
                 };
 
-                var var = seClient.uploadEletronicFile(Indice.PrimaryDocumentId, "", Indice.User, eletronicFiles);
+                var var = seClient.uploadEletronicFile(Indice.DocumentIdPrimary, "", Indice.User, eletronicFiles);
 
                 return true;
             }
@@ -229,7 +228,7 @@ namespace WebService.SE
             }
         }
 
-        public bool InsertPhysicalFile(DocumentoAtributo Indice)
+        private bool InsertPhysicalFile(DocumentoAtributo Indice)
         {
             try
             {
@@ -261,7 +260,7 @@ namespace WebService.SE
                 using (SqlConnection connectionInsert = new SqlConnection(connectionString))
                 {
                     var queryInsert = string.Format(queryStringInsert,
-                        Indice.PrimaryDocumentId /*Identificador do Documento*/,
+                        Indice.DocumentIdPrimary /*Identificador do Documento*/,
                         Indice.FileName /*Nome do Arquivo*/,
                         Indice.User /*Matrícula do Usuário*/,
                         physicalPathSE + Indice.FileName,

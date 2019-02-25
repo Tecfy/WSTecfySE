@@ -1,0 +1,2 @@
+**** Método: submitFile. Erro: O cliente encontrou o tipo de conteúdo de resposta de 'text/html;charset=UTF-8', mas esperava 'text/xml'.
+Falha na solicitação com resposta vazia.. Arquivo: 01180587.pdf  ****
