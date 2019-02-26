@@ -39,7 +39,7 @@ namespace WebService.SE
         {
             get
             {
-                return DocumentIdPrimary + "-" + User + "-" + DateTime.Now.ToString("ddMMyyyyhhmmss") + Extension;
+                return DocumentIdPrimary + "-" + DateTime.Now.ToString("ddMMyyyyhhmmss") + Extension;
             }
         }
 

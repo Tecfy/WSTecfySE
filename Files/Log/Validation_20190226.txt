@@ -1,0 +1,12 @@
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Inicio: 26/02/2019 13:18:17 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Fim: 26/02/2019 13:18:34 ****
+**** Método: submitFile. Arquivo não existe: Teste.pdf ****
+**** Método: submitFile. Arquivo não existe: Teste.pdf ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Inicio: 26/02/2019 13:21:19 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Fim: 26/02/2019 13:21:35 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Inicio: 26/02/2019 13:23:59 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Inicio: 26/02/2019 13:35:03 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Inicio: 26/02/2019 13:37:21 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Fim: 26/02/2019 13:37:54 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Inicio: 26/02/2019 13:56:25 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: Teste.pdf. Fim: 26/02/2019 13:56:57 ****

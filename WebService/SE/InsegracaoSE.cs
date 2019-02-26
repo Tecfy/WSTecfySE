@@ -135,9 +135,24 @@ namespace WebService.SE
                 searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributes);
 
                 if (searchDocumentReturn.RESULTS.Count() > 0)
-                    return searchDocumentReturn.RESULTS.Count();
+                {
+                    var s = searchDocumentReturn.RESULTS.OrderByDescending(x => x.IDDOCUMENT).FirstOrDefault().IDDOCUMENT.Split('-');
+                    if (s.Count() == 3)
+                    {
+                        int i = 0;
+                        int.TryParse(s[2], out i);
+
+                        return i;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
                 else
+                {
                     return 0;
+                }
             }
             catch (Exception ex)
             {
