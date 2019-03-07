@@ -179,7 +179,8 @@ namespace WebService
                             CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
                             Registration = registration,
                             User = user,
-                            Extension = Path.GetExtension(filePath)
+                            Extension = Path.GetExtension(filePath),
+                            Now = DateTime.Now
                         };
 
                         integrador.InsertBinaryDocument(documentoAtributo);
