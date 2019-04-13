@@ -65,7 +65,7 @@ namespace WebService
 
                 // Setting the file location to be saved in the server.
                 // Reading from the web.config file
-                if (Directory.Exists(path))
+                if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
@@ -123,6 +123,11 @@ namespace WebService
             {
                 string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
 
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
                 string filePath = Path.Combine(path, fileName);
 
                 FileInfo fileInfo = new FileInfo(filePath);
@@ -161,39 +166,60 @@ namespace WebService
             try
             {
                 string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
+                string pathDossier = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document"]);
+
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                if (!Directory.Exists(pathDossier))
+                {
+                    Directory.CreateDirectory(pathDossier);
+                }
 
                 string filePath = Path.Combine(path, fileName);
 
                 if (File.Exists(filePath))
                 {
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-
-                    try
+                    if (Path.GetExtension(filePath) == ".pdf")
                     {
-                        var integrador = new InsegracaoSE();
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                        var documentoAtributo = new DocumentoAtributo
+                        try
                         {
-                            FileBinary = System.IO.File.ReadAllBytes(filePath),
-                            CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
-                            CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
-                            Registration = registration,
-                            User = user,
-                            Extension = Path.GetExtension(filePath),
-                            Now = DateTime.Now
-                        };
+                            var integrador = new InsegracaoSE();
 
-                        integrador.InsertBinaryDocument(documentoAtributo);
+                            var documentoAtributo = new DocumentoAtributo
+                            {
+                                FileBinary = System.IO.File.ReadAllBytes(filePath),
+                                CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
+                                CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
+                                Registration = registration,
+                                User = user,
+                                Extension = Path.GetExtension(filePath),
+                                Now = DateTime.Now
+                            };
 
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                            integrador.InsertBinaryDocument(documentoAtributo, out string document);
 
-                        File.Delete(filePath);
+                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                        return true;
+                            document = Path.Combine(pathDossier, document + ".pdf");
+
+                            File.Move(filePath, document);
+
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+                            return false;
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sem extensão: {0} ****", fileName) + Environment.NewLine);
                         return false;
                     }
                 }

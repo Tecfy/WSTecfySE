@@ -1,0 +1,12 @@
+**** Método: submitFile. Arquivo não existe: 01180587.pdf ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 11/04/2019 22:59:33 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 11/04/2019 23:02:57 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Fim: 11/04/2019 23:04:03 ****
+**** Método: submitFile. Arquivo sem extensão: 01180587 ****
+**** Método: submitFile. Arquivo sem extensão: 01180587 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 11/04/2019 23:12:39 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Fim: 11/04/2019 23:13:20 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 11/04/2019 23:15:49 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Fim: 11/04/2019 23:16:06 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Inicio: 11/04/2019 23:16:57 ****
+**** Método: submitFile. Arquivo sendo enviado para o SE: 01180587.pdf. Fim: 11/04/2019 23:17:08 ****

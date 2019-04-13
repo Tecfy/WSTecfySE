@@ -59,7 +59,7 @@ namespace WebService.SE
             return false;
         }
 
-        public bool InsertBinaryDocument(DocumentoAtributo documentoAtributo)
+        public bool InsertBinaryDocument(DocumentoAtributo documentoAtributo, out string document)
         {
             try
             {
@@ -69,6 +69,8 @@ namespace WebService.SE
 
                 // Checks the current document version
                 documentoAtributo.CurrentVersion = GetPrimaryDocuments(documentoAtributo.Registration, documentoAtributo.CategoryPrimary);
+
+                document = documentoAtributo.DocumentIdPrimary;
 
                 documentDataReturn documentDataReturn = GetDocumentProperties(documentoAtributo.DocumentIdOwner);
                 if (documentDataReturn.ATTRIBUTTES.Count() > 0)
