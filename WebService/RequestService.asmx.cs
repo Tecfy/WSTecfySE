@@ -18,7 +18,11 @@ namespace WebService
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     public class RequestService : System.Web.Services.WebService
     {
+        readonly string pathIn = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
+        readonly string pathOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Out"]);
         readonly string pathLog = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Log"]);
+        readonly string pathDocument = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document"]);
+        readonly string extension = WebConfigurationManager.AppSettings["Extension"];
 
         #region .: Methods :.       
 
@@ -57,20 +61,15 @@ namespace WebService
         [WebMethod(EnableSession = true)]
         public bool sendFile(string fileName, byte[] buffer, long offset)
         {
-            //FileName
             bool retVal = false;
             try
             {
-                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
+                //Create Directories
+                CreateFolder();
 
                 // Setting the file location to be saved in the server.
                 // Reading from the web.config file
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-
-                string FilePath = Path.Combine(path, fileName);
+                string FilePath = Path.Combine(pathIn, fileName);
 
                 // New file, create an empty file
                 if (offset == 0)
@@ -108,8 +107,6 @@ namespace WebService
             {
                 File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
                 throw ex;
-                //sending error to an email id
-                //common.SendError(ex);
             }
 
             return retVal;
@@ -121,14 +118,10 @@ namespace WebService
         {
             try
             {
-                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
+                //Cria os Diretorios
+                CreateFolder();
 
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-
-                string filePath = Path.Combine(path, fileName);
+                string filePath = Path.Combine(pathIn, fileName);
 
                 FileInfo fileInfo = new FileInfo(filePath);
 
@@ -165,26 +158,27 @@ namespace WebService
         {
             try
             {
-                string path = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path"]);
-                string pathDossier = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document"]);
+                //Cria os Diretorios
+                CreateFolder();
 
-                if (!Directory.Exists(path))
+                string filePathIn = Path.Combine(pathIn, fileName);
+                string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
+
+
+                if (File.Exists(filePathIn))
                 {
-                    Directory.CreateDirectory(path);
-                }
-
-                if (!Directory.Exists(pathDossier))
-                {
-                    Directory.CreateDirectory(pathDossier);
-                }
-
-                string filePath = Path.Combine(path, fileName);
-
-                if (File.Exists(filePath))
-                {
-                    if (Path.GetExtension(filePath) == ".pdf")
+                    if (Path.GetExtension(filePathIn) == ".pdf" || Path.GetExtension(filePathIn) == ".cry")
                     {
                         File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                        if (Path.GetExtension(filePathIn) == ".cry")
+                        {
+                            Encrypt.DecryptFile(filePathIn, filePathOut, WebConfigurationManager.AppSettings["Key"]);
+                        }
+                        else if (Path.GetExtension(filePathIn) == ".pdf")
+                        {
+                            File.Copy(filePathIn, filePathOut);
+                        }
 
                         try
                         {
@@ -192,22 +186,23 @@ namespace WebService
 
                             var documentoAtributo = new DocumentoAtributo
                             {
-                                FileBinary = System.IO.File.ReadAllBytes(filePath),
+                                FileBinary = File.ReadAllBytes(filePathOut),
                                 CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
                                 CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
                                 Registration = registration,
                                 User = user,
-                                Extension = Path.GetExtension(filePath),
+                                Extension = extension,
                                 Now = DateTime.Now
                             };
 
-                            integrador.InsertBinaryDocument(documentoAtributo, out string document);
+                            integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
+
+                            fileDocument = Path.Combine(pathDocument, fileDocument + extension);
+
+                            File.Delete(filePathIn);
+                            File.Move(filePathOut, fileDocument);
 
                             File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-
-                            document = Path.Combine(pathDossier, document + ".pdf");
-
-                            File.Move(filePath, document);
 
                             return true;
                         }
@@ -219,7 +214,7 @@ namespace WebService
                     }
                     else
                     {
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sem extensão: {0} ****", fileName) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. O arquivo não possui as extensões permitidas: {0} ****", fileName) + Environment.NewLine);
                         return false;
                     }
                 }
@@ -336,5 +331,23 @@ namespace WebService
         #endregion
 
         #endregion
+
+        #region .: Helper :.
+
+        private void CreateFolder()
+        {
+            var folders = new string[] { "Path.In", "Path.Out", "Path.Log", "Path.Document" };
+
+            foreach (var item in folders)
+            {
+                var pathInput = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings[item]).ToString();
+                if (!Directory.Exists(pathInput))
+                {
+                    Directory.CreateDirectory(pathInput);
+                }
+            }
+        }
+
+        #endregion 
     }
 }
