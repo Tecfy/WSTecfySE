@@ -76,10 +76,10 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Web References\com.softexpert.tecfy.adm\adm_ws.wsdl" />
-    <Content Include="Web References\com.softexpert.tecfy.adm\Reference.map">
+    <None Include="Web References\com.softexpert.tecfy.adm\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
+    </None>
     <None Include="Web References\com.softexpert.tecfy\dc_ws.wsdl" />
     <Content Include="RequestService.asmx" />
     <Content Include="Web References\com.softexpert.tecfy\documentDataReturn.datasource">

@@ -23,7 +23,7 @@ namespace WebService.com.softexpert.tecfy {
     
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="DocumentoBinding", Namespace="urn:document")]
@@ -657,7 +657,7 @@ namespace WebService.com.softexpert.tecfy {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:document#newDocument", RequestNamespace="urn:document", ResponseNamespace="urn:document", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlElementAttribute("return")]
-        public string newDocument(string idcategory, string iddocument, string title, string dsresume, string dtdocument, string attributes, string iduser, [System.Xml.Serialization.XmlArrayItemAttribute("item", IsNullable=false)] participantsData[] participants, int fgmodel) {
+        public string newDocument(string idcategory, string iddocument, string title, string dsresume, string dtdocument, string attributes, string iduser, [System.Xml.Serialization.XmlArrayItemAttribute("item", IsNullable=false)] participantsData[] participants, int fgmodel, [System.Xml.Serialization.XmlArrayItemAttribute("item", IsNullable=false)] eletronicFile[] file) {
             object[] results = this.Invoke("newDocument", new object[] {
                         idcategory,
                         iddocument,
@@ -667,17 +667,18 @@ namespace WebService.com.softexpert.tecfy {
                         attributes,
                         iduser,
                         participants,
-                        fgmodel});
+                        fgmodel,
+                        file});
             return ((string)(results[0]));
         }
         
         /// <remarks/>
-        public void newDocumentAsync(string idcategory, string iddocument, string title, string dsresume, string dtdocument, string attributes, string iduser, participantsData[] participants, int fgmodel) {
-            this.newDocumentAsync(idcategory, iddocument, title, dsresume, dtdocument, attributes, iduser, participants, fgmodel, null);
+        public void newDocumentAsync(string idcategory, string iddocument, string title, string dsresume, string dtdocument, string attributes, string iduser, participantsData[] participants, int fgmodel, eletronicFile[] file) {
+            this.newDocumentAsync(idcategory, iddocument, title, dsresume, dtdocument, attributes, iduser, participants, fgmodel, file, null);
         }
         
         /// <remarks/>
-        public void newDocumentAsync(string idcategory, string iddocument, string title, string dsresume, string dtdocument, string attributes, string iduser, participantsData[] participants, int fgmodel, object userState) {
+        public void newDocumentAsync(string idcategory, string iddocument, string title, string dsresume, string dtdocument, string attributes, string iduser, participantsData[] participants, int fgmodel, eletronicFile[] file, object userState) {
             if ((this.newDocumentOperationCompleted == null)) {
                 this.newDocumentOperationCompleted = new System.Threading.SendOrPostCallback(this.OnnewDocumentOperationCompleted);
             }
@@ -690,7 +691,8 @@ namespace WebService.com.softexpert.tecfy {
                         attributes,
                         iduser,
                         participants,
-                        fgmodel}, this.newDocumentOperationCompleted, userState);
+                        fgmodel,
+                        file}, this.newDocumentOperationCompleted, userState);
         }
         
         private void OnnewDocumentOperationCompleted(object arg) {
@@ -953,28 +955,30 @@ namespace WebService.com.softexpert.tecfy {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:document#viewDocumentData", RequestNamespace="urn:document", ResponseNamespace="urn:document", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlElementAttribute("return")]
-        public documentDataReturn viewDocumentData(string iddocument, string idrevision, string iduser) {
+        public documentDataReturn viewDocumentData(string iddocument, string idrevision, string iduser, string idcategory) {
             object[] results = this.Invoke("viewDocumentData", new object[] {
                         iddocument,
                         idrevision,
-                        iduser});
+                        iduser,
+                        idcategory});
             return ((documentDataReturn)(results[0]));
         }
         
         /// <remarks/>
-        public void viewDocumentDataAsync(string iddocument, string idrevision, string iduser) {
-            this.viewDocumentDataAsync(iddocument, idrevision, iduser, null);
+        public void viewDocumentDataAsync(string iddocument, string idrevision, string iduser, string idcategory) {
+            this.viewDocumentDataAsync(iddocument, idrevision, iduser, idcategory, null);
         }
         
         /// <remarks/>
-        public void viewDocumentDataAsync(string iddocument, string idrevision, string iduser, object userState) {
+        public void viewDocumentDataAsync(string iddocument, string idrevision, string iduser, string idcategory, object userState) {
             if ((this.viewDocumentDataOperationCompleted == null)) {
                 this.viewDocumentDataOperationCompleted = new System.Threading.SendOrPostCallback(this.OnviewDocumentDataOperationCompleted);
             }
             this.InvokeAsync("viewDocumentData", new object[] {
                         iddocument,
                         idrevision,
-                        iduser}, this.viewDocumentDataOperationCompleted, userState);
+                        iduser,
+                        idcategory}, this.viewDocumentDataOperationCompleted, userState);
         }
         
         private void OnviewDocumentDataOperationCompleted(object arg) {
@@ -1088,7 +1092,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1146,7 +1150,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1167,7 +1171,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1201,7 +1205,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1440,7 +1444,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1497,7 +1501,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1543,7 +1547,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1576,7 +1580,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1909,7 +1913,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1966,7 +1970,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1988,7 +1992,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2141,7 +2145,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2174,7 +2178,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2207,7 +2211,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2276,7 +2280,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2333,7 +2337,7 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.2612.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2379,11 +2383,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void newCaptureInstanceCompletedEventHandler(object sender, newCaptureInstanceCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class newCaptureInstanceCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2437,11 +2441,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void cancelDocumentCompletedEventHandler(object sender, cancelDocumentCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class cancelDocumentCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2463,11 +2467,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void checkAccessPermissionCompletedEventHandler(object sender, checkAccessPermissionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class checkAccessPermissionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2489,11 +2493,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void deleteAccessPermissionCompletedEventHandler(object sender, deleteAccessPermissionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class deleteAccessPermissionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2515,11 +2519,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void deleteDocumentCompletedEventHandler(object sender, deleteDocumentCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class deleteDocumentCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2541,11 +2545,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void deleteRevisionCompletedEventHandler(object sender, deleteRevisionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class deleteRevisionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2567,11 +2571,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void downloadEletronicFileCompletedEventHandler(object sender, downloadEletronicFileCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class downloadEletronicFileCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2593,11 +2597,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void editDocumentCompletedEventHandler(object sender, editDocumentCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class editDocumentCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2619,11 +2623,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void getKeyWordsCompletedEventHandler(object sender, getKeyWordsCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class getKeyWordsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2645,11 +2649,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void getKeyWordsDataCompletedEventHandler(object sender, getKeyWordsDataCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class getKeyWordsDataCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2671,11 +2675,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void listAccessPermissionCompletedEventHandler(object sender, listAccessPermissionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class listAccessPermissionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2697,11 +2701,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void listPendencyDocumentCompletedEventHandler(object sender, listPendencyDocumentCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class listPendencyDocumentCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2723,11 +2727,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void newAccessPermissionCompletedEventHandler(object sender, newAccessPermissionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class newAccessPermissionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2749,11 +2753,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void newDocumentCompletedEventHandler(object sender, newDocumentCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class newDocumentCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2775,11 +2779,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void newRevisionCompletedEventHandler(object sender, newRevisionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class newRevisionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2801,11 +2805,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void releasePendencyDocumentCompletedEventHandler(object sender, releasePendencyDocumentCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class releasePendencyDocumentCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2827,11 +2831,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void searchAccessAuditCompletedEventHandler(object sender, searchAccessAuditCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class searchAccessAuditCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2853,11 +2857,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void searchCategoryCompletedEventHandler(object sender, searchCategoryCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class searchCategoryCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2879,11 +2883,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void searchDocumentCompletedEventHandler(object sender, searchDocumentCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class searchDocumentCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2905,11 +2909,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void setAttributeValueCompletedEventHandler(object sender, setAttributeValueCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class setAttributeValueCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2931,11 +2935,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void uploadEletronicFileCompletedEventHandler(object sender, uploadEletronicFileCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class uploadEletronicFileCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2957,11 +2961,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void viewDocumentDataCompletedEventHandler(object sender, viewDocumentDataCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class viewDocumentDataCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -2983,11 +2987,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void newDocumentContainerAssociationCompletedEventHandler(object sender, newDocumentContainerAssociationCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class newDocumentContainerAssociationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -3025,11 +3029,11 @@ namespace WebService.com.softexpert.tecfy {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void deleteDocumentContainerAssociationCompletedEventHandler(object sender, deleteDocumentContainerAssociationCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class deleteDocumentContainerAssociationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {

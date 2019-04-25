@@ -36,7 +36,7 @@ namespace WebService.SE
 
         public documentDataReturn GetDocumentProperties(string documentId)
         {
-            return seClient.viewDocumentData(documentId, "", "");
+            return seClient.viewDocumentData(documentId, "", "", "");
         }
 
         public bool VerifyDocumentPermission(string iddocumento, string usuario)
@@ -75,7 +75,7 @@ namespace WebService.SE
                 documentDataReturn documentDataReturn = GetDocumentProperties(documentoAtributo.DocumentIdOwner);
                 if (documentDataReturn.ATTRIBUTTES.Count() > 0)
                 {
-                    var response = seClient.newDocument(documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, categoryPrimaryTitle, "", "", "", documentoAtributo.User, null, 0);
+                    var response = seClient.newDocument(documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, categoryPrimaryTitle, "", "", "", documentoAtributo.User, null, 0, null);
 
                     var responseArray = response.Split(':');
                     if (responseArray.Count() > 0)

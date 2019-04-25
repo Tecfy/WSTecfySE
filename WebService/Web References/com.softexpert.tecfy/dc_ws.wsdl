@@ -183,6 +183,7 @@
           <xsd:element name="iduser" type="xsd:string" />
           <xsd:element name="participants" type="tns:participantsArray" />
           <xsd:element name="fgmodel" type="xsd:int" />
+          <xsd:element name="file" type="tns:eletronicFileArray" />
         </xsd:all>
       </xsd:complexType>
       <xsd:complexType name="newDocumentResponseType">
@@ -281,6 +282,7 @@
           <xsd:element name="iddocument" type="xsd:string" />
           <xsd:element name="idrevision" type="xsd:string" />
           <xsd:element name="iduser" type="xsd:string" />
+          <xsd:element name="idcategory" type="xsd:string" />
         </xsd:all>
       </xsd:complexType>
       <xsd:complexType name="viewDocumentDataResponseType">
@@ -951,6 +953,10 @@
             SEQUENCE: SequÃªncia. Ex: 2, 2, 2, 2
             QTDEADLINE: Prazo (dias). Ex: 5;
          FGMODEL        -&gt; Flag Arquivo modelo''. Ex: 1 = Marcado / 2 = Desmarcado &lt;BR&gt;
+         FILE           -&gt; Array Arquivos; &lt;BR&gt;
+             NMFILE: String; Nome do arquivo;
+             BINFILE: Stream; BinÃ¡rio do arquivo eletrÃ´nico;
+             CONTAINER: String; Identificador do container de arquivo complexo;&lt;BR&gt;
           Em caso de SUCESSO: Retorna uma mensagem de Â´1: OperaÃ§Ã£o realizada com sucesso.Â´. &lt;BR&gt;Em caso de FALHA, retorna uma mensagem com o erro ocorrido. &lt;BR&gt;
           *Requerido. &lt;BR&gt;</documentation>
       <wsdl:input message="tns:newDocumentRequest" />

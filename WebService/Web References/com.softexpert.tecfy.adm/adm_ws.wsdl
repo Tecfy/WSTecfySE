@@ -112,6 +112,36 @@
           <xsd:element name="RecordKey" type="xsd:string" />
         </xsd:all>
       </xsd:complexType>
+      <xsd:complexType name="importUserV2RequestType">
+        <xsd:all>
+          <xsd:element name="UserId" type="xsd:string" />
+          <xsd:element name="UserName" type="xsd:string" />
+          <xsd:element name="UserLogin" type="xsd:string" />
+          <xsd:element name="UserPassword" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserCounterSign" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserLanguage" type="xsd:string" />
+          <xsd:element minOccurs="0" name="IsActive" type="xsd:string" />
+          <xsd:element minOccurs="0" name="IsEnabled" type="xsd:string" />
+          <xsd:element minOccurs="0" name="NumMaxConnections" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserPhone" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserEmail" type="xsd:string" />
+          <xsd:element minOccurs="0" name="LeaderId" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UserPhoto" type="xsd:base64Binary" />
+          <xsd:element minOccurs="0" name="UserDomainId" type="xsd:string" />
+          <xsd:element minOccurs="0" name="DomainId" type="xsd:string" />
+          <xsd:element minOccurs="0" name="AccGroupIdArray" type="xsd:string" />
+          <xsd:element minOccurs="0" name="DeptPosString" type="xsd:string" />
+          <xsd:element minOccurs="0" name="TeamIdArray" type="xsd:string" />
+          <xsd:element minOccurs="0" name="UpdateType" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="importUserV2ResponseType">
+        <xsd:all>
+          <xsd:element name="UserId" type="xsd:int" />
+          <xsd:element name="Status" type="xsd:string" />
+          <xsd:element name="Detail" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
       <xsd:complexType name="addAttribProfileValueRequestType">
         <xsd:all>
           <xsd:element name="IDUSER" type="xsd:string" />
@@ -473,6 +503,8 @@
       <xsd:element name="editPositionResponse" type="tns:editPositionResponseType" />
       <xsd:element name="newPosition" type="tns:newPositionRequestType" />
       <xsd:element name="newPositionResponse" type="tns:newPositionResponseType" />
+      <xsd:element name="importUserV2" type="tns:importUserV2RequestType" />
+      <xsd:element name="importUserV2Response" type="tns:importUserV2ResponseType" />
       <xsd:element name="addAttribProfileValue" type="tns:addAttribProfileValueRequestType" />
       <xsd:element name="addAttribProfileValueResponse" type="tns:addAttribProfileValueResponseType" />
       <xsd:element name="addAttribute" type="tns:addAttributeRequestType" />
@@ -558,6 +590,12 @@
   </wsdl:message>
   <wsdl:message name="newPositionResponse">
     <wsdl:part name="parameters" element="tns:newPositionResponse" />
+  </wsdl:message>
+  <wsdl:message name="importUserV2Request">
+    <wsdl:part name="parameters" element="tns:importUserV2" />
+  </wsdl:message>
+  <wsdl:message name="importUserV2Response">
+    <wsdl:part name="parameters" element="tns:importUserV2Response" />
   </wsdl:message>
   <wsdl:message name="addAttribProfileValueRequest">
     <wsdl:part name="parameters" element="tns:addAttribProfileValue" />
@@ -705,12 +743,12 @@
   </wsdl:message>
   <wsdl:portType name="AdministrationPortType">
     <wsdl:operation name="newUser">
-      <documentation>Adiciona um novo usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUSER     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NAME       -&gt; Nome do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;LOGIN      -&gt; Login do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PASS       -&gt; Senha do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;EMAIL      -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA     -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC     -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDACCGROUP -&gt; Identificador do grupo de acesso &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDLEADER   -&gt; MatrÃ­cula do lÃ­der &lt;BR&gt;</documentation>
+      <documentation>Adiciona um novo usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUSER     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NAME       -&gt; Nome do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;LOGIN      -&gt; Login do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PASS       -&gt; Senha do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;EMAIL      -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA     -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC     -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDACCGROUP -&gt; Identificador do grupo de acesso &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDLEADER   -&gt; MatrÃ­cula do lÃ­der &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso  : Chave primÃ¡ria (CDUSER)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha -1 : Erro inesperado.   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 2 : Grupo de acesso inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 3 : O tamanho mÃ¡ximo para este campo Ã©  50   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 4 : Erro ao identificar o usuÃ¡rio. Existe mais de um registro com o mesmo login.   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 5 : NÃ£o Ã© permitido utilizar aspas no campo login   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 6 : Login do usuÃ¡rio nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 7 : Identificador do usuÃ¡rio nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 8 : Nome do usuÃ¡rio nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 9 : Senha nula   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 10 : Linguagem nula ou inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 11 : O lÃ­der informado nÃ£o existe.   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 12 : UsuÃ¡rio inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 13 : Identificador da funÃ§Ã£o nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 14 : Identificador da Ã¡rea nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 15 : Ãrea inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 16 : FunÃ§Ã£o inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 17 : Relacionamento entre Ã¡rea e funÃ§Ã£o inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 18 : A matrÃ­cula do usuÃ¡rio nÃ£o pode ser igual Ã  matrÃ­cula do lÃ­der   &lt;BR&gt;</documentation>
       <wsdl:input message="tns:newUserRequest" />
       <wsdl:output message="tns:newUserResponse" />
     </wsdl:operation>
     <wsdl:operation name="editUser">
-      <documentation>Edita as informaÃ§Ãµes de um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID    -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NAME  -&gt; Nome do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;LOGIN -&gt; Login do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PASS  -&gt; Senha do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;EMAIL -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDLEADER   -&gt; MatrÃ­cula do lÃ­der &lt;BR&gt;</documentation>
+      <documentation>Edita as informaÃ§Ãµes de um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID    -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NAME  -&gt; Nome do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;LOGIN -&gt; Login do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PASS  -&gt; Senha do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;EMAIL -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDLEADER   -&gt; MatrÃ­cula do lÃ­der &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso  : Chave primÃ¡ria (CDUSER)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 3 : O tamanho mÃ¡ximo para este campo Ã©  50   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 4 : Erro ao identificar o usuÃ¡rio. Existe mais de um registro com o mesmo login.   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 5 : NÃ£o Ã© permitido utilizar aspas no campo login   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 6 : Login do usuÃ¡rio nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 7 : Identificador do usuÃ¡rio nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 8 : Nome do usuÃ¡rio nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 9 : Senha nula   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 10 : Linguagem nula ou inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 11 : O lÃ­der informado nÃ£o existe.   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 12 : UsuÃ¡rio inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 15 : Ãrea inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 16 : FunÃ§Ã£o inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 18 : A matrÃ­cula do usuÃ¡rio nÃ£o pode ser igual Ã  matrÃ­cula do lÃ­der   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 19 : Relacionamento entre Ã¡rea e funÃ§Ã£o inexistente   &lt;BR&gt;</documentation>
       <wsdl:input message="tns:editUserRequest" />
       <wsdl:output message="tns:editUserResponse" />
     </wsdl:operation>
@@ -720,19 +758,24 @@
       <wsdl:output message="tns:disableUserResponse" />
     </wsdl:operation>
     <wsdl:operation name="editUserDepartment">
-      <documentation>Edita um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;</documentation>
+      <documentation>Edita um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDUSER)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha -1 : Erro inesperado.   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 12 : UsuÃ¡rio inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 15 : Ãrea inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 16 : FunÃ§Ã£o inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 17 : Relacionamento entre Ã¡rea e funÃ§Ã£o inexistente   &lt;BR&gt;</documentation>
       <wsdl:input message="tns:editUserDepartmentRequest" />
       <wsdl:output message="tns:editUserDepartmentResponse" />
     </wsdl:operation>
     <wsdl:operation name="editPosition">
-      <documentation>Edita as informÃ§Ãµes de uma funÃ§Ã£o&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID   -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC -&gt; DescriÃ§Ã£o &lt;BR&gt;</documentation>
+      <documentation>Edita as informaÃ§Ãµes de uma funÃ§Ã£o. &lt;BR&gt;ParÃ¢metros requeridos:  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID   -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC -&gt; DescriÃ§Ã£o &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDPOSITION)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 13 : Identificador da funÃ§Ã£o nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 16 : FunÃ§Ã£o inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 22 : Nome da funÃ§Ã£o nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 23 : FunÃ§Ã£o jÃ¡ existente   &lt;BR&gt;</documentation>
       <wsdl:input message="tns:editPositionRequest" />
       <wsdl:output message="tns:editPositionResponse" />
     </wsdl:operation>
     <wsdl:operation name="newPosition">
-      <documentation>Adiciona uma nova funÃ§Ã£o&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID   -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC -&gt; DescriÃ§Ã£o &lt;BR&gt;</documentation>
+      <documentation>Adiciona uma nova funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID   -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC -&gt; DescriÃ§Ã£o &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDPOSITION)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 13 : Identificador da funÃ§Ã£o nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 16 : FunÃ§Ã£o inexistente   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 22 : Nome da funÃ§Ã£o nulo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha 23 : FunÃ§Ã£o jÃ¡ existente   &lt;BR&gt;</documentation>
       <wsdl:input message="tns:newPositionRequest" />
       <wsdl:output message="tns:newPositionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="importUserV2">
+      <documentation>Adiciona um novo usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserID         -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserName           -&gt; Nome do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserLogin          -&gt; Login do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserPassword       -&gt; Senha do usuÃ¡rio &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserCounterSign    -&gt; Contrassenha &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserLanguage       -&gt; Idioma do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsActive         -&gt; SituaÃ§Ã£o [1 - UsuÃ¡rio ativo; 2 - UsuÃ¡rio inativo] &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsEnabled        -&gt; Habilitado &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NumMaxConnections -&gt; NÃºmero mÃ¡ximo de conexÃµes &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserPhone          -&gt; Telefone &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserEmail          -&gt; E-mail &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;LeaderId       -&gt; MatrÃ­cula do lÃ­der &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserPhoto          -&gt; Foto &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserDomainId     -&gt; Identificador do domÃ­nio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DomainId         -&gt; Controlador de domÃ­nio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;AccGroupIdArray     -&gt; Identificador do grupo de acesso &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DeptPosString     -&gt; Dados da Ã¡rea e funÃ§Ã£o do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UpdateType         -&gt; Equipe &lt;BR&gt;Retorno&lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UserId         -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Status         -&gt; Status: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Detail         -&gt; Detalhes &lt;BR&gt;</documentation>
+      <wsdl:input message="tns:importUserV2Request" />
+      <wsdl:output message="tns:importUserV2Response" />
     </wsdl:operation>
     <wsdl:operation name="addAttribProfileValue">
       <documentation>Valor do atributo do perfil do colaborador&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUSER      -&gt; MatrÃ­cula do colaborador   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NMATTRIBUTE -&gt; Identificador do atributo   &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;VLATTRIBUTE -&gt; Valor do atributo   &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DSATTRIBUTE -&gt; Valor do atributo   &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: 1               &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: Em caso de FALHA, retorna uma mensagem com o erro ocorrido.&lt;BR&gt;</documentation>
@@ -770,7 +813,7 @@
       <wsdl:output message="tns:addMeasUnityResponse" />
     </wsdl:operation>
     <wsdl:operation name="addUserDepartment">
-      <documentation>Adiciona um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;</documentation>
+      <documentation>Adiciona um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDUSER)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1  &lt;BR&gt;</documentation>
       <wsdl:input message="tns:addUserDepartmentRequest" />
       <wsdl:output message="tns:addUserDepartmentResponse" />
     </wsdl:operation>
@@ -805,27 +848,27 @@
       <wsdl:output message="tns:deleteMeasUnityResponse" />
     </wsdl:operation>
     <wsdl:operation name="deleteUser">
-      <documentation>Deleta um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;</documentation>
+      <documentation>Deleta um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDUSER)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1  &lt;BR&gt;</documentation>
       <wsdl:input message="tns:deleteUserRequest" />
       <wsdl:output message="tns:deleteUserResponse" />
     </wsdl:operation>
     <wsdl:operation name="deleteUserDepartment">
-      <documentation>Exclui um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;</documentation>
+      <documentation>Exclui um relacionamento entre usuÃ¡rio, Ã¡rea e funÃ§Ã£o.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDAREA -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDFUNC -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDUSER)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1  &lt;BR&gt;</documentation>
       <wsdl:input message="tns:deleteUserDepartmentRequest" />
       <wsdl:output message="tns:deleteUserDepartmentResponse" />
     </wsdl:operation>
     <wsdl:operation name="deleteUserAccessGroup">
-      <documentation>Exclui um relacionamento entre usuÃ¡rio e grupo de acesso.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;USERID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDACCGROUP -&gt; Identificador do grupo de acesso &lt;BR&gt;</documentation>
+      <documentation>Exclui um relacionamento entre usuÃ¡rio e grupo de acesso.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;USERID     -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDACCGROUP -&gt; Identificador do grupo de acesso &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDGROUP)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1  &lt;BR&gt;</documentation>
       <wsdl:input message="tns:deleteUserAccessGroupRequest" />
       <wsdl:output message="tns:deleteUserAccessGroupResponse" />
     </wsdl:operation>
     <wsdl:operation name="deleteUserLeader">
-      <documentation>Edita as informaÃ§Ãµes de um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID    -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;</documentation>
+      <documentation>Edita as informaÃ§Ãµes de um usuÃ¡rio.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID    -&gt; MatrÃ­cula do usuÃ¡rio &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDUSER)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1  &lt;BR&gt;</documentation>
       <wsdl:input message="tns:deleteUserLeaderRequest" />
       <wsdl:output message="tns:deleteUserLeaderResponse" />
     </wsdl:operation>
     <wsdl:operation name="editDepartment">
-      <documentation>Edita as informaÃ§Ãµes de uma Ã¡rea.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID         -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC       -&gt; DescriÃ§Ã£o &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUPPER    -&gt; Ãrea superior &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMPANY  -&gt; CÃ³digo da empresa &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDEPTTYPE -&gt; Tipo da Ã¡rea [1 - Ãrea; 2 - Unidade de NegÃ³cio] &lt;BR&gt;</documentation>
+      <documentation>Edita as informaÃ§Ãµes de uma Ã¡rea.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID         -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC       -&gt; DescriÃ§Ã£o &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUPPER    -&gt; Ãrea superior &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMPANY  -&gt; CÃ³digo da empresa &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDEPTTYPE -&gt; Tipo da Ã¡rea [1 - Ãrea; 2 - Unidade de NegÃ³cio] &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDDEPARTMENT)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1  &lt;BR&gt;</documentation>
       <wsdl:input message="tns:editDepartmentRequest" />
       <wsdl:output message="tns:editDepartmentResponse" />
     </wsdl:operation>
@@ -835,7 +878,7 @@
       <wsdl:output message="tns:getAttribDataResponse" />
     </wsdl:operation>
     <wsdl:operation name="newDepartment">
-      <documentation>Adiciona uma nova Ã¡rea.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID         -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC       -&gt; DescriÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDPOS      -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUPPER    -&gt; Ãrea superior &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMPANY  -&gt; CÃ³digo da empresa &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDEPTTYPE -&gt; Tipo da Ã¡rea [1 - Ãrea; 2 - Unidade de NegÃ³cio] &lt;BR&gt;</documentation>
+      <documentation>Adiciona uma nova Ã¡rea.&lt;BR&gt;ParÃ¢metros requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ID         -&gt; Identificador da Ã¡rea &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DESC       -&gt; DescriÃ§Ã£o &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDPOS      -&gt; Identificador da funÃ§Ã£o &lt;BR&gt;ParÃ¢metros nÃ£o requeridos: &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDUPPER    -&gt; Ãrea superior &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IDCOMPANY  -&gt; CÃ³digo da empresa &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FGDEPTTYPE -&gt; Tipo da Ã¡rea [1 - Ãrea; 2 - Unidade de NegÃ³cio] &lt;BR&gt;RETORNO:                 &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Sucesso: Chave primÃ¡ria (CDDEPARTMENT)  &lt;BR&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Falha: -1  &lt;BR&gt;</documentation>
       <wsdl:input message="tns:newDepartmentRequest" />
       <wsdl:output message="tns:newDepartmentResponse" />
     </wsdl:operation>
@@ -846,9 +889,9 @@
     </wsdl:operation>
     <wsdl:operation name="synchUser">
       <documentation>[THIS METHOD IS DEPRECATED] Synchronize User. Parameters: nmdomainuid-&gt;Unique user identifier on Domain Controller
-                                        ID-&gt;Identifier for the User; Name-&gt;The user's name; 
-                                        Login-&gt;The user's login; 
-                                        Email-&gt;Email address for this user; 
+                                        ID-&gt;Identifier for the User; Name-&gt;The user's name;
+                                        Login-&gt;The user's login;
+                                        Email-&gt;Email address for this user;
                                         Fglanguage-&gt;Default languge of this user
                                         Fguserenabled-&gt;User enabled
                                         Fguserblocked-&gt;User blocked
@@ -919,6 +962,15 @@
     </wsdl:operation>
     <wsdl:operation name="newPosition">
       <soap:operation soapAction="urn:admin#newPosition" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:admin" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="importUserV2">
+      <soap:operation soapAction="urn:admin#importUserV2" style="document" />
       <wsdl:input>
         <soap:body use="literal" namespace="urn:admin" />
       </wsdl:input>
