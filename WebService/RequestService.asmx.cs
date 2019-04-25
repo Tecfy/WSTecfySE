@@ -200,7 +200,8 @@ namespace WebService
                             fileDocument = Path.Combine(pathDocument, fileDocument + extension);
 
                             File.Delete(filePathIn);
-                            File.Move(filePathOut, fileDocument);
+                            File.Delete(filePathOut);
+                            //File.Move(filePathOut, fileDocument);
 
                             File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
