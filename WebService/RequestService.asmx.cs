@@ -32,6 +32,8 @@ namespace WebService
         [WebMethod]
         public DadosAlunos findStudentByRa(string ra, string usuario)
         {
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. RA: {0} ****", ra) + Environment.NewLine);
+
             DadosAlunos dadosAluno = new DadosAlunos();
             var integrador = new InsegracaoSE();
 
@@ -42,16 +44,31 @@ namespace WebService
                 var documentDataReturn = integrador.GetDocumentProperties(ra);
                 if (string.IsNullOrEmpty(documentDataReturn.ERROR))
                 {
-                    Student estudante = new Student
+                    try
                     {
-                        RA = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        CPFALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        NOMECURSO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        CODCENTRO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        NOMEALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                    };
-                    dadosAluno.RetornoStudent.Add(estudante);
+                        Student estudante = new Student
+                        {
+                            RA = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                            CPFALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                            NOMECURSO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                            CODCENTRO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                            NOMEALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                        };
+                        dadosAluno.RetornoStudent.Add(estudante);
+                    }
+                    catch (Exception ex)
+                    {
+                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {0} ****", ex.Message, ra) + Environment.NewLine);
+                    }
                 }
+                else
+                {
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {0} ****", documentDataReturn.ERROR, ra) + Environment.NewLine);
+                }
+            }
+            else
+            {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {0} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra) + Environment.NewLine);
             }
 
             return dadosAluno;
@@ -241,6 +258,8 @@ namespace WebService
         [WebMethod]
         public JobOut getJobById(int jobId)
         {
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobById. JobId: {0} ****", jobId) + Environment.NewLine);
+
             JobOut jobOut = new JobOut();
 
             try
@@ -248,6 +267,9 @@ namespace WebService
                 var client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.GetJobById"].ToString(), jobId));
 
                 var request = RestRequestHelper.Get(Method.GET);
+
+                client.Timeout = (1000 * 60 * 60);
+                client.ReadWriteTimeout = (1000 * 60 * 60);
 
                 IRestResponse response = client.Execute(request);
 
@@ -260,6 +282,8 @@ namespace WebService
             }
             catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobById. Erro: {0}. JobId: {1}  ****", ex.Message, jobId) + Environment.NewLine);
+
                 jobOut.successMessage = null;
                 jobOut.messages.Add(ex.Message);
             }
@@ -271,15 +295,26 @@ namespace WebService
         [WebMethod]
         public JobsRegistrationOut getJobsByRegistration(string registration)
         {
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Usuário: {0} ****", registration) + Environment.NewLine);
+
             JobsRegistrationOut jobsRegistrationOut = new JobsRegistrationOut();
 
             try
             {
-                var client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.GetJobsByRegistration"].ToString(), registration));
+                string uri = WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.GetJobsByRegistration"].ToString(), registration);
+
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. URI: {0} ****", uri) + Environment.NewLine);
+
+                var client = new RestClient(uri);
 
                 var request = RestRequestHelper.Get(Method.GET);
 
+                client.Timeout = (1000 * 60 * 60);
+                client.ReadWriteTimeout = (1000 * 60 * 60);
+
                 IRestResponse response = client.Execute(request);
+
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Response: {0} ****", response.ContentLength) + Environment.NewLine);
 
                 jobsRegistrationOut = SimpleJson.DeserializeObject<JobsRegistrationOut>(response.Content);
 
@@ -287,9 +322,13 @@ namespace WebService
                 {
                     throw new Exception(jobsRegistrationOut.messages.FirstOrDefault());
                 }
+
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), "**** Método: getJobsByRegistration. Success ****" + Environment.NewLine);
             }
             catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Erro: {0}. Usuário: {1}  ****", ex.Message, registration) + Environment.NewLine);
+
                 jobsRegistrationOut.successMessage = null;
                 jobsRegistrationOut.messages.Add(ex.Message);
             }
@@ -301,6 +340,8 @@ namespace WebService
         [WebMethod]
         public JobCategorySaveOut setJobCategorySave(int jobCategoryId, string archive)
         {
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: setJobCategorySave. JobCategoryId: {0}, Archive: {1}. ****", jobCategoryId, archive.Length) + Environment.NewLine);
+
             JobCategorySaveOut jobCategorySaveOut = new JobCategorySaveOut();
 
             try
@@ -322,6 +363,8 @@ namespace WebService
             }
             catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: setJobCategorySave. Erro: {0}. JobCategoryId: {1}, Archive: {2}.  ****", ex.Message, jobCategoryId, archive.Length) + Environment.NewLine);
+
                 jobCategorySaveOut.successMessage = null;
                 jobCategorySaveOut.messages.Add(ex.Message);
             }
