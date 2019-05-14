@@ -21,6 +21,8 @@ namespace WebService.SE
 
         public DateTime Now { get; set; }
 
+        public int Paginas { get; set; }
+
         public string DocumentIdOwner
         {
             get
@@ -42,20 +44,6 @@ namespace WebService.SE
             get
             {
                 return DocumentIdPrimary + "-" + Now.ToString("ddMMyyyy-HHmmss") + Extension;
-            }
-        }
-
-        public int Paginas
-        {
-            get
-            {
-                int pageCount;
-                using (var reader = new PdfReader(FileBinary))
-                {
-                    pageCount = reader.NumberOfPages;
-                }
-
-                return pageCount;
             }
         }
     }

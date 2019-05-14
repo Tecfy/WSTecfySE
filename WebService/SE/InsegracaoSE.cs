@@ -187,25 +187,49 @@ namespace WebService.SE
                     }
                 }
 
-                seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributePages, documentoAtributo.Paginas.ToString());
-                seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributeUsuario, documentoAtributo.User.ToString());
+                try
+                {
+                    seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributePages, documentoAtributo.Paginas.ToString());
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Campo " + attributePages + " com erro");
+                }
+
+                try
+                {
+                    seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributeUsuario, documentoAtributo.User.ToString());
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Campo " + attributeUsuario + " com erro");
+                }
 
                 if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
                 {
-                    string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
+                    try
+                    {
+                        string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
 
-                    seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
-                    seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
+                        seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
+                        seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
 
-                    seClient.newAccessPermission(documentoAtributo.DocumentIdPrimary, unityCode + ";" + unityCode, newAccessPermissionUserType, newAccessPermissionPermission, newAccessPermissionPermissionType, newAccessPermissionFgaddLowerLevel);
+                        seClient.newAccessPermission(documentoAtributo.DocumentIdPrimary, unityCode + ";" + unityCode, newAccessPermissionUserType, newAccessPermissionPermission, newAccessPermissionPermissionType, newAccessPermissionFgaddLowerLevel);
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception("Atualização das permissão com erro");
+                    }
                 }
 
                 try
                 {
                     seClient.newDocumentContainerAssociation(documentoAtributo.CategoryOwner, documentoAtributo.DocumentIdOwner, "", structID, documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, out long codeAssociation, out string detailAssociation);
                 }
-                catch
-                { }
+                catch (Exception)
+                {
+                    throw new Exception("Criação da associação dos documentos com erro");
+                }
 
                 if (physicalFile)
                 {

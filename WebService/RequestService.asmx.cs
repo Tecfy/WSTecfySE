@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using iTextSharp.text.pdf;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,7 +33,7 @@ namespace WebService
         [WebMethod]
         public DadosAlunos findStudentByRa(string ra, string usuario)
         {
-            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. RA: {0} ****", ra) + Environment.NewLine);
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. RA: {0} . Data: {1} ****", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
             DadosAlunos dadosAluno = new DadosAlunos();
             var integrador = new InsegracaoSE();
@@ -58,17 +59,17 @@ namespace WebService
                     }
                     catch (Exception ex)
                     {
-                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {0} ****", ex.Message, ra) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", ex.Message, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     }
                 }
                 else
                 {
-                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {0} ****", documentDataReturn.ERROR, ra) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", documentDataReturn.ERROR, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 }
             }
             else
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {0} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
             }
 
             return dadosAluno;
@@ -112,7 +113,7 @@ namespace WebService
                 }
                 catch (Exception ex)
                 {
-                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}. Data: {2} ****", ex.Message, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                     Tentativa++;
                     System.Threading.Thread.Sleep(1000);
@@ -122,7 +123,7 @@ namespace WebService
             }
             catch (Exception ex)
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: sendFile. Erro: {0}. Arquivo: {1}. Data: {2} ****", ex.Message, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 throw ex;
             }
 
@@ -146,24 +147,45 @@ namespace WebService
                 {
                     if (fileInfo.Length == fileSize)
                     {
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo pronto para ser enviado: {0} ****", fileName) + Environment.NewLine);
-                        return true;
+                        int pageCount = 0;
+                        try
+                        {
+                            using (var reader = new PdfReader(File.ReadAllBytes(filePath)))
+                            {
+                                pageCount = reader.NumberOfPages;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message);
+                        }
+
+                        if (pageCount >= 0)
+                        {
+                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo pronto para ser enviado: {0}, Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                            return true;
+                        }
+                        else
+                        {
+                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo corrompido número de páginas igual a 0, arquivo: {0}. Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                            return false;
+                        }
                     }
                     else
                     {
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo corrompido: {0} ****", fileName) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo corrompido: {0}. Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                         return false;
                     }
                 }
                 else
                 {
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo não existe: {0} ****", fileName) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo não existe: {0}. Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Erro: {0}. Arquivo: {1}. Data: {1} ****", ex.Message, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 return false;
             }
@@ -201,50 +223,74 @@ namespace WebService
                         {
                             var integrador = new InsegracaoSE();
 
-                            var documentoAtributo = new DocumentoAtributo
+                            byte[] fileBinary = File.ReadAllBytes(filePathOut);
+
+                            int pageCount = 0;
+                            try
                             {
-                                FileBinary = File.ReadAllBytes(filePathOut),
-                                CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
-                                CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
-                                Registration = registration,
-                                User = user,
-                                Extension = extension,
-                                Now = DateTime.Now
-                            };
+                                using (var reader = new PdfReader(fileBinary))
+                                {
+                                    pageCount = reader.NumberOfPages;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(ex.Message);
+                            }
 
-                            integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
+                            if (pageCount >= 0)
+                            {
+                                var documentoAtributo = new DocumentoAtributo
+                                {
+                                    FileBinary = fileBinary,
+                                    CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
+                                    CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
+                                    Registration = registration,
+                                    User = user,
+                                    Extension = extension,
+                                    Now = DateTime.Now,
+                                    Paginas = pageCount
+                                };
 
-                            fileDocument = Path.Combine(pathDocument, fileDocument + extension);
+                                integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
 
-                            File.Delete(filePathIn);
-                            File.Delete(filePathOut);
-                            //File.Move(filePathOut, fileDocument);
+                                fileDocument = Path.Combine(pathDocument, fileDocument + extension);
 
-                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                File.Delete(filePathIn);
+                                File.Delete(filePathOut);
+                                //File.Move(filePathOut, fileDocument);
 
-                            return true;
+                                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                                return true;
+                            }
+                            else
+                            {
+                                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo corrompido número de páginas igual a 0, SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                return false;
+                            }
                         }
                         catch (Exception ex)
                         {
-                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}. Data: {2} ****", ex.Message, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                             return false;
                         }
                     }
                     else
                     {
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. O arquivo não possui as extensões permitidas: {0} ****", fileName) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. O arquivo não possui as extensões permitidas: {0}. Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                         return false;
                     }
                 }
                 else
                 {
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo não existe: {0} ****", fileName) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo não existe: {0}.  Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}  ****", ex.Message, fileName) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}. Data: {2} ****", ex.Message, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 return false;
             }
@@ -258,7 +304,7 @@ namespace WebService
         [WebMethod]
         public JobOut getJobById(int jobId)
         {
-            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobById. JobId: {0} ****", jobId) + Environment.NewLine);
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobById. JobId: {0}. Data: {1} ****", jobId, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
             JobOut jobOut = new JobOut();
 
@@ -282,7 +328,7 @@ namespace WebService
             }
             catch (Exception ex)
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobById. Erro: {0}. JobId: {1}  ****", ex.Message, jobId) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobById. Erro: {0}. JobId: {1}. Data: {2} ****", ex.Message, jobId, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 jobOut.successMessage = null;
                 jobOut.messages.Add(ex.Message);
@@ -295,7 +341,7 @@ namespace WebService
         [WebMethod]
         public JobsRegistrationOut getJobsByRegistration(string registration)
         {
-            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Usuário: {0} ****", registration) + Environment.NewLine);
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Usuário: {0}. Data: {1} ****", registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
             JobsRegistrationOut jobsRegistrationOut = new JobsRegistrationOut();
 
@@ -303,7 +349,7 @@ namespace WebService
             {
                 string uri = WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.GetJobsByRegistration"].ToString(), registration);
 
-                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. URI: {0} ****", uri) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. URI: {0}. Data: {1} ****", uri, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 var client = new RestClient(uri);
 
@@ -314,7 +360,7 @@ namespace WebService
 
                 IRestResponse response = client.Execute(request);
 
-                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Response: {0} ****", response.ContentLength) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Response: {0}. Data: {1} ****", response.ContentLength, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 jobsRegistrationOut = SimpleJson.DeserializeObject<JobsRegistrationOut>(response.Content);
 
@@ -327,7 +373,7 @@ namespace WebService
             }
             catch (Exception ex)
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Erro: {0}. Usuário: {1}  ****", ex.Message, registration) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. Erro: {0}. Usuário: {1}. Data: {2}  ****", ex.Message, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 jobsRegistrationOut.successMessage = null;
                 jobsRegistrationOut.messages.Add(ex.Message);
@@ -340,7 +386,7 @@ namespace WebService
         [WebMethod]
         public JobCategorySaveOut setJobCategorySave(int jobCategoryId, string archive)
         {
-            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: setJobCategorySave. JobCategoryId: {0}, Archive: {1}. ****", jobCategoryId, archive.Length) + Environment.NewLine);
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: setJobCategorySave. JobCategoryId: {0}, Archive: {1}. Data: {2} ****", jobCategoryId, archive.Length, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
             JobCategorySaveOut jobCategorySaveOut = new JobCategorySaveOut();
 
@@ -351,6 +397,9 @@ namespace WebService
                 var client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.SetJobCategorySave"].ToString()));
 
                 var request = RestRequestHelper.Get(Method.POST, SimpleJson.SerializeObject(jobCategorySaveIn));
+
+                client.Timeout = (1000 * 60 * 60);
+                client.ReadWriteTimeout = (1000 * 60 * 60);
 
                 IRestResponse response = client.Execute(request);
 
@@ -363,7 +412,7 @@ namespace WebService
             }
             catch (Exception ex)
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: setJobCategorySave. Erro: {0}. JobCategoryId: {1}, Archive: {2}.  ****", ex.Message, jobCategoryId, archive.Length) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: setJobCategorySave. Erro: {0}. JobCategoryId: {1}, Archive: {2}. Data: {3}  ****", ex.Message, jobCategoryId, archive.Length, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 jobCategorySaveOut.successMessage = null;
                 jobCategorySaveOut.messages.Add(ex.Message);
