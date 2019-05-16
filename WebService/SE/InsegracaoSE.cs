@@ -27,6 +27,7 @@ namespace WebService.SE
         readonly string structID = WebConfigurationManager.AppSettings["StructID"];
         readonly string categoryPrimaryTitle = WebConfigurationManager.AppSettings["Category_Primary_Title"];
         readonly string attributeRegistration = WebConfigurationManager.AppSettings["Attribute_Registration"];
+        readonly string messageDeleteDocument = WebConfigurationManager.AppSettings["MessageDeleteDocument"];
         readonly SEClient seClient = SEConnection.GetConnection();
         readonly SEAdministration seAdministration = SEConnection.GetConnectionAdm();
 
@@ -89,6 +90,31 @@ namespace WebService.SE
                             throw new Exception(response);
                         }
                     }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool DeleteDocument(string documentId)
+        {
+            try
+            {
+                //Checks whether the document exists
+                documentDataReturn documentDataReturn = GetDocumentProperties(documentId);
+
+                //If the document already exists in the specified category, it deletes the document
+                if (documentDataReturn.IDDOCUMENT == documentId)
+                {
+                    var deleteDocument = seClient.deleteDocument(documentDataReturn.IDCATEGORY, documentDataReturn.IDDOCUMENT, "", messageDeleteDocument);
+                }
+                else if (!string.IsNullOrEmpty(documentDataReturn.ERROR))
+                {
+                    throw new Exception(documentDataReturn.ERROR);
                 }
 
                 return true;

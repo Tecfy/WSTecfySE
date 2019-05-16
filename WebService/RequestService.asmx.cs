@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Configuration;
 using System.Web.Script.Services;
 using System.Web.Services;
@@ -23,6 +24,7 @@ namespace WebService
         readonly string pathOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Out"]);
         readonly string pathLog = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Log"]);
         readonly string pathDocument = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document"]);
+        readonly string pathDocumentDelete = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document.Delete"]);
         readonly string extension = WebConfigurationManager.AppSettings["Extension"];
 
         #region .: Methods :.       
@@ -147,29 +149,8 @@ namespace WebService
                 {
                     if (fileInfo.Length == fileSize)
                     {
-                        int pageCount = 0;
-                        try
-                        {
-                            using (var reader = new PdfReader(File.ReadAllBytes(filePath)))
-                            {
-                                pageCount = reader.NumberOfPages;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(ex.Message);
-                        }
-
-                        if (pageCount >= 0)
-                        {
-                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo pronto para ser enviado: {0}, Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                            return true;
-                        }
-                        else
-                        {
-                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo corrompido número de páginas igual a 0, arquivo: {0}. Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                            return false;
-                        }
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: checkFile. Arquivo pronto para ser enviado: {0}, Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        return true;
                     }
                     else
                     {
@@ -419,6 +400,82 @@ namespace WebService
             }
 
             return jobCategorySaveOut;
+        }
+
+        #endregion
+
+        #region .: :.
+
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        [WebMethod]
+        public bool deleteDocuments(string code)
+        {
+            if (code == WebConfigurationManager.AppSettings["Delete.Code"])
+            {
+                var currentContext = HttpContext.Current;
+
+                System.Threading.Tasks.Task objTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
+                {
+                    HttpContext.Current = currentContext;
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. code: {0}. Data: {1} ****", code, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                    try
+                    {
+                        var integrador = new InsegracaoSE();
+
+                        if (Directory.GetFiles(pathDocumentDelete).Length > 0)
+                        {
+                            foreach (var file in Directory.GetFiles(pathDocumentDelete))
+                            {
+                                try
+                                {
+                                    FileInfo fileInfo = new FileInfo(file);
+
+                                    using (StreamReader sr = new StreamReader(file))
+                                    {
+                                        List<string> listDocuments = sr.ReadToEnd().Split(';').ToList();
+
+                                        foreach (var item in listDocuments)
+                                        {
+                                            try
+                                            {
+                                                integrador.DeleteDocument(item);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Erro: {0}. code: {1}. Item: {2}. Data: {3}  ****", ex.Message, code, item, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                            }
+                                        }
+                                    }
+
+                                    string pathDelete = Path.Combine(pathDocumentDelete, "Processed");
+
+                                    if (!Directory.Exists(pathDelete))
+                                    {
+                                        Directory.CreateDirectory(pathDelete);
+                                    }
+
+                                    File.Move(file, Path.Combine(pathDelete, fileInfo.Name));
+                                }
+                                catch (Exception ex)
+                                {
+                                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Erro: {0}. code: {1}. Data: {2}  ****", ex.Message, code, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Erro: {0}. code: {1}. Data: {2}  ****", ex.Message, code, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    }
+                });
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #endregion
