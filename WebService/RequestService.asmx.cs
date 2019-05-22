@@ -417,63 +417,65 @@ namespace WebService
                 System.Threading.Tasks.Task objTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
                     HttpContext.Current = currentContext;
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. code: {0}. Data: {1} ****", code, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Inicio do processo. Data: {0} ****", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                    try
+                    var integrador = new InsegracaoSE();
+
+                    if (Directory.GetFiles(pathDocumentDelete).Length > 0)
                     {
-                        var integrador = new InsegracaoSE();
-
-                        if (Directory.GetFiles(pathDocumentDelete).Length > 0)
+                        foreach (var file in Directory.GetFiles(pathDocumentDelete))
                         {
-                            foreach (var file in Directory.GetFiles(pathDocumentDelete))
+                            try
                             {
-                                try
+                                FileInfo fileInfo = new FileInfo(file);
+
+                                using (StreamReader sr = new StreamReader(file))
                                 {
-                                    FileInfo fileInfo = new FileInfo(file);
+                                    List<string> listDocuments = sr.ReadToEnd().Split(';').ToList();
 
-                                    using (StreamReader sr = new StreamReader(file))
+                                    foreach (var item in listDocuments)
                                     {
-                                        List<string> listDocuments = sr.ReadToEnd().Split(';').ToList();
-
-                                        foreach (var item in listDocuments)
+                                        try
                                         {
-                                            try
-                                            {
-                                                integrador.DeleteDocument(item);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Erro: {0}. code: {1}. Item: {2}. Data: {3}  ****", ex.Message, code, item, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                                            }
+                                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Inicio exclusão SE, documento: {0}. Data: {1} ****", item, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                                            integrador.DeleteDocument(item);
+
+                                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Fim exclusão SE, documento: {0}. Data: {1} ****", item, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Erro exclusão SE, documento: {1}. Messagem: {0} Data: {2}  ****", ex.Message, item, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                                         }
                                     }
-
-                                    string pathDelete = Path.Combine(pathDocumentDelete, "Processed");
-
-                                    if (!Directory.Exists(pathDelete))
-                                    {
-                                        Directory.CreateDirectory(pathDelete);
-                                    }
-
-                                    File.Move(file, Path.Combine(pathDelete, fileInfo.Name));
                                 }
-                                catch (Exception ex)
+
+                                string pathDelete = Path.Combine(pathDocumentDelete, "Processed");
+
+                                if (!Directory.Exists(pathDelete))
                                 {
-                                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Erro: {0}. code: {1}. Data: {2}  ****", ex.Message, code, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                    Directory.CreateDirectory(pathDelete);
                                 }
+
+                                File.Move(file, Path.Combine(pathDelete, fileInfo.Name));
+                            }
+                            catch (Exception ex)
+                            {
+                                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Erro no processo de exclusão do arquivo: {0}. Mensagem: {1}. Data: {2}  ****", file, ex.Message, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                             }
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Erro: {0}. code: {1}. Data: {2}  ****", ex.Message, code, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                    }
-                });
+
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Final do processo. Data: {0} ****", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                });                
 
                 return true;
             }
             else
             {
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Código de validação não corresponde (code: {0}). Data: {1} ****", code, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                 return false;
             }
         }
