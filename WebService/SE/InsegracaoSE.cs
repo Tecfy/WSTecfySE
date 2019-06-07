@@ -96,6 +96,12 @@ namespace WebService.SE
             }
             catch (Exception ex)
             {
+                try
+                {
+                    DeleteDocument(documentoAtributo.DocumentIdPrimary);
+                }
+                catch { }
+
                 throw ex;
             }
         }
