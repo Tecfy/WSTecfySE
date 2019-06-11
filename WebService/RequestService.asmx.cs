@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Script.Services;
@@ -189,7 +190,7 @@ namespace WebService
                 {
                     if (Path.GetExtension(filePathIn) == ".pdf" || Path.GetExtension(filePathIn) == ".cry")
                     {
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Inicio: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                         if (Path.GetExtension(filePathIn) == ".cry")
                         {
@@ -235,43 +236,55 @@ namespace WebService
 
                                 integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
 
-                                fileDocument = Path.Combine(pathDocument, fileDocument + extension);
+                                try
+                                {
+                                    fileDocument = Path.Combine(pathDocument, fileDocument + extension);
 
-                                File.Delete(filePathIn);
-                                File.Delete(filePathOut);
-                                //File.Move(filePathOut, fileDocument);
+                                    File.Delete(filePathIn);
+                                    File.Delete(filePathOut);
+                                    //File.Move(filePathOut, fileDocument);
 
-                                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                }
+                                catch
+                                {
+                                    Thread.Sleep(5000);
+                                    try
+                                    {
+                                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                    }
+                                    catch { }
+                                }
 
                                 return true;
                             }
                             else
                             {
-                                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo corrompido número de páginas igual a 0, SE: {0}. Fim: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo corrompido número de páginas igual a 0, SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                                 return false;
                             }
                         }
                         catch (Exception ex)
                         {
-                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}. Data: {2} ****", ex.Message, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                             return false;
                         }
                     }
                     else
                     {
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. O arquivo não possui as extensões permitidas: {0}. Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. O arquivo não possui as extensões permitidas: {0}, RA: {1}. Data: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                         return false;
                     }
                 }
                 else
                 {
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo não existe: {0}.  Data: {1} ****", fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo não existe: {0}, RA: {1}.  Data: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}. Data: {2} ****", ex.Message, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 return false;
             }
@@ -468,7 +481,7 @@ namespace WebService
                     }
 
                     File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Final do processo. Data: {0} ****", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                });                
+                });
 
                 return true;
             }
