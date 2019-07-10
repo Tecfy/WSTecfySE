@@ -707,7 +707,7 @@ namespace WebService
                     Now = DateTime.Now,
                     Paginas = pageCount,
                     UnityCode = Unity.Code,
-                    UnityName = Unity.Code
+                    UnityName = Unity.Name
                 };
 
                 integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
