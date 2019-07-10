@@ -190,123 +190,6 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod(EnableSession = true)]
-        public bool submitFileOld(string fileName, string registration, string user)
-        {
-            try
-            {
-                //Cria os Diretorios
-                CreateFolder();
-
-                string filePathIn = Path.Combine(pathIn, fileName);
-                string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
-
-
-                if (File.Exists(filePathIn))
-                {
-                    if (Path.GetExtension(filePathIn) == ".pdf" || Path.GetExtension(filePathIn) == ".cry")
-                    {
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Inicio: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-
-                        if (Path.GetExtension(filePathIn) == ".cry")
-                        {
-                            Encrypt.DecryptFile(filePathIn, filePathOut, WebConfigurationManager.AppSettings["Key"]);
-                        }
-                        else if (Path.GetExtension(filePathIn) == ".pdf")
-                        {
-                            File.Copy(filePathIn, filePathOut);
-                        }
-
-                        try
-                        {
-                            InsegracaoSE integrador = new InsegracaoSE();
-
-                            byte[] fileBinary = File.ReadAllBytes(filePathOut);
-
-                            int pageCount = 0;
-                            try
-                            {
-                                using (PdfReader reader = new PdfReader(fileBinary))
-                                {
-                                    pageCount = reader.NumberOfPages;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new Exception(ex.Message);
-                            }
-
-                            if (pageCount >= 0)
-                            {
-                                DocumentoAtributo documentoAtributo = new DocumentoAtributo
-                                {
-                                    FileBinary = fileBinary,
-                                    CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
-                                    CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
-                                    Registration = registration,
-                                    User = user,
-                                    Extension = extension,
-                                    Now = DateTime.Now,
-                                    Paginas = pageCount
-                                };
-
-                                integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
-
-                                try
-                                {
-                                    fileDocument = Path.Combine(pathDocument, fileDocument + extension);
-
-                                    File.Delete(filePathIn);
-                                    File.Delete(filePathOut);
-                                    //File.Move(filePathOut, fileDocument);
-
-                                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                                }
-                                catch
-                                {
-                                    Thread.Sleep(5000);
-                                    try
-                                    {
-                                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                                    }
-                                    catch { }
-                                }
-
-                                return true;
-                            }
-                            else
-                            {
-                                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo corrompido número de páginas igual a 0, SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                                return false;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. O arquivo não possui as extensões permitidas: {0}, RA: {1}. Data: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                        return false;
-                    }
-                }
-                else
-                {
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo não existe: {0}, RA: {1}.  Data: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-
-                return false;
-            }
-        }
-
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        [WebMethod(EnableSession = true)]
         public bool submitFile(string fileName, string registration, string user)
         {
             try
@@ -531,7 +414,6 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
-        //public HttpResponseMessage processPendingFiles()
         public bool processPendingFiles()
         {
             HttpContext currentContext = HttpContext.Current;
@@ -621,7 +503,6 @@ namespace WebService
                 }
             });
 
-            //return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("OK") };
             return true;
         }
 
@@ -655,7 +536,7 @@ namespace WebService
             }
         }
 
-        public async Task processFile(string fileName, string registration, string user, bool moveOut = true)
+        private void processFile(string fileName, string registration, string user, bool moveOut = true)
         {
             string filePathIn = Path.Combine(pathIn, fileName);
             string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
