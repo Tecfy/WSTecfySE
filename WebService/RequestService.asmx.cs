@@ -7,6 +7,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Script.Serialization;
@@ -314,6 +315,11 @@ namespace WebService
                 string filePathIn = Path.Combine(pathIn, fileName);
                 string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
 
+                if (File.Exists(filePathOut))
+                {
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", "Arquivo já existente no Out", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    return false;
+                }
 
                 if (File.Exists(filePathIn))
                 {
@@ -327,7 +333,15 @@ namespace WebService
                         }
                         else if (Path.GetExtension(filePathIn) == ".pdf")
                         {
-                            File.Copy(filePathIn, filePathOut);
+                            if (File.Exists(filePathOut))
+                            {
+                                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", "Arquivo já existente no Out", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                return false;
+                            }
+                            else
+                            {
+                                File.Copy(filePathIn, filePathOut);
+                            }
                         }
 
                         try
@@ -351,7 +365,7 @@ namespace WebService
                             {
                                 bool result = saveJsonFile(fileName, registration, user);
 
-                                processFile(fileName, registration, user);
+                                Task objTask = Task.Factory.StartNew(() =>{ processFile(fileName, registration, user); });
 
                                 return result;
                             }
@@ -635,7 +649,7 @@ namespace WebService
             }
         }
 
-        public async void processFile(string fileName, string registration, string user, bool moveOut = true)
+        public async Task processFile(string fileName, string registration, string user, bool moveOut = true)
         {
             string filePathIn = Path.Combine(pathIn, fileName);
             string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
@@ -698,26 +712,26 @@ namespace WebService
                     File.Delete(filePathOut);
                     File.Delete(filePathToProcessOut);
 
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);                    
                 }
-                catch
+                catch (Exception ex)
                 {
                     Thread.Sleep(5000);
                     try
                     {
                         File.Move(filePathToProcessOut, filePathToProcessIn);
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);                        
                     }
                     catch { }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 Thread.Sleep(5000);
                 try
                 {
                     File.Move(filePathToProcessOut, filePathToProcessIn);
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 }
                 catch { }
             }
