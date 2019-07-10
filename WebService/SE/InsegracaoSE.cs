@@ -6,6 +6,8 @@ using System.Web.Configuration;
 using TecnoSet.Ecm.Wpf.Services.SE;
 using WebService.com.softexpert.tecfy;
 using WebService.Connection;
+using WebService.Models.Common.Enum;
+using WebService.Models.Unit;
 
 namespace WebService.SE
 {
@@ -13,23 +15,24 @@ namespace WebService.SE
     {
         #region .: Attributes :.
 
-        readonly bool physicalFile = Convert.ToBoolean(WebConfigurationManager.AppSettings["Sesuite.Folder.Physical"]);
-        readonly string physicalPath = WebConfigurationManager.AppSettings["Sesuite.Physical.Path"];
-        readonly string physicalPathSE = WebConfigurationManager.AppSettings["Sesuite.Physical.Path.SE"];
-        readonly string prefix = WebConfigurationManager.AppSettings["Prefix_Category"];
-        readonly string attributePages = WebConfigurationManager.AppSettings["Attribute_Pages"];
-        readonly string attributeUsuario = WebConfigurationManager.AppSettings["Attribute_Usuario"];
-        readonly string attributeUnityCode = WebConfigurationManager.AppSettings["Attribute_Unity_Code"];
-        readonly int newAccessPermissionUserType = int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.UserType"].ToString());
-        readonly string newAccessPermissionPermission = WebConfigurationManager.AppSettings["NewAccessPermission.Permission"].ToString();
-        readonly int newAccessPermissionPermissionType = int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString());
-        readonly string newAccessPermissionFgaddLowerLevel = WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString();
-        readonly string structID = WebConfigurationManager.AppSettings["StructID"];
-        readonly string categoryPrimaryTitle = WebConfigurationManager.AppSettings["Category_Primary_Title"];
-        readonly string attributeRegistration = WebConfigurationManager.AppSettings["Attribute_Registration"];
-        readonly string messageDeleteDocument = WebConfigurationManager.AppSettings["MessageDeleteDocument"];
-        readonly SEClient seClient = SEConnection.GetConnection();
-        readonly SEAdministration seAdministration = SEConnection.GetConnectionAdm();
+        private readonly bool physicalFile = Convert.ToBoolean(WebConfigurationManager.AppSettings["Sesuite.Folder.Physical"]);
+        private readonly string physicalPath = WebConfigurationManager.AppSettings["Sesuite.Physical.Path"];
+        private readonly string physicalPathSE = WebConfigurationManager.AppSettings["Sesuite.Physical.Path.SE"];
+        private readonly string prefix = WebConfigurationManager.AppSettings["Prefix_Category"];
+        private readonly string attributePages = WebConfigurationManager.AppSettings["Attribute_Pages"];
+        private readonly string attributeUsuario = WebConfigurationManager.AppSettings["Attribute_Usuario"];
+        private readonly string attributeUnityCode = WebConfigurationManager.AppSettings["Attribute_Unity_Code"];
+        private readonly int newAccessPermissionUserType = int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.UserType"].ToString());
+        private readonly string newAccessPermissionPermission = WebConfigurationManager.AppSettings["NewAccessPermission.Permission"].ToString();
+        private readonly int newAccessPermissionPermissionType = int.Parse(WebConfigurationManager.AppSettings["NewAccessPermission.PermissionType"].ToString());
+        private readonly string newAccessPermissionFgaddLowerLevel = WebConfigurationManager.AppSettings["NewAccessPermission.FgaddLowerLevel"].ToString();
+        private readonly string structID = WebConfigurationManager.AppSettings["StructID"];
+        private readonly string categoryPrimaryTitle = WebConfigurationManager.AppSettings["Category_Primary_Title"];
+        private readonly string attributeRegistration = WebConfigurationManager.AppSettings["Attribute_Registration"];
+        private readonly string messageDeleteDocument = WebConfigurationManager.AppSettings["MessageDeleteDocument"];
+        private readonly SEClient seClient = SEConnection.GetConnection();
+        private readonly SEAdministration seAdministration = SEConnection.GetConnectionAdm();
+        private static readonly string searchAttributePermissionCategory = WebConfigurationManager.AppSettings["SoftExpert.SearchAttributePermissionCategory"];
 
         #endregion
 
@@ -42,9 +45,9 @@ namespace WebService.SE
 
         public bool VerifyDocumentPermission(string iddocumento, string usuario)
         {
-            var r = seClient.checkAccessPermission(iddocumento, usuario, 6);
+            string r = seClient.checkAccessPermission(iddocumento, usuario, 6);
 
-            var inx = r.Split(':');
+            string[] inx = r.Split(':');
             if (inx.Count() > 0)
             {
                 if (inx.Count() >= 2 && inx[1].Trim().ToUpper().Contains("ACESSO PERMITIDO"))
@@ -66,7 +69,9 @@ namespace WebService.SE
             {
                 documentReturn documentReturnOwner = CheckRegisteredDocument(documentoAtributo.Registration, documentoAtributo.CategoryOwner);
                 if (documentReturnOwner == null)
+                {
                     throw new Exception("Sistema não localizou o aluno!");
+                }
 
                 // Checks the current document version
                 documentoAtributo.CurrentVersion = GetPrimaryDocuments(documentoAtributo.Registration, documentoAtributo.CategoryPrimary);
@@ -76,9 +81,9 @@ namespace WebService.SE
                 documentDataReturn documentDataReturn = GetDocumentProperties(documentoAtributo.DocumentIdOwner);
                 if (documentDataReturn.ATTRIBUTTES.Count() > 0)
                 {
-                    var response = seClient.newDocument(documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, categoryPrimaryTitle, "", "", "", documentoAtributo.User, null, 0, null);
+                    string response = seClient.newDocument(documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, categoryPrimaryTitle, "", "", "", documentoAtributo.User, null, 0, null);
 
-                    var responseArray = response.Split(':');
+                    string[] responseArray = response.Split(':');
                     if (responseArray.Count() > 0)
                     {
                         if (responseArray.Count() >= 3 && responseArray[2].ToUpper().Contains("SUCESSO"))
@@ -116,7 +121,7 @@ namespace WebService.SE
                 //If the document already exists in the specified category, it deletes the document
                 if (documentDataReturn.IDDOCUMENT == documentId)
                 {
-                    var deleteDocument = seClient.deleteDocument(documentDataReturn.IDCATEGORY, documentDataReturn.IDDOCUMENT, "", messageDeleteDocument);
+                    string deleteDocument = seClient.deleteDocument(documentDataReturn.IDCATEGORY, documentDataReturn.IDDOCUMENT, "", messageDeleteDocument);
                 }
                 else if (!string.IsNullOrEmpty(documentDataReturn.ERROR))
                 {
@@ -147,9 +152,13 @@ namespace WebService.SE
                 searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributes);
 
                 if (searchDocumentReturn.RESULTS.Count() > 0)
+                {
                     return searchDocumentReturn.RESULTS[0];
+                }
                 else
+                {
                     return null;
+                }
             }
             catch (Exception ex)
             {
@@ -170,11 +179,10 @@ namespace WebService.SE
 
                 if (searchDocumentReturn.RESULTS.Count() > 0)
                 {
-                    var s = searchDocumentReturn.RESULTS.OrderByDescending(x => x.IDDOCUMENT).FirstOrDefault().IDDOCUMENT.Split('-');
+                    string[] s = searchDocumentReturn.RESULTS.OrderByDescending(x => x.IDDOCUMENT).FirstOrDefault().IDDOCUMENT.Split('-');
                     if (s.Count() == 3)
                     {
-                        int i = 0;
-                        int.TryParse(s[2], out i);
+                        int.TryParse(s[2], out int i);
 
                         return i;
                     }
@@ -198,18 +206,34 @@ namespace WebService.SE
         {
             try
             {
-                foreach (var item in documentDataReturn.ATTRIBUTTES)
+                foreach (attributtes item in documentDataReturn.ATTRIBUTTES)
                 {
                     if (item.ATTRIBUTTENAME.Contains(prefix))
                     {
                         string valor = "";
                         if (item.ATTRIBUTTEVALUE.Count() > 0)
                         {
-                            valor = item.ATTRIBUTTEVALUE[0];
+                            if (item.ATTRIBUTTENAME == EAttribute.SER_cad_cod_unidade.ToString())
+                            {
+                                valor = documentoAtributo.UnityCode;
+                            }
+                            if (item.ATTRIBUTTENAME == EAttribute.SER_cad_Unidade.ToString())
+                            {
+                                valor = documentoAtributo.UnityName;
+                            }
+                            if (item.ATTRIBUTTENAME == EAttribute.SER_cad_unidades.ToString())
+                            {
+                                valor = documentoAtributo.UnityCode;
+                            }
+                            else
+                            {
+                                valor = item.ATTRIBUTTEVALUE[0];
+                            }
                         }
 
                         try
                         {
+
                             seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", item.ATTRIBUTTENAME, valor);
                         }
                         catch (Exception)
@@ -217,59 +241,54 @@ namespace WebService.SE
                             throw new Exception("Campo " + item.ATTRIBUTTENAME + " com erro");
                         }
                     }
-                }
 
-                try
-                {
-                    seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributePages, documentoAtributo.Paginas.ToString());
-                }
-                catch (Exception)
-                {
-                    throw new Exception("Campo " + attributePages + " com erro");
-                }
-
-                try
-                {
-                    seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributeUsuario, documentoAtributo.User.ToString());
-                }
-                catch (Exception)
-                {
-                    throw new Exception("Campo " + attributeUsuario + " com erro");
-                }
-
-                if (documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeUnityCode))
-                {
                     try
                     {
-                        string unityCode = documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeUnityCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault();
+                        seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributePages, documentoAtributo.Paginas.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception("Campo " + attributePages + " com erro");
+                    }
 
-                        seAdministration.newPosition(unityCode, unityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
-                        seAdministration.newDepartment(unityCode, unityCode, unityCode, "", "", "1");
+                    try
+                    {
+                        seClient.setAttributeValue(documentoAtributo.DocumentIdPrimary, "", attributeUsuario, documentoAtributo.User.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception("Campo " + attributeUsuario + " com erro");
+                    }
 
-                        seClient.newAccessPermission(documentoAtributo.DocumentIdPrimary, unityCode + ";" + unityCode, newAccessPermissionUserType, newAccessPermissionPermission, newAccessPermissionPermissionType, newAccessPermissionFgaddLowerLevel);
+                    try
+                    {
+                        seAdministration.newPosition(documentoAtributo.UnityCode, documentoAtributo.UnityCode, out string status, out string detail, out int code, out string recordid, out string recordKey);
+                        seAdministration.newDepartment(documentoAtributo.UnityCode, documentoAtributo.UnityCode, documentoAtributo.UnityCode, "", "", "1");
+
+                        seClient.newAccessPermission(documentoAtributo.DocumentIdPrimary, documentoAtributo.UnityCode + ";" + documentoAtributo.UnityCode, newAccessPermissionUserType, newAccessPermissionPermission, newAccessPermissionPermissionType, newAccessPermissionFgaddLowerLevel);
                     }
                     catch (Exception)
                     {
                         throw new Exception("Atualização das permissão com erro");
                     }
-                }
 
-                try
-                {
-                    seClient.newDocumentContainerAssociation(documentoAtributo.CategoryOwner, documentoAtributo.DocumentIdOwner, "", structID, documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, out long codeAssociation, out string detailAssociation);
-                }
-                catch (Exception)
-                {
-                    throw new Exception("Criação da associação dos documentos com erro");
-                }
+                    try
+                    {
+                        seClient.newDocumentContainerAssociation(documentoAtributo.CategoryOwner, documentoAtributo.DocumentIdOwner, "", structID, documentoAtributo.CategoryPrimary, documentoAtributo.DocumentIdPrimary, out long codeAssociation, out string detailAssociation);
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception("Criação da associação dos documentos com erro");
+                    }
 
-                if (physicalFile)
-                {
-                    InsertPhysicalFile(documentoAtributo);
-                }
-                else
-                {
-                    InsertEletronicFile(documentoAtributo);
+                    if (physicalFile)
+                    {
+                        InsertPhysicalFile(documentoAtributo);
+                    }
+                    else
+                    {
+                        InsertEletronicFile(documentoAtributo);
+                    }
                 }
             }
             catch (Exception ex)
@@ -291,7 +310,7 @@ namespace WebService.SE
                     NMFILE = Indice.FileName
                 };
 
-                var var = seClient.uploadEletronicFile(Indice.DocumentIdPrimary, "", Indice.User, eletronicFiles);
+                string var = seClient.uploadEletronicFile(Indice.DocumentIdPrimary, "", Indice.User, eletronicFiles);
 
                 return true;
             }
@@ -332,7 +351,7 @@ namespace WebService.SE
 
                 using (SqlConnection connectionInsert = new SqlConnection(connectionString))
                 {
-                    var queryInsert = string.Format(queryStringInsert,
+                    string queryInsert = string.Format(queryStringInsert,
                         Indice.DocumentIdPrimary /*Identificador do Documento*/,
                         Indice.FileName /*Nome do Arquivo*/,
                         Indice.User /*Matrícula do Usuário*/,
@@ -357,5 +376,70 @@ namespace WebService.SE
         }
 
         #endregion
+
+        public Unity GetUnity(string user)
+        {
+            Unity unity = new Unity();
+
+            attributeData[] attributeDatas = new attributeData[1];
+            attributeDatas[0] = new attributeData
+            {
+                //search enrollment
+                IDATTRIBUTE = EAttribute.tfyacess_userid.ToString(),
+                VLATTRIBUTE = user
+            };
+
+            searchDocumentFilter searchDocumentFilter = new searchDocumentFilter
+            {
+                IDCATEGORY = searchAttributePermissionCategory
+            };
+
+            searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributeDatas);
+            documentReturn retorno = new documentReturn();
+            if (searchDocumentReturn.RESULTS.Count() > 0)
+            {
+                string idDocument = searchDocumentReturn.RESULTS.FirstOrDefault().IDDOCUMENT;
+                documentDataReturn documentDataReturn = seClient.viewDocumentData(idDocument, "", "", "");
+
+                var attributeCode = EAttribute.SER_cad_cod_unidade.ToString();
+                var attributeName = EAttribute.SER_cad_cod_unidade.ToString();
+
+                unity.Code = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeCode) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null;
+                unity.Name = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeName) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeName).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null;
+            }
+
+            return unity;
+        }
+
+        public string GetAttributeByAttributeNameByUser(string user, string attribute)
+        {
+            string result = "";
+
+            attributeData[] attributeDatas = new attributeData[1];
+            attributeDatas[0] = new attributeData
+            {
+                //search enrollment
+                IDATTRIBUTE = EAttribute.tfyacess_userid.ToString(),
+                VLATTRIBUTE = user
+            };
+
+            searchDocumentFilter searchDocumentFilter = new searchDocumentFilter
+            {
+                IDCATEGORY = searchAttributePermissionCategory
+            };
+
+            searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributeDatas);
+            documentReturn retorno = new documentReturn();
+            if (searchDocumentReturn.RESULTS.Count() > 0)
+            {
+                string idDocument = searchDocumentReturn.RESULTS.FirstOrDefault().IDDOCUMENT;
+                documentDataReturn documentDataReturn = seClient.viewDocumentData(idDocument, "", "", "");
+
+                result = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attribute) ?
+                         documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attribute).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null;
+            }
+
+            return result;
+        }
     }
 }
