@@ -402,44 +402,13 @@ namespace WebService.SE
                 documentDataReturn documentDataReturn = seClient.viewDocumentData(idDocument, "", "", "");
 
                 var attributeCode = EAttribute.SER_cad_cod_unidade.ToString();
-                var attributeName = EAttribute.SER_cad_cod_unidade.ToString();
+                var attributeName = EAttribute.SER_cad_Unidade.ToString();
 
                 unity.Code = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeCode) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeCode).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null;
                 unity.Name = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attributeName) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attributeName).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null;
             }
 
             return unity;
-        }
-
-        public string GetAttributeByAttributeNameByUser(string user, string attribute)
-        {
-            string result = "";
-
-            attributeData[] attributeDatas = new attributeData[1];
-            attributeDatas[0] = new attributeData
-            {
-                //search enrollment
-                IDATTRIBUTE = EAttribute.tfyacess_userid.ToString(),
-                VLATTRIBUTE = user
-            };
-
-            searchDocumentFilter searchDocumentFilter = new searchDocumentFilter
-            {
-                IDCATEGORY = searchAttributePermissionCategory
-            };
-
-            searchDocumentReturn searchDocumentReturn = seClient.searchDocument(searchDocumentFilter, "", attributeDatas);
-            documentReturn retorno = new documentReturn();
-            if (searchDocumentReturn.RESULTS.Count() > 0)
-            {
-                string idDocument = searchDocumentReturn.RESULTS.FirstOrDefault().IDDOCUMENT;
-                documentDataReturn documentDataReturn = seClient.viewDocumentData(idDocument, "", "", "");
-
-                result = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == attribute) ?
-                         documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == attribute).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null;
-            }
-
-            return result;
-        }
+        }        
     }
 }
