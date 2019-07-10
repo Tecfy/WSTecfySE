@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -365,7 +367,7 @@ namespace WebService
                             {
                                 bool result = saveJsonFile(fileName, registration, user);
 
-                                Task objTask = Task.Factory.StartNew(() =>{ processFile(fileName, registration, user); });
+                                Task objTask = Task.Factory.StartNew(() => { processFile(fileName, registration, user); });
 
                                 return result;
                             }
@@ -529,93 +531,97 @@ namespace WebService
 
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         [WebMethod]
+        //public HttpResponseMessage processPendingFiles()
         public bool processPendingFiles()
         {
-            try
+            HttpContext currentContext = HttpContext.Current;
+
+            Task objTask = Task.Factory.StartNew(() =>
             {
-                CreateFolder();
+                HttpContext.Current = currentContext;
+                string Key = Guid.NewGuid().ToString();
 
-                string[] filesToProcess = Directory.GetFiles(pathToProcessIn);
-
-                foreach (string filePathToProcessIn in filesToProcess)
+                try
                 {
-                    if (File.Exists(filePathToProcessIn))
+                    CreateFolder();
+
+                    string[] filesToProcess = Directory.GetFiles(pathToProcessIn);
+
+                    foreach (string filePathToProcessIn in filesToProcess)
                     {
-                        string fileNameJson = Path.GetFileName(filePathToProcessIn);
-                        string filePathToProcessOut = Path.Combine(pathToProcessOut, fileNameJson);
-
-                        File.Move(filePathToProcessIn, filePathToProcessOut);
-
-                        string[] jsonDeserialized;
-
-                        try
+                        if (File.Exists(filePathToProcessIn))
                         {
-                            using (StreamReader r = new StreamReader(filePathToProcessOut))
-                            {
-                                string content = r.ReadToEnd();
-                                jsonDeserialized = JsonConvert.DeserializeObject<string[]>(content);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles, Leitura do JSON. Erro: {0}. Json {1}. Data: {2} ****", ex.Message, filePathToProcessOut, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                            return false;
-                        }
+                            string fileNameJson = Path.GetFileName(filePathToProcessIn);
+                            string filePathToProcessOut = Path.Combine(pathToProcessOut, fileNameJson);
 
-                        try
-                        {
-                            //"jsonDeserialized" é um array de string com 3 posições, onde:
-                            // 0 = filename
-                            // 1 = registration
-                            // 2 = user
-                            string fileName = jsonDeserialized[0];
-                            string registration = jsonDeserialized[1];
-                            string user = jsonDeserialized[2];
+                            File.Move(filePathToProcessIn, filePathToProcessOut);
 
-                            string filePathIn = Path.Combine(pathIn, fileName);
-                            string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
+                            string[] jsonDeserialized;
 
-                            byte[] fileBinary = File.ReadAllBytes(filePathOut);
-
-                            int pageCount = 0;
                             try
                             {
-                                using (PdfReader reader = new PdfReader(fileBinary))
+                                using (StreamReader r = new StreamReader(filePathToProcessOut))
                                 {
-                                    pageCount = reader.NumberOfPages;
+                                    string content = r.ReadToEnd();
+                                    jsonDeserialized = JsonConvert.DeserializeObject<string[]>(content);
+                                }
+                                try
+                                {
+                                    //"jsonDeserialized" é um array de string com 3 posições, onde:
+                                    // 0 = filename
+                                    // 1 = registration
+                                    // 2 = user
+                                    string fileName = jsonDeserialized[0];
+                                    string registration = jsonDeserialized[1];
+                                    string user = jsonDeserialized[2];
+
+                                    string filePathIn = Path.Combine(pathIn, fileName);
+                                    string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
+
+                                    byte[] fileBinary = File.ReadAllBytes(filePathOut);
+
+                                    int pageCount = 0;
+                                    try
+                                    {
+                                        using (PdfReader reader = new PdfReader(fileBinary))
+                                        {
+                                            pageCount = reader.NumberOfPages;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new Exception(ex.Message);
+                                    }
+
+                                    if (pageCount >= 0)
+                                    {
+                                        Task objTask2 = Task.Factory.StartNew(() => { processFile(fileName, registration, user, false); });
+                                    }
+                                    else
+                                    {
+                                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivo corrompido número de páginas igual a 0, SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", ex.Message, jsonDeserialized[0], jsonDeserialized[1], DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                throw new Exception(ex.Message);
+                                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles, Leitura do JSON. Erro: {0}. Json {1}. Data: {2} ****", ex.Message, filePathToProcessOut, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                             }
-
-                            if (pageCount >= 0)
-                            {
-                                processFile(fileName, registration, user, false);
-                            }
-                            else
-                            {
-                                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivo corrompido número de páginas igual a 0, SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                                return false;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", ex.Message, jsonDeserialized[0], jsonDeserialized[1], DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                            return false;
                         }
                     }
+
                 }
+                catch (Exception ex)
+                {
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Erro: {0}. Data: {1} ****", ex.Message, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                }
+            });
 
-            }
-            catch (Exception ex)
-            {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Erro: {0}. Data: {1} ****", ex.Message, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-
-                return false;
-            }
-
+            //return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("OK") };
             return true;
         }
 
@@ -681,7 +687,7 @@ namespace WebService
                     throw new Exception(ex.Message);
                 }
 
-                var Unity = integrador.GetUnity(user);
+                Models.Unit.Unity Unity = integrador.GetUnity(user);
 
                 if (string.IsNullOrEmpty(Unity.Code))
                 {
@@ -712,7 +718,7 @@ namespace WebService
                     File.Delete(filePathOut);
                     File.Delete(filePathToProcessOut);
 
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);                    
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 }
                 catch (Exception ex)
                 {
@@ -720,7 +726,7 @@ namespace WebService
                     try
                     {
                         File.Move(filePathToProcessOut, filePathToProcessIn);
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);                        
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     }
                     catch { }
                 }
