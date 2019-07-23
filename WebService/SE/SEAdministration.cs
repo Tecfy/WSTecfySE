@@ -17,7 +17,7 @@ namespace TecnoSet.Ecm.Wpf.Services.SE
         protected override WebRequest GetWebRequest(Uri uri)
         {
             HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(uri);
-
+            
             if (_proxy)
             {
                 WebProxy webProxy = new WebProxy();
