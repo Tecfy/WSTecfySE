@@ -23,6 +23,10 @@ namespace WebService.SE
 
         public int Paginas { get; set; }
 
+        public string UnityCode { get; set; }
+
+        public string UnityName { get; set; }
+
         public string DocumentIdOwner
         {
             get
@@ -35,7 +39,7 @@ namespace WebService.SE
         {
             get
             {
-                return Registration.Trim() + "-" + CategoryPrimary.Trim() + "-" + (CurrentVersion + 1).ToString("000");
+                return Registration.Trim() + "-" + UnityCode.Trim() + "-" + CategoryPrimary.Trim() + "-" + (CurrentVersion + 1).ToString("000");
             }
         }
 

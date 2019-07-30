@@ -1,13 +1,18 @@
 ﻿using iTextSharp.text.pdf;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Configuration;
+using System.Web.Script.Serialization;
 using System.Web.Script.Services;
 using System.Web.Services;
 using WebService.Connection;
@@ -21,12 +26,15 @@ namespace WebService
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     public class RequestService : System.Web.Services.WebService
     {
-        readonly string pathIn = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
-        readonly string pathOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Out"]);
-        readonly string pathLog = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Log"]);
-        readonly string pathDocument = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document"]);
-        readonly string pathDocumentDelete = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document.Delete"]);
-        readonly string extension = WebConfigurationManager.AppSettings["Extension"];
+        private readonly string pathIn = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.In"]);
+        private readonly string pathOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Out"]);
+        private readonly string pathToProcessIn = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.ToProcessIn"]);
+        private readonly string pathToProcessOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.ToProcessOut"]);
+        private readonly string pathToProcessError = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.ToProcessError"]);
+        private readonly string pathLog = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Log"]);
+        private readonly string pathDocument = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document"]);
+        private readonly string pathDocumentDelete = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Document.Delete"]);
+        private readonly string extension = WebConfigurationManager.AppSettings["Extension"];
 
         #region .: Methods :.       
 
@@ -39,40 +47,47 @@ namespace WebService
             File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. RA: {0} . Data: {1} ****", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
             DadosAlunos dadosAluno = new DadosAlunos();
-            var integrador = new InsegracaoSE();
+            InsegracaoSE integrador = new InsegracaoSE();
 
             dadosAluno.RetornoStudent = new List<Student>();
 
-            if (integrador.VerifyDocumentPermission(ra, usuario))
+            if (string.IsNullOrEmpty(integrador.GetUnity(usuario).Code))
             {
-                var documentDataReturn = integrador.GetDocumentProperties(ra);
-                if (string.IsNullOrEmpty(documentDataReturn.ERROR))
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+            }
+            else
+            {
+                if (integrador.VerifyDocumentPermission(ra, usuario))
                 {
-                    try
+                    com.softexpert.tecfy.documentDataReturn documentDataReturn = integrador.GetDocumentProperties(ra);
+                    if (string.IsNullOrEmpty(documentDataReturn.ERROR))
                     {
-                        Student estudante = new Student
+                        try
                         {
-                            RA = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                            CPFALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                            NOMECURSO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                            CODCENTRO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                            NOMEALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                        };
-                        dadosAluno.RetornoStudent.Add(estudante);
+                            Student estudante = new Student
+                            {
+                                RA = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                CPFALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                NOMECURSO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                CODCENTRO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                NOMEALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                            };
+                            dadosAluno.RetornoStudent.Add(estudante);
+                        }
+                        catch (Exception ex)
+                        {
+                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", ex.Message, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", ex.Message, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", documentDataReturn.ERROR, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     }
                 }
                 else
                 {
-                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", documentDataReturn.ERROR, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 }
-            }
-            else
-            {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
             }
 
             return dadosAluno;
@@ -102,7 +117,7 @@ namespace WebService
                 // Don't open with FileMode.Append because the transfer may wish to
                 // Start a different point
                 int Tentativa = 0;
-                INICIO:
+            INICIO:
                 try
                 {
                     if (Tentativa < 6)
@@ -185,6 +200,11 @@ namespace WebService
                 string filePathIn = Path.Combine(pathIn, fileName);
                 string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
 
+                if (File.Exists(filePathOut))
+                {
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", "Arquivo já existente no Out", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    return false;
+                }
 
                 if (File.Exists(filePathIn))
                 {
@@ -198,19 +218,25 @@ namespace WebService
                         }
                         else if (Path.GetExtension(filePathIn) == ".pdf")
                         {
-                            File.Copy(filePathIn, filePathOut);
+                            if (File.Exists(filePathOut))
+                            {
+                                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", "Arquivo já existente no Out", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                return false;
+                            }
+                            else
+                            {
+                                File.Copy(filePathIn, filePathOut);
+                            }
                         }
 
                         try
                         {
-                            var integrador = new InsegracaoSE();
-
                             byte[] fileBinary = File.ReadAllBytes(filePathOut);
 
                             int pageCount = 0;
                             try
                             {
-                                using (var reader = new PdfReader(fileBinary))
+                                using (PdfReader reader = new PdfReader(fileBinary))
                                 {
                                     pageCount = reader.NumberOfPages;
                                 }
@@ -222,41 +248,11 @@ namespace WebService
 
                             if (pageCount >= 0)
                             {
-                                var documentoAtributo = new DocumentoAtributo
-                                {
-                                    FileBinary = fileBinary,
-                                    CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
-                                    CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
-                                    Registration = registration,
-                                    User = user,
-                                    Extension = extension,
-                                    Now = DateTime.Now,
-                                    Paginas = pageCount
-                                };
+                                bool result = saveJsonFile(fileName, registration, user);
 
-                                integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
+                                Task objTask = Task.Factory.StartNew(() => { processFile(fileName, registration, user); });
 
-                                try
-                                {
-                                    fileDocument = Path.Combine(pathDocument, fileDocument + extension);
-
-                                    File.Delete(filePathIn);
-                                    File.Delete(filePathOut);
-                                    //File.Move(filePathOut, fileDocument);
-
-                                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                                }
-                                catch
-                                {
-                                    Thread.Sleep(5000);
-                                    try
-                                    {
-                                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: submitFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                                    }
-                                    catch { }
-                                }
-
-                                return true;
+                                return result;
                             }
                             else
                             {
@@ -288,6 +284,7 @@ namespace WebService
 
                 return false;
             }
+
         }
 
         #endregion
@@ -304,9 +301,9 @@ namespace WebService
 
             try
             {
-                var client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.GetJobById"].ToString(), jobId));
+                RestClient client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.GetJobById"].ToString(), jobId));
 
-                var request = RestRequestHelper.Get(Method.GET);
+                RestRequest request = RestRequestHelper.Get(Method.GET);
 
                 client.Timeout = (1000 * 60 * 60);
                 client.ReadWriteTimeout = (1000 * 60 * 60);
@@ -345,9 +342,9 @@ namespace WebService
 
                 File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: getJobsByRegistration. URI: {0}. Data: {1} ****", uri, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                var client = new RestClient(uri);
+                RestClient client = new RestClient(uri);
 
-                var request = RestRequestHelper.Get(Method.GET);
+                RestRequest request = RestRequestHelper.Get(Method.GET);
 
                 client.Timeout = (1000 * 60 * 60);
                 client.ReadWriteTimeout = (1000 * 60 * 60);
@@ -388,9 +385,9 @@ namespace WebService
             {
                 JobCategorySaveIn jobCategorySaveIn = new JobCategorySaveIn { jobCategoryId = jobCategoryId, archive = archive };
 
-                var client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.SetJobCategorySave"].ToString()));
+                RestClient client = new RestClient(WebConfigurationManager.AppSettings["API.URL"].ToString() + string.Format(WebConfigurationManager.AppSettings["API.SetJobCategorySave"].ToString()));
 
-                var request = RestRequestHelper.Get(Method.POST, SimpleJson.SerializeObject(jobCategorySaveIn));
+                RestRequest request = RestRequestHelper.Get(Method.POST, SimpleJson.SerializeObject(jobCategorySaveIn));
 
                 client.Timeout = (1000 * 60 * 60);
                 client.ReadWriteTimeout = (1000 * 60 * 60);
@@ -415,6 +412,218 @@ namespace WebService
             return jobCategorySaveOut;
         }
 
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        [WebMethod]
+        public bool processPendingFiles()
+        {
+            HttpContext currentContext = HttpContext.Current;
+
+            Task objTask = Task.Factory.StartNew(() =>
+            {
+                HttpContext.Current = currentContext;
+                string Key = Guid.NewGuid().ToString();
+
+                try
+                {
+                    CreateFolder();
+
+                    string[] filesToProcess = Directory.GetFiles(pathToProcessIn);
+
+                    foreach (string filePathToProcessIn in filesToProcess)
+                    {
+                        if (File.Exists(filePathToProcessIn))
+                        {
+                            string fileNameJson = Path.GetFileName(filePathToProcessIn);
+                            string filePathToProcessOut = Path.Combine(pathToProcessOut, fileNameJson);
+
+                            File.Move(filePathToProcessIn, filePathToProcessOut);
+
+                            string[] jsonDeserialized;
+
+                            try
+                            {
+                                using (StreamReader r = new StreamReader(filePathToProcessOut))
+                                {
+                                    string content = r.ReadToEnd();
+                                    jsonDeserialized = JsonConvert.DeserializeObject<string[]>(content);
+                                }
+                                try
+                                {
+                                    //"jsonDeserialized" é um array de string com 3 posições, onde:
+                                    // 0 = filename
+                                    // 1 = registration
+                                    // 2 = user
+                                    string fileName = jsonDeserialized[0];
+                                    string registration = jsonDeserialized[1];
+                                    string user = jsonDeserialized[2];
+
+                                    string filePathIn = Path.Combine(pathIn, fileName);
+                                    string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
+
+                                    byte[] fileBinary = File.ReadAllBytes(filePathOut);
+
+                                    int pageCount = 0;
+                                    try
+                                    {
+                                        using (PdfReader reader = new PdfReader(fileBinary))
+                                        {
+                                            pageCount = reader.NumberOfPages;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new Exception(ex.Message);
+                                    }
+
+                                    if (pageCount >= 0)
+                                    {
+                                        Task objTask2 = Task.Factory.StartNew(() => { processFile(fileName, registration, user, false); });
+                                    }
+                                    else
+                                    {
+                                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivo corrompido número de páginas igual a 0, SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Erro: {0}. Arquivo: {1}, RA: {2}. Data: {3} ****", ex.Message, jsonDeserialized[0], jsonDeserialized[1], DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles, Leitura do JSON. Erro: {0}. Json {1}. Data: {2} ****", ex.Message, filePathToProcessOut, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                            }
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Erro: {0}. Data: {1} ****", ex.Message, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                }
+            });
+
+            return true;
+        }
+
+        public bool saveJsonFile(string fileName, string registration, string user)
+        {
+            try
+            {
+                CreateFolder();
+                string filePathToProcessIn = Path.Combine(pathToProcessIn, fileName + ".json");
+
+                string[] jsonContent = new string[3];
+
+                jsonContent[0] = fileName;
+                jsonContent[1] = registration;
+                jsonContent[2] = user;
+
+                string jsonToProcess = new JavaScriptSerializer().Serialize(jsonContent);
+
+                File.WriteAllText(filePathToProcessIn, jsonToProcess);
+
+                return true;
+            }
+            catch
+            {
+                try
+                {
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: saveJsonFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    return false;
+                }
+                catch { return false; }
+            }
+        }
+
+        private void processFile(string fileName, string registration, string user, bool moveOut = true)
+        {
+            string filePathIn = Path.Combine(pathIn, fileName);
+            string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
+            string filePathToProcessIn = Path.Combine(pathToProcessIn, fileName + ".json");
+            string filePathToProcessOut = Path.Combine(pathToProcessOut, fileName + ".json");
+            string filePathToProcessError = Path.Combine(pathToProcessError, fileName + ".json");
+
+            try
+            {
+                InsegracaoSE integrador = new InsegracaoSE();
+
+                if (moveOut)
+                {
+                    File.Move(filePathToProcessIn, filePathToProcessOut);
+                }
+
+                byte[] fileBinary = File.ReadAllBytes(filePathOut);
+
+                int pageCount = 0;
+                try
+                {
+                    using (PdfReader reader = new PdfReader(fileBinary))
+                    {
+                        pageCount = reader.NumberOfPages;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+
+                Models.Unit.Unity Unity = integrador.GetUnity(user);
+
+                if (string.IsNullOrEmpty(Unity.Code))
+                {
+                    File.Move(filePathToProcessOut, filePathToProcessError);
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Unidade não encontrada): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    return;
+                }
+
+                DocumentoAtributo documentoAtributo = new DocumentoAtributo
+                {
+                    FileBinary = fileBinary,
+                    CategoryPrimary = WebConfigurationManager.AppSettings["Category_Primary"],
+                    CategoryOwner = WebConfigurationManager.AppSettings["Category_Owner"],
+                    Registration = registration,
+                    User = user,
+                    Extension = extension,
+                    Now = DateTime.Now,
+                    Paginas = pageCount,
+                    UnityCode = Unity.Code,
+                    UnityName = Unity.Name
+                };
+
+                integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
+
+                try
+                {
+                    File.Delete(filePathIn);
+                    File.Delete(filePathOut);
+                    File.Delete(filePathToProcessOut);
+
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(5000);
+                    try
+                    {
+                        File.Move(filePathToProcessOut, filePathToProcessIn);
+                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                Thread.Sleep(5000);
+                try
+                {
+                    File.Move(filePathToProcessOut, filePathToProcessIn);
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                }
+                catch { }
+            }
+        }
+
         #endregion
 
         #region .: :.
@@ -425,18 +634,18 @@ namespace WebService
         {
             if (code == WebConfigurationManager.AppSettings["Delete.Code"])
             {
-                var currentContext = HttpContext.Current;
+                HttpContext currentContext = HttpContext.Current;
 
                 System.Threading.Tasks.Task objTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
                     HttpContext.Current = currentContext;
                     File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: deleteDocuments. Inicio do processo. Data: {0} ****", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                    var integrador = new InsegracaoSE();
+                    InsegracaoSE integrador = new InsegracaoSE();
 
                     if (Directory.GetFiles(pathDocumentDelete).Length > 0)
                     {
-                        foreach (var file in Directory.GetFiles(pathDocumentDelete))
+                        foreach (string file in Directory.GetFiles(pathDocumentDelete))
                         {
                             try
                             {
@@ -446,7 +655,7 @@ namespace WebService
                                 {
                                     List<string> listDocuments = sr.ReadToEnd().Split(';').ToList();
 
-                                    foreach (var item in listDocuments)
+                                    foreach (string item in listDocuments)
                                     {
                                         try
                                         {
@@ -501,11 +710,11 @@ namespace WebService
 
         private void CreateFolder()
         {
-            var folders = new string[] { "Path.In", "Path.Out", "Path.Log", "Path.Document" };
+            string[] folders = new string[] { "Path.In", "Path.Out", "Path.ToProcessIn", "Path.ToProcessOut", "Path.ToProcessError", "Path.Log", "Path.Document" };
 
-            foreach (var item in folders)
+            foreach (string item in folders)
             {
-                var pathInput = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings[item]).ToString();
+                string pathInput = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings[item]).ToString();
                 if (!Directory.Exists(pathInput))
                 {
                     Directory.CreateDirectory(pathInput);
@@ -513,6 +722,6 @@ namespace WebService
             }
         }
 
-        #endregion 
+        #endregion
     }
 }
