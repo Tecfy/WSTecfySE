@@ -51,43 +51,50 @@ namespace WebService
 
             dadosAluno.RetornoStudent = new List<Student>();
 
-            if (string.IsNullOrEmpty(integrador.GetUnity(usuario).Code))
+            try
             {
-                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-            }
-            else
-            {
-                if (integrador.VerifyDocumentPermission(ra, usuario))
+                if (string.IsNullOrEmpty(integrador.GetUnity(usuario).Code))
                 {
-                    com.softexpert.tecfy.documentDataReturn documentDataReturn = integrador.GetDocumentProperties(ra);
-                    if (string.IsNullOrEmpty(documentDataReturn.ERROR))
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                }
+                else
+                {
+                    if (integrador.VerifyDocumentPermission(ra, usuario))
                     {
-                        try
+                        com.softexpert.tecfy.documentDataReturn documentDataReturn = integrador.GetDocumentProperties(ra);
+                        if (string.IsNullOrEmpty(documentDataReturn.ERROR))
                         {
-                            Student estudante = new Student
+                            try
                             {
-                                RA = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                                CPFALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                                NOMECURSO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                                CODCENTRO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                                NOMEALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
-                            };
-                            dadosAluno.RetornoStudent.Add(estudante);
+                                Student estudante = new Student
+                                {
+                                    RA = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Registration"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                    CPFALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_CPF"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                    NOMECURSO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Course"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                    CODCENTRO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Unity"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                    NOMEALUNO = documentDataReturn.ATTRIBUTTES.Any(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()) ? documentDataReturn.ATTRIBUTTES.Where(x => x.ATTRIBUTTENAME == WebConfigurationManager.AppSettings["Attribute_Name"].ToString()).FirstOrDefault().ATTRIBUTTEVALUE.FirstOrDefault() : null,
+                                };
+                                dadosAluno.RetornoStudent.Add(estudante);
+                            }
+                            catch (Exception ex)
+                            {
+                                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", ex.Message, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                            }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", ex.Message, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                            File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", documentDataReturn.ERROR, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                         }
                     }
                     else
                     {
-                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", documentDataReturn.ERROR, ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     }
                 }
-                else
-                {
-                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. RA: {1}. Data: {2} ****", "O usuário não tem permissão para visualizar os dados desse aluno.", ra, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: findStudentByRa. Erro: {0}. Message: {1}, Source: {2}. Data: {3} ****", ex.Message, ex.StackTrace, ex.Source, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
             }
 
             return dadosAluno;
@@ -117,7 +124,7 @@ namespace WebService
                 // Don't open with FileMode.Append because the transfer may wish to
                 // Start a different point
                 int Tentativa = 0;
-            INICIO:
+                INICIO:
                 try
                 {
                     if (Tentativa < 6)
