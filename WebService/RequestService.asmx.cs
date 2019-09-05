@@ -535,8 +535,8 @@ namespace WebService
             catch
             {
                 try
-                {
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: saveJsonFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                {                    
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: saveJsonFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     return false;
                 }
                 catch { return false; }
@@ -580,7 +580,7 @@ namespace WebService
                 if (string.IsNullOrEmpty(Unity.Code))
                 {
                     File.Move(filePathToProcessOut, filePathToProcessError);
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Unidade não encontrada): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Unidade não encontrada): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     return;
                 }
 
@@ -614,7 +614,7 @@ namespace WebService
                     try
                     {
                         File.Move(filePathToProcessOut, filePathToProcessIn);
-                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     }
                     catch { }
                 }
@@ -625,7 +625,7 @@ namespace WebService
                 try
                 {
                     File.Move(filePathToProcessOut, filePathToProcessIn);
-                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 }
                 catch { }
             }
