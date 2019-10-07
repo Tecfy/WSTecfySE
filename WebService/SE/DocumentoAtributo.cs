@@ -17,31 +17,15 @@ namespace WebService.SE
 
         public string Extension { get; set; }
 
-        public int CurrentVersion { get; set; }
-
         public DateTime Now { get; set; }
 
-        public int Paginas { get; set; }
+        public int Pages { get; set; }
 
         public string UnityCode { get; set; }
 
         public string UnityName { get; set; }
 
-        public string DocumentIdOwner
-        {
-            get
-            {
-                return Registration.Trim();
-            }
-        }
-
-        public string DocumentIdPrimary
-        {
-            get
-            {
-                return Registration.Trim() + "-" + UnityCode.Trim() + "-" + CategoryPrimary.Trim() + "-" + (CurrentVersion + 1).ToString("000");
-            }
-        }
+        public string DocumentIdPrimary { get; set; }
 
         public string FileName
         {
