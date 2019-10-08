@@ -73,8 +73,6 @@ namespace WebService.SE
                         command.CommandType = CommandType.StoredProcedure;
 
                         command.Parameters.Add("@Registration", SqlDbType.VarChar).Value = documentoAtributo.Registration;
-                        command.Parameters.Add("@CategoryPrimary", SqlDbType.VarChar).Value = documentoAtributo.CategoryPrimary;
-                        command.Parameters.Add("@CategoryOwner", SqlDbType.VarChar).Value = documentoAtributo.CategoryOwner;
                         command.Parameters.Add("@User", SqlDbType.VarChar).Value = documentoAtributo.User;
                         command.Parameters.Add("@Pages", SqlDbType.Decimal).Value = documentoAtributo.Pages;
                         command.Parameters.Add("@UnityCode", SqlDbType.VarChar).Value = documentoAtributo.UnityCode;
