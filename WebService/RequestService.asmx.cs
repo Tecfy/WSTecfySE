@@ -593,12 +593,12 @@ namespace WebService
                     User = user,
                     Extension = extension,
                     Now = DateTime.Now,
-                    Paginas = pageCount,
+                    Pages = pageCount,
                     UnityCode = Unity.Code,
                     UnityName = Unity.Name
                 };
 
-                integrador.InsertBinaryDocument(documentoAtributo, out string fileDocument);
+                integrador.InsertBinaryDocument(documentoAtributo);
 
                 try
                 {
