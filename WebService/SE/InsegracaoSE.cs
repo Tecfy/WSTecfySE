@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Web.Configuration;
 using TecnoSet.Ecm.Wpf.Services.SE;
 using WebService.com.softexpert.tecfy;
@@ -86,7 +87,7 @@ namespace WebService.SE
 
                         documentoAtributo.DocumentIdPrimary = reader["DocumentId"].ToString().Trim();
 
-                        InsertPhysicalFile(documentoAtributo);
+                        InsertPhysicalFile(documentoAtributo, 1);
                     }
                 }
 
@@ -129,7 +130,7 @@ namespace WebService.SE
 
         #region .: Private :.
 
-        private bool InsertPhysicalFile(DocumentoAtributo Indice)
+        private bool InsertPhysicalFile(DocumentoAtributo Indice, int exec)
         {
             try
             {
@@ -174,14 +175,26 @@ namespace WebService.SE
                     }
                 }
 
-                #endregion
-
-                return true;
+                #endregion                
             }
             catch (Exception ex)
             {
-                throw ex;
+                if (exec < 5)
+                {
+                    exec++;
+                    int sleep = 3000;
+                    int.TryParse(ConfigurationManager.AppSettings["SLEEP"], out sleep);
+
+                    Thread.Sleep(sleep);
+                    InsertPhysicalFile(Indice, exec);
+                }
+                else
+                {
+                    throw ex;
+                }
             }
+
+            return true;
         }
 
         #endregion
