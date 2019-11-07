@@ -124,7 +124,7 @@ namespace WebService
                 // Don't open with FileMode.Append because the transfer may wish to
                 // Start a different point
                 int Tentativa = 0;
-                INICIO:
+            INICIO:
                 try
                 {
                     if (Tentativa < 6)
@@ -257,7 +257,7 @@ namespace WebService
                             {
                                 bool result = saveJsonFile(fileName, registration, user);
 
-                                Task objTask = Task.Factory.StartNew(() => { processFile(fileName, registration, user); });
+                                //Task objTask = Task.Factory.StartNew(() => { processFile(fileName, registration, user); });
 
                                 return result;
                             }
@@ -427,6 +427,8 @@ namespace WebService
 
             Task objTask = Task.Factory.StartNew(() =>
             {
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivos sendo enviados para o SE. Inicio: {0} ****", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                 HttpContext.Current = currentContext;
                 string Key = Guid.NewGuid().ToString();
 
@@ -436,10 +438,14 @@ namespace WebService
 
                     string[] filesToProcess = Directory.GetFiles(pathToProcessIn);
 
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivos sendo enviados para o SE. Quantidade: {0} Inicio: {1} ****", filesToProcess.Count(), DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                     foreach (string filePathToProcessIn in filesToProcess)
                     {
                         if (File.Exists(filePathToProcessIn))
                         {
+                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivo sendo enviado para o SE. Arquivo: {0} Inicio: {1} ****", Path.GetFileName(filePathToProcessIn), DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                             string fileNameJson = Path.GetFileName(filePathToProcessIn);
                             string filePathToProcessOut = Path.Combine(pathToProcessOut, fileNameJson);
 
@@ -484,11 +490,11 @@ namespace WebService
 
                                     if (pageCount >= 0)
                                     {
-                                        Task objTask2 = Task.Factory.StartNew(() => { processFile(fileName, registration, user, false); });
+                                        processFile(fileName, registration, user, false);
                                     }
                                     else
                                     {
-                                        File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivo corrompido número de páginas igual a 0, SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                                        File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivo corrompido número de páginas igual a 0, SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                                     }
                                 }
                                 catch (Exception ex)
@@ -500,6 +506,8 @@ namespace WebService
                             {
                                 File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles, Leitura do JSON. Erro: {0}. Json {1}. Data: {2} ****", ex.Message, filePathToProcessOut, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                             }
+
+                            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivo sendo enviado para o SE. Arquivo: {0} Fim: {1} ****", Path.GetFileName(filePathToProcessIn), DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                         }
                     }
 
@@ -508,6 +516,8 @@ namespace WebService
                 {
                     File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Erro: {0}. Data: {1} ****", ex.Message, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 }
+
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processPendingFiles. Arquivos sendo enviados para o SE. Fim: {0} ****", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
             });
 
             return true;
@@ -535,7 +545,7 @@ namespace WebService
             catch
             {
                 try
-                {                    
+                {
                     File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: saveJsonFile. Arquivo sendo enviado para o SE (Erro na Finalização): {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                     return false;
                 }
@@ -545,6 +555,8 @@ namespace WebService
 
         private void processFile(string fileName, string registration, string user, bool moveOut = true)
         {
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE: {0}. Arquivo: {1} Inicio: {2} ****", registration, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
             string filePathIn = Path.Combine(pathIn, fileName);
             string filePathOut = Path.Combine(pathOut, Path.GetFileNameWithoutExtension(fileName) + extension);
             string filePathToProcessIn = Path.Combine(pathToProcessIn, fileName + ".json");
@@ -613,8 +625,8 @@ namespace WebService
                     Thread.Sleep(5000);
                     try
                     {
-                        File.Move(filePathToProcessOut, filePathToProcessIn);
                         File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                        File.Move(filePathToProcessOut, filePathToProcessError);
                     }
                     catch { }
                 }
@@ -624,11 +636,13 @@ namespace WebService
                 Thread.Sleep(5000);
                 try
                 {
-                    File.Move(filePathToProcessOut, filePathToProcessIn);
                     File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE (Erro {0}): {1}, RA: {2}. Fim: {3} ****", ex.Message, fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                    File.Move(filePathToProcessOut, filePathToProcessError);
                 }
                 catch { }
             }
+
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: processFile. Arquivo sendo enviado para o SE: {0}. Arquivo: {1} Fim: {2} ****", registration, fileName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
         }
 
         #endregion
