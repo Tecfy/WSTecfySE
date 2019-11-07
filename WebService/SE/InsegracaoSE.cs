@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -9,6 +8,7 @@ using System.Web.Configuration;
 using TecnoSet.Ecm.Wpf.Services.SE;
 using WebService.com.softexpert.tecfy;
 using WebService.Connection;
+using WebService.Helper;
 using WebService.Models.Common.Enum;
 using WebService.Models.Unit;
 
@@ -18,6 +18,7 @@ namespace WebService.SE
     {
         #region .: Attributes :.
 
+        private readonly string pathLog = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Log"]);
         private readonly string physicalPath = WebConfigurationManager.AppSettings["Sesuite.Physical.Path"];
         private readonly string physicalPathSE = WebConfigurationManager.AppSettings["Sesuite.Physical.Path.SE"];
         private readonly string categoryPrimaryTitle = WebConfigurationManager.AppSettings["Category_Primary_Title"];
@@ -59,6 +60,8 @@ namespace WebService.SE
         {
             try
             {
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertBinaryDocument. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", documentoAtributo.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                 #region .: Query :.
 
                 string connectionString = WebConfigurationManager.ConnectionStrings["DefaultSesuite"].ConnectionString;
@@ -86,17 +89,20 @@ namespace WebService.SE
                         reader.Read();
 
                         documentoAtributo.DocumentIdPrimary = reader["DocumentId"].ToString().Trim();
-
-                        InsertPhysicalFile(documentoAtributo, 1);
                     }
                 }
 
+                InsertPhysicalFile(documentoAtributo);
+
                 #endregion
+
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertBinaryDocument. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", documentoAtributo.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 return true;
             }
             catch (Exception ex)
             {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertBinaryDocument. Arquivo sendo enviado para o SE (Erro {0}): {1}. Fim: {2} ****", ex.Message, documentoAtributo.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 throw ex;
             }
         }
@@ -130,10 +136,12 @@ namespace WebService.SE
 
         #region .: Private :.
 
-        private bool InsertPhysicalFile(DocumentoAtributo Indice, int exec)
+        private bool InsertPhysicalFile(DocumentoAtributo Indice)
         {
             try
             {
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                 #region .: Save File :.
 
                 if (!Directory.Exists(physicalPath))
@@ -141,12 +149,19 @@ namespace WebService.SE
                     Directory.CreateDirectory(physicalPath);
                 }
 
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Passo 1. Inicio: {1} ****", Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                 if (File.Exists(Path.Combine(physicalPath, Indice.FileName)))
                 {
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Passo 1.1 Path: {1} ****", Indice.Registration, Path.Combine(physicalPath, Indice.FileName)) + Environment.NewLine);
                     File.Delete(Path.Combine(physicalPath, Indice.FileName));
                 }
 
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Passo 2. Inicio: {1} ****", Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                 File.WriteAllBytes(Path.Combine(physicalPath, Indice.FileName), Indice.FileBinary);
+
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Passo 3. Inicio: {1} ****", Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
                 #endregion
 
@@ -161,6 +176,8 @@ namespace WebService.SE
 
                 using (SqlConnection connectionInsert = new SqlConnection(connectionString))
                 {
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Passo 4. Inicio: {1} ****", Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
                     string queryInsert = string.Format(queryStringInsert,
                         Indice.DocumentIdPrimary /*Identificador do Documento*/,
                         Indice.FileName /*Nome do Arquivo*/,
@@ -173,26 +190,19 @@ namespace WebService.SE
                         connectionInsert.Open();
                         commandInsert.ExecuteNonQuery();
                     }
+
+                    File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Passo 5. Inicio: {1} ****", Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
                 }
 
                 #endregion                
             }
             catch (Exception ex)
             {
-                if (exec < 5)
-                {
-                    exec++;
-                    int sleep = 3000;
-                    int.TryParse(ConfigurationManager.AppSettings["SLEEP"], out sleep);
-
-                    Thread.Sleep(sleep);
-                    InsertPhysicalFile(Indice, exec);
-                }
-                else
-                {
-                    throw ex;
-                }
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE (Erro {0}): {1}. Fim: {2} ****", ex.Message, Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                throw ex;
             }
+
+            File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
             return true;
         }
