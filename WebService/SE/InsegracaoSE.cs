@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Web.Configuration;
+using System.Web.Script.Serialization;
 using TecnoSet.Ecm.Wpf.Services.SE;
 using WebService.com.softexpert.tecfy;
 using WebService.Connection;
@@ -19,6 +20,7 @@ namespace WebService.SE
         #region .: Attributes :.
 
         private readonly string pathLog = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.Log"]);
+        private readonly string pathToProcessOut = ServerMapHelper.GetServerMap(WebConfigurationManager.AppSettings["Path.ToProcessOut"]);
         private readonly string physicalPath = WebConfigurationManager.AppSettings["Sesuite.Physical.Path"];
         private readonly string physicalPathSE = WebConfigurationManager.AppSettings["Sesuite.Physical.Path.SE"];
         private readonly string categoryPrimaryTitle = WebConfigurationManager.AppSettings["Category_Primary_Title"];
@@ -62,37 +64,42 @@ namespace WebService.SE
             {
                 File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertBinaryDocument. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", documentoAtributo.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
-                #region .: Query :.
-
-                string connectionString = WebConfigurationManager.ConnectionStrings["DefaultSesuite"].ConnectionString;
-
-                #endregion
-
                 #region .: Synchronization :.
 
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                if (string.IsNullOrEmpty(documentoAtributo.DocumentId))
                 {
-                    using (SqlCommand command = new SqlCommand("p_Dossier_Document", connection))
+                    string documentIdPrimary = string.Empty;
+                    InsertDocumentSE(documentoAtributo, out documentIdPrimary);
+                    SaveJsonFile(documentoAtributo.FileNameJson, documentoAtributo.Registration, documentoAtributo.User, documentIdPrimary);
+                    documentoAtributo.DocumentIdPrimary = documentIdPrimary;
+                    InsertPhysicalFile(documentoAtributo);
+                }
+                else
+                {
+                    documentoAtributo.DocumentIdPrimary = documentoAtributo.DocumentId;
+
+                    int status = 0;
+                    ValidDocumentSE(documentoAtributo.DocumentId, out status);
+
+                    switch (status)
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-
-                        command.Parameters.Add("@Registration", SqlDbType.VarChar).Value = documentoAtributo.Registration;
-                        command.Parameters.Add("@User", SqlDbType.VarChar).Value = documentoAtributo.User;
-                        command.Parameters.Add("@Pages", SqlDbType.Decimal).Value = documentoAtributo.Pages;
-                        command.Parameters.Add("@UnityCode", SqlDbType.VarChar).Value = documentoAtributo.UnityCode;
-                        command.Parameters.Add("@UnityName", SqlDbType.VarChar).Value = documentoAtributo.UnityName;
-                        command.Parameters.Add("@Title", SqlDbType.VarChar).Value = categoryPrimaryTitle;
-
-                        connection.Open();
-                        SqlDataReader reader = command.ExecuteReader();
-
-                        reader.Read();
-
-                        documentoAtributo.DocumentIdPrimary = reader["DocumentId"].ToString().Trim();
+                        case 1:
+                            //Document does not exist
+                            string documentIdPrimary = string.Empty;
+                            InsertDocumentSE(documentoAtributo, out documentIdPrimary);
+                            SaveJsonFile(documentoAtributo.FileNameJson, documentoAtributo.Registration, documentoAtributo.User, documentIdPrimary);
+                            documentoAtributo.DocumentIdPrimary = documentIdPrimary;
+                            InsertPhysicalFile(documentoAtributo);
+                            break;
+                        case 2:
+                            //Document exists without file
+                            InsertPhysicalFile(documentoAtributo);
+                            break;
+                        default:
+                            //Document exists with file     
+                            throw new Exception("ValidDocumentSE");
                     }
                 }
-
-                InsertPhysicalFile(documentoAtributo);
 
                 #endregion
 
@@ -135,6 +142,47 @@ namespace WebService.SE
         #endregion
 
         #region .: Private :.
+
+        private bool InsertDocumentSE(DocumentoAtributo documentoAtributo, out string documentIdPrimary)
+        {
+            try
+            {
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertDocumentSE. Arquivo sendo enviado para o SE: {0}. Inicio: {1} ****", documentoAtributo.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                string connectionString = WebConfigurationManager.ConnectionStrings["DefaultSesuite"].ConnectionString;
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("p_Dossier_Document", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add("@Registration", SqlDbType.VarChar).Value = documentoAtributo.Registration;
+                        command.Parameters.Add("@User", SqlDbType.VarChar).Value = documentoAtributo.User;
+                        command.Parameters.Add("@Pages", SqlDbType.Decimal).Value = documentoAtributo.Pages;
+                        command.Parameters.Add("@UnityCode", SqlDbType.VarChar).Value = documentoAtributo.UnityCode;
+                        command.Parameters.Add("@UnityName", SqlDbType.VarChar).Value = documentoAtributo.UnityName;
+                        command.Parameters.Add("@Title", SqlDbType.VarChar).Value = categoryPrimaryTitle;
+
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        reader.Read();
+
+                        documentIdPrimary = reader["DocumentId"].ToString().Trim();
+                    }
+                }
+
+                File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertDocumentSE. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", documentoAtributo.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertDocumentSE. Arquivo sendo enviado para o SE (Erro {0}): {1}. Fim: {2} ****", ex.Message, documentoAtributo.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                throw new Exception("InsertDocumentSE");
+            }
+        }
 
         private bool InsertPhysicalFile(DocumentoAtributo Indice)
         {
@@ -199,12 +247,69 @@ namespace WebService.SE
             catch (Exception ex)
             {
                 File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE (Erro {0}): {1}. Fim: {2} ****", ex.Message, Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
-                throw ex;
+                throw new Exception("InsertPhysicalFile");
             }
 
             File.AppendAllText(string.Format("{0}\\Validation_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: InsertPhysicalFile. Arquivo sendo enviado para o SE: {0}. Fim: {1} ****", Indice.Registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
 
             return true;
+        }
+
+        private bool SaveJsonFile(string fileName, string registration, string user, string documentId)
+        {
+            try
+            {
+                string filePathToProcessIn = Path.Combine(pathToProcessOut, fileName + ".json");
+
+                string[] jsonContent = new string[4];
+
+                jsonContent[0] = fileName;
+                jsonContent[1] = registration;
+                jsonContent[2] = user;
+                jsonContent[3] = documentId;
+
+                string jsonToProcess = new JavaScriptSerializer().Serialize(jsonContent);
+
+                File.WriteAllText(filePathToProcessIn, jsonToProcess);
+
+                return true;
+            }
+            catch
+            {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: saveJsonFile. Arquivo sendo enviado para o SE: {0}, RA: {1}. Fim: {2} ****", fileName, registration, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                throw new Exception("SaveJsonFile");
+            }
+        }
+
+        private void ValidDocumentSE(string documentIdPrimary, out int status)
+        {
+            try
+            {
+                documentDataReturn documentDataReturn = seClient.viewDocumentData(documentIdPrimary, "", "", "");
+
+                if (documentDataReturn.ERROR == null)
+                {
+                    eletronicFile[] eletronicFiles = seClient.downloadEletronicFile(documentDataReturn.IDDOCUMENT, "", "", "", "", "", "", "1");
+
+                    if (!eletronicFiles.Any(x => x.ERROR != null))
+                    {
+                        status = 3;//Document exists with file                        
+                    }
+                    else
+                    {
+                        status = 2;//Document exists without file
+                    }
+                }
+                else
+                {
+                    status = 1;//Document does not exist
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(string.Format("{0}\\Error_{1}.txt", pathLog, DateTime.Now.ToString("yyyyMMdd")), string.Format("**** Método: ValidDocumentSE. Arquivo sendo enviado para o SE (Erro {0}): {1}. Fim: {2} ****", ex.Message, documentIdPrimary, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")) + Environment.NewLine);
+                throw new Exception("ValidDocumentSE");
+            }
         }
 
         #endregion
