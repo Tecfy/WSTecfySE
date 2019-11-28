@@ -27,6 +27,16 @@ namespace WebService.SE
 
         public string DocumentIdPrimary { get; set; }
 
+        /// <summary>
+        /// DocumentId SE
+        /// </summary>
+        public string DocumentId { get; set; }
+
+        /// <summary>
+        /// Nome do Arquivo com os dados para importação no SE
+        /// </summary>
+        public string FileNameJson { get; set; }
+
         public string FileName
         {
             get
